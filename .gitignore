@@ -26,3 +26,8 @@ personnel/
 *.swp
 Thumbs.db
 desktop.ini
+
+# Production
+staticfiles/
+logs/
+tmp/

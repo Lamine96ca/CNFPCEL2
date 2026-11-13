@@ -30,6 +30,10 @@ La base de données est MySQL (`cnfpcel` sur `localhost:3306` par défaut, modif
 
 `config/local_settings.py` (clé secrète, mots de passe SMTP, `DEBUG`…) et `credentials.json` ne sont **jamais versionnés**. Partez de `config/local_settings.example.py`.
 
+## Mise en production
+
+Voir [DEPLOIEMENT.md](DEPLOIEMENT.md) (o2switch, domaine principal `cnfpcel.gov.gn`).
+
 ## Tests
 
 ```bash

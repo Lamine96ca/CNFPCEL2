@@ -23,10 +23,13 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'cle-de-developpement-a-remplacer')
 
-# SECURITY WARNING: don't run with debug turned on in production!
+# Valeurs de développement : la production les redéfinit dans config/local_settings.py
 DEBUG = True
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', '[::1]']
 
-ALLOWED_HOSTS = ['*']
+# Domaine principal : toute autre adresse du site (ex. cn.cnfpcel.com) y est redirigée.
+# Laisser vide en développement.
+DOMAINE_PRINCIPAL = ''
 
 
 # Application definition
@@ -43,6 +46,8 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'cnfpcel.domaine.DomainePrincipalMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -124,6 +129,12 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
 STATIC_URL = 'static/'
+# CSS, JS, images : rassemblés par « collectstatic » dans staticfiles/ et servis par WhiteNoise
+STATIC_ROOT = BASE_DIR / 'staticfiles'
+STORAGES = {
+    'default': {'BACKEND': 'django.core.files.storage.FileSystemStorage'},
+    'staticfiles': {'BACKEND': 'whitenoise.storage.CompressedStaticFilesStorage'},
+}
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
@@ -148,3 +159,38 @@ try:
     from .local_settings import *  # noqa: F401,F403
 except ImportError:
     pass
+
+
+# ---------------------------------------------------------------------------
+# Production (DEBUG = False) : HTTPS, cookies sécurisés, journal des erreurs
+# ---------------------------------------------------------------------------
+CSRF_TRUSTED_ORIGINS = [f'https://{h}' for h in ALLOWED_HOSTS
+                        if h and h not in ('localhost', '127.0.0.1', '[::1]') and not h.startswith('.')]
+
+if not DEBUG:
+    # o2switch / cPanel : le HTTPS est terminé par le serveur web, qui transmet X-Forwarded-Proto
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+    SECURE_SSL_REDIRECT = True
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+    SECURE_CONTENT_TYPE_NOSNIFF = True
+    SECURE_REFERRER_POLICY = 'same-origin'
+    X_FRAME_OPTIONS = 'SAMEORIGIN'
+    # À activer (ex. 31536000) une fois le HTTPS confirmé sur tous les domaines
+    SECURE_HSTS_SECONDS = globals().get('SECURE_HSTS_SECONDS', 0)
+
+    (BASE_DIR / 'logs').mkdir(exist_ok=True)
+    LOGGING = {
+        'version': 1,
+        'disable_existing_loggers': False,
+        'formatters': {'simple': {'format': '{asctime} {levelname} {name} : {message}', 'style': '{'}},
+        'handlers': {
+            'fichier': {
+                'class': 'logging.handlers.RotatingFileHandler',
+                'filename': BASE_DIR / 'logs' / 'erreurs.log',
+                'maxBytes': 5 * 1024 * 1024, 'backupCount': 5,
+                'formatter': 'simple', 'level': 'WARNING', 'encoding': 'utf-8',
+            },
+        },
+        'loggers': {'django': {'handlers': ['fichier'], 'level': 'WARNING', 'propagate': True}},
+    }
