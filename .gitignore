@@ -1,8 +1,9 @@
 # Secrets et réglages propres à chaque machine
-config/local_settings.py
+config/cle_secrete.txt
 credentials.json
 token.json
 .env
+!.env.exemple
 COMPTES_TEST.txt
 
 # Environnement Python

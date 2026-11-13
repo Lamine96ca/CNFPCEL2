@@ -19,16 +19,16 @@ La connexion se fait sur `/login/` ; chaque compte est redirigé vers son espace
 python -m venv env
 env\Scripts\activate            # Windows
 pip install -r requirements.txt
-copy config\local_settings.example.py config\local_settings.py   # puis renseigner les valeurs
+copy .env.exemple .env           # puis renseigner les valeurs (CNFPCEL_DEBUG=1 en local)
 python manage.py migrate
 python manage.py runserver
 ```
 
-La base de données est MySQL (`cnfpcel` sur `localhost:3306` par défaut, modifiable dans `config/local_settings.py`).
+La base de données est MySQL (`cnfpcel` sur `localhost:3306` par défaut, modifiable dans `.env`).
 
 ## Secrets
 
-`config/local_settings.py` (clé secrète, mots de passe SMTP, `DEBUG`…) et `credentials.json` ne sont **jamais versionnés**. Partez de `config/local_settings.example.py`.
+Tous les réglages propres à une machine (clé secrète, base, e-mails, domaine, `DEBUG`) sont dans le fichier **`.env`**, jamais versionné. Partez du modèle **`.env.exemple`**. `credentials.json` n'est pas versionné non plus.
 
 ## Mise en production
 

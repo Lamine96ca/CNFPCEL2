@@ -42,8 +42,9 @@ allowed_attrs = {
     'a': ['href', 'title', 'target']
 }
 
-email_reponse='noreply@cnfpcel.gov.gn'
-domaine='https://cnfpcel.gov.gn'
+# Adresse d'envoi et adresse publique du site (réglées dans le fichier .env)
+email_reponse = settings.DEFAULT_FROM_EMAIL
+domaine = settings.URL_PUBLIQUE
 
 # Imports auparavant dispersés au milieu de l'ancien views.py
 import json

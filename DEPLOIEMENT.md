@@ -56,7 +56,7 @@ Dans cPanel, ouvrez **SSL/TLS Status**, puis lancez **AutoSSL** pour `cnfpcel.go
 
 ## Étape 5 — Mettre le nouveau code sur le serveur
 
-Ouvrez cPanel, puis **Terminal**. Collez la commande d'activation affichée en haut de Setup Python App, du type `source /home/vazi2419/virtualenv/DOSSIER/3.11/bin/activate && cd /home/vazi2419/DOSSIER`.
+Ouvrez cPanel, puis **Terminal**. Collez la commande d'activation affichée en haut de Setup Python App, du type `source /home/vazi2419/virtualenv/CNFPCEL2/3.11/bin/activate && cd /home/vazi2419/CNFPCEL2`.
 
 **Première fois avec Git :**
 ```bash
@@ -79,43 +79,36 @@ pip install --upgrade pip
 pip install -r requirements.txt
 ```
 
-## Étape 6 — Réglages de production (`config/local_settings.py`)
+## Étape 6 — Réglages de production (fichier `.env`)
+
+Tous les réglages propres au serveur sont dans le fichier **`.env`**, à la racine du projet (`~/CNFPCEL2/.env`). Ce fichier n'est jamais envoyé sur Git. On le crée à partir du modèle `.env.exemple` :
 
 ```bash
-cp config/local_settings.example.py config/local_settings.py
-chmod 600 config/local_settings.py
+cp .env.exemple .env
+chmod 600 .env
 python -c "from django.core.management.utils import get_random_secret_key as g; print(g())"
 ```
 
-Ouvrez `config/local_settings.py` dans l'éditeur de fichiers de cPanel et renseignez :
+Ouvrez `.env` avec l'éditeur de fichiers de cPanel ou avec `nano .env`, puis remplissez les valeurs :
 
-```python
-SECRET_KEY = 'la-clé-générée-ci-dessus'
-DEBUG = False
-ALLOWED_HOSTS = ['cnfpcel.gov.gn', 'www.cnfpcel.gov.gn', 'cn.cnfpcel.com']
-DOMAINE_PRINCIPAL = 'cnfpcel.gov.gn'
+| Variable | Valeur |
+|---|---|
+| `CNFPCEL_DEBUG` | `0` |
+| `CNFPCEL_SECRET_KEY` | la clé affichée par la commande ci-dessus (**obligatoire** : sans elle, le site refuse de démarrer) |
+| `CNFPCEL_ALLOWED_HOSTS` | `cnfpcel.gov.gn,www.cnfpcel.gov.gn,cn.cnfpcel.com` |
+| `CNFPCEL_DOMAINE_PRINCIPAL` | `cnfpcel.gov.gn` |
+| `CNFPCEL_DB_NAME` / `_USER` / `_PASSWORD` | la base MySQL **actuelle** du site (cPanel → Bases de données MySQL, noms en `vazi2419_…`) |
+| `CNFPCEL_EMAIL_*` | la boîte `noreply@cnfpcel.gov.gn` (hébergée chez SiteGround) |
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'COMPTE_base', 'USER': 'COMPTE_utilisateur', 'PASSWORD': '...',
-        'HOST': 'localhost', 'PORT': '3306',
-        'OPTIONS': {'charset': 'utf8mb4', 'init_command': "SET sql_mode='STRICT_TRANS_TABLES'"},
-    }
-}
-
-# E-mails : la boîte noreply@cnfpcel.gov.gn est chez SiteGround
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'mail.cnfpcel.gov.gn'   # ou le nom de serveur SMTP indiqué par SiteGround
-EMAIL_PORT = 465
-EMAIL_USE_SSL = True
-EMAIL_USE_TLS = False
-EMAIL_HOST_USER = 'noreply@cnfpcel.gov.gn'
-EMAIL_HOST_PASSWORD = '...'
-DEFAULT_FROM_EMAIL = 'CNFPCEL <noreply@cnfpcel.gov.gn>'
+Pour retrouver les identifiants de la base actuelle, regardez la configuration de l'ancienne application :
+```bash
+grep -n -A8 "DATABASES" ~/ANCIEN_DOSSIER/config/settings.py
 ```
 
-Reprenez les valeurs de base de données et d'e-mail de la configuration actuelle du serveur.
+**Fichiers téléversés** (images, PDF, vidéos) : recopiez-les depuis l'ancienne application.
+```bash
+cp -a ~/ANCIEN_DOSSIER/media ~/CNFPCEL2/
+```
 
 ## Étape 7 — Mettre à jour la base, les fichiers statiques et redémarrer
 
@@ -134,14 +127,14 @@ mkdir -p tmp && touch tmp/restart.txt
 - Un e-mail part bien, par exemple avec « Mot de passe oublié ».
 - En cas d'erreur, consultez `logs/erreurs.log` dans le dossier de l'application.
 
-Quand tout fonctionne depuis quelques jours, activez HSTS : mettez `SECURE_HSTS_SECONDS = 31536000` dans `local_settings.py`, puis redémarrez.
+Quand tout fonctionne depuis quelques jours, activez HSTS : mettez `CNFPCEL_HSTS_SECONDES=31536000` dans `.env`, puis redémarrez.
 
 ---
 
 ## Mises à jour suivantes
 
 ```bash
-source /home/vazi2419/virtualenv/DOSSIER/3.11/bin/activate && cd /home/vazi2419/DOSSIER
+source /home/vazi2419/virtualenv/CNFPCEL2/3.11/bin/activate && cd /home/vazi2419/CNFPCEL2
 git pull
 pip install -r requirements.txt
 python manage.py migrate
@@ -153,9 +146,11 @@ touch tmp/restart.txt
 
 | Symptôme | Piste |
 |---|---|
-| « Bad Request (400) » | le domaine manque dans `ALLOWED_HOSTS` |
+| « Bad Request (400) » | le domaine manque dans `CNFPCEL_ALLOWED_HOSTS` (`.env`) |
+| `Access denied for user 'root'@'localhost'` | `.env` absent ou `CNFPCEL_DB_*` non renseignés |
+| `CNFPCEL_SECRET_KEY manque` | renseigner la clé secrète dans `.env` |
 | Boucle de redirection | vérifiez que la redirection SiteGround est bien supprimée (étape 3.1) |
 | CSS absent | relancez `collectstatic`, puis redémarrez |
 | Erreur 500 | consultez `logs/erreurs.log` |
-| E-mails non envoyés | vérifiez `EMAIL_HOST` / `EMAIL_PORT` / mot de passe et le nom SMTP fourni par SiteGround |
+| E-mails non envoyés | vérifiez `CNFPCEL_EMAIL_HOST` / `_PORT` / `_PASSWORD` dans `.env` et le nom SMTP fourni par SiteGround |
 | `mysqlclient` ne s'installe pas | normal chez o2switch : `PyMySQL` est utilisé automatiquement |

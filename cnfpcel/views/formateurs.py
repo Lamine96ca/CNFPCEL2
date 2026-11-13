@@ -6,6 +6,7 @@ L'accès est réservé au personnel par `roles.AccesMiddleware`.
 import secrets
 import string
 
+from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.models import User
 from django.core.mail import EmailMultiAlternatives
@@ -18,8 +19,8 @@ from django.views.decorators.http import require_POST
 from ..forms import FormateurForm, FormateurFormationsForm
 from ..models import DispenseFormation, Formateur, Formation, Personnel
 
-DOMAINE = 'https://cnfpcel.gov.gn'
-EMAIL_REPONSE = 'noreply@cnfpcel.gov.gn'
+DOMAINE = settings.URL_PUBLIQUE
+EMAIL_REPONSE = settings.DEFAULT_FROM_EMAIL
 
 
 def _mot_de_passe(longueur=10):
