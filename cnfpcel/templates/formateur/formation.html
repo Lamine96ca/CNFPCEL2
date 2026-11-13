@@ -1,0 +1,218 @@
+{% extends 'formateur/base_formateur.html' %}
+
+{% block titre %}{{ formation.nom }}{% endblock %}
+{% block ariane %}<span class="sep">/</span><a href="{% url 'espace_formateur_formations' %}">Mes formations</a><span class="sep">/</span><span>{{ formation.nom|truncatechars:40 }}</span>{% endblock %}
+{% block actions %}
+  <a href="{% url 'list_section_formation' formation.id %}" target="_blank" class="btn btn-soft btn-sm"><i class="bi bi-eye"></i> {% if formation.publiee %}Voir sur le site{% else %}Aperçu{% endif %}</a>
+  <a href="{% url 'espace_formateur_formation_modif' formation.id %}" class="btn btn-outline-primary btn-sm"><i class="bi bi-pencil-square"></i> Modifier les informations</a>
+  {% if not formation.publiee and formation.cree_par_id == formateur.id %}
+    <button class="btn btn-outline-danger btn-sm" data-bs-toggle="modal" data-bs-target="#retirer-formation"><i class="bi bi-x-circle"></i> Retirer</button>
+  {% endif %}
+{% endblock %}
+
+{% block corps %}
+{% if not formation.publiee %}
+  <div class="alert alert-warning d-flex gap-2 align-items-start">
+    <i class="bi bi-hourglass-split mt-1"></i>
+    <div><strong>En attente de validation.</strong> Cette formation n'est pas encore visible sur le site public.
+      Préparez son contenu : l'administration la publiera après validation.</div>
+  </div>
+  {% if formation.cree_par_id == formateur.id %}
+  <div class="modal fade" id="retirer-formation" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered"><div class="modal-content">
+      <div class="modal-header"><h5 class="modal-title">Retirer la proposition</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+      <div class="modal-body">Retirer <strong>« {{ formation.nom }} »</strong> ? Ses sections, ressources et évaluations seront supprimées.</div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-soft" data-bs-dismiss="modal">Annuler</button>
+        <form method="post" action="{% url 'espace_formateur_formation_suppr' formation.id %}">{% csrf_token %}<button class="btn btn-danger">Retirer</button></form>
+      </div>
+    </div></div>
+  </div>
+  {% endif %}
+{% endif %}
+<!-- Résumé -->
+<div class="card mb-3">
+  <div class="card-body d-flex flex-wrap gap-4 align-items-center">
+    {% if formation.image %}<img src="{{ formation.image.url }}" alt="" style="width:96px;height:72px;object-fit:cover;border-radius:10px">{% endif %}
+    <div class="flex-grow-1" style="min-width:220px">
+      {% if formation.domaine %}<div class="small text-secondary">{{ formation.domaine.nom }}</div>{% endif %}
+      <div class="text-secondary small mt-1">{{ formation.description|truncatewords:40 }}</div>
+    </div>
+    <div class="d-flex gap-4 text-center">
+      <div><div class="fs-6 fw-bold text-primary" style="max-width:140px">{{ formation.duree }}</div><div class="small text-secondary">Durée</div></div>
+      <div><div class="fs-4 fw-bold text-primary">{{ inscriptions|length }}</div><div class="small text-secondary">Inscrits</div></div>
+      <div><div class="fs-4 fw-bold text-primary">{% if moyenne is not None %}{{ moyenne|floatformat:0 }}%{% else %}—{% endif %}</div><div class="small text-secondary">Moyenne</div></div>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <ul class="nav onglets-cnf px-2">
+    <li class="nav-item"><a class="nav-link {% if onglet == 'sections' %}active{% endif %}" href="?onglet=sections"><i class="bi bi-list-columns"></i> Sections <span class="pill">{{ sections|length }}</span></a></li>
+    <li class="nav-item"><a class="nav-link {% if onglet == 'ressources' %}active{% endif %}" href="?onglet=ressources"><i class="bi bi-folder2-open"></i> Ressources <span class="pill">{{ ressources|length }}</span></a></li>
+    <li class="nav-item"><a class="nav-link {% if onglet == 'evaluations' %}active{% endif %}" href="?onglet=evaluations"><i class="bi bi-ui-checks"></i> Évaluations <span class="pill">{{ evaluations|length }}</span></a></li>
+    <li class="nav-item"><a class="nav-link {% if onglet == 'participants' %}active{% endif %}" href="?onglet=participants"><i class="bi bi-people"></i> Participants <span class="pill">{{ inscriptions|length }}</span></a></li>
+    <li class="nav-item"><a class="nav-link {% if onglet == 'resultats' %}active{% endif %}" href="?onglet=resultats"><i class="bi bi-clipboard-data"></i> Résultats <span class="pill">{{ resultats|length }}</span></a></li>
+  </ul>
+
+  <div class="card-body">
+  {% if onglet == 'sections' %}
+    <!-- ================= SECTIONS ================= -->
+    <div class="d-flex flex-wrap align-items-center gap-2 mb-3">
+      <p class="text-secondary small m-0">Les sections forment le programme affiché aux participants, dans l'ordre de création.</p>
+      <button class="btn btn-primary btn-sm ms-auto text-nowrap" data-bs-toggle="collapse" data-bs-target="#ajout-section"><i class="bi bi-plus-lg"></i> Ajouter une section</button>
+    </div>
+    <form method="post" action="{% url 'espace_formateur_section_ajout' formation.id %}" class="collapse mb-3" id="ajout-section">{% csrf_token %}
+      <div class="bloc-element" style="background:var(--fond)">
+        <div class="mb-2"><label class="form-label">Titre</label>{{ form_section.titre }}</div>
+        <div class="mb-2"><label class="form-label">Contenu</label>{{ form_section.contenu }}</div>
+        <div class="text-end"><button class="btn btn-primary btn-sm"><i class="bi bi-save"></i> Enregistrer</button></div>
+      </div>
+    </form>
+    {% for s in sections %}
+      <div class="bloc-element">
+        <div class="d-flex gap-2 align-items-start">
+          <span class="pill pill-cnf">{{ forloop.counter }}</span>
+          <div class="flex-grow-1" style="min-width:0">
+            <div class="titre">{{ s.titre }}</div>
+            <div class="contenu mt-1">{{ s.contenu|truncatewords:60 }}</div>
+          </div>
+          <a href="{% url 'espace_formateur_section_modif' s.id %}" class="btn btn-sm btn-outline-primary" title="Modifier"><i class="bi bi-pencil"></i></a>
+          {% include 'formateur/_bouton_suppr.html' with action=s.id url_nom='espace_formateur_section_suppr' libelle=s.titre %}
+        </div>
+      </div>
+    {% empty %}
+      <div class="etat-vide"><i class="bi bi-list-columns"></i>Aucune section. Commencez par décrire le programme de la formation.</div>
+    {% endfor %}
+
+  {% elif onglet == 'ressources' %}
+    <!-- ================= RESSOURCES ================= -->
+    <div class="d-flex flex-wrap align-items-center gap-2 mb-3">
+      <p class="text-secondary small m-0">Supports réservés aux participants acceptés : PDF (1 Mo max.) ou vidéo.</p>
+      <button class="btn btn-primary btn-sm ms-auto text-nowrap" data-bs-toggle="collapse" data-bs-target="#ajout-ressource"><i class="bi bi-plus-lg"></i> Ajouter une ressource</button>
+    </div>
+    <form method="post" enctype="multipart/form-data" action="{% url 'espace_formateur_ressource_ajout' formation.id %}" class="collapse mb-3" id="ajout-ressource">{% csrf_token %}
+      <div class="bloc-element row g-2 mx-0" style="background:var(--fond)">
+        <div class="col-md-4"><label class="form-label">Titre</label>{{ form_ressource.titre }}</div>
+        <div class="col-md-4"><label class="form-label">Fichier PDF</label>{{ form_ressource.pdf }}</div>
+        <div class="col-md-4"><label class="form-label">Vidéo</label>{{ form_ressource.video }}</div>
+        <div class="col-12 text-end"><button class="btn btn-primary btn-sm"><i class="bi bi-upload"></i> Téléverser</button></div>
+      </div>
+    </form>
+    {% if ressources %}
+    <div class="table-responsive">
+      <table class="table table-hover align-middle">
+        <thead><tr><th>Titre</th><th>PDF</th><th>Vidéo</th><th class="text-end">Actions</th></tr></thead>
+        <tbody>
+        {% for r in ressources %}
+          <tr>
+            <td class="fw-semibold">{{ r.titre }}</td>
+            <td>{% if r.pdf %}<a href="{{ r.pdf.url }}" target="_blank" class="pill pill-danger text-decoration-none"><i class="bi bi-file-earmark-pdf"></i> Ouvrir</a>{% else %}<span class="text-secondary">—</span>{% endif %}</td>
+            <td>{% if r.video %}<a href="{{ r.video.url }}" target="_blank" class="pill pill-cnf text-decoration-none"><i class="bi bi-play-circle"></i> Lire</a>{% else %}<span class="text-secondary">—</span>{% endif %}</td>
+            <td class="text-end text-nowrap">
+              <a href="{% url 'espace_formateur_ressource_modif' r.id %}" class="btn btn-sm btn-outline-primary"><i class="bi bi-pencil"></i></a>
+              {% include 'formateur/_bouton_suppr.html' with action=r.id url_nom='espace_formateur_ressource_suppr' libelle=r.titre %}
+            </td>
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+      <div class="etat-vide"><i class="bi bi-folder2-open"></i>Aucune ressource pour cette formation.</div>
+    {% endif %}
+
+  {% elif onglet == 'evaluations' %}
+    <!-- ================= ÉVALUATIONS ================= -->
+    <div class="d-flex flex-wrap align-items-center gap-2 mb-3">
+      <p class="text-secondary small m-0">Questionnaires à choix multiples chronométrés, passés par les participants depuis « Mes formations ».</p>
+      <button class="btn btn-primary btn-sm ms-auto text-nowrap" data-bs-toggle="collapse" data-bs-target="#ajout-evaluation"><i class="bi bi-plus-lg"></i> Nouvelle évaluation</button>
+    </div>
+    <form method="post" action="{% url 'espace_formateur_evaluation_ajout' formation.id %}" class="collapse mb-3" id="ajout-evaluation">{% csrf_token %}
+      <div class="bloc-element row g-2 mx-0" style="background:var(--fond)">
+        <div class="col-md-6"><label class="form-label">Titre</label>{{ form_evaluation.titre }}</div>
+        <div class="col-md-3"><label class="form-label">{{ form_evaluation.duree.label }}</label>{{ form_evaluation.duree }}</div>
+        <div class="col-md-3"><label class="form-label">{{ form_evaluation.note_minimale.label }}</label>{{ form_evaluation.note_minimale }}</div>
+        <div class="col-12"><label class="form-label">Description</label>{{ form_evaluation.description }}</div>
+        <div class="col-md-6 d-flex align-items-center gap-2">{{ form_evaluation.actif }} <label for="{{ form_evaluation.actif.id_for_label }}" class="small">{{ form_evaluation.actif.label }}</label></div>
+        <div class="col-md-6 text-end"><button class="btn btn-primary btn-sm"><i class="bi bi-save"></i> Créer et ajouter les questions</button></div>
+      </div>
+    </form>
+    {% if evaluations %}
+    <div class="table-responsive">
+      <table class="table table-hover align-middle">
+        <thead><tr><th>Évaluation</th><th>Durée</th><th>Seuil</th><th>Questions</th><th>Passages</th><th>Statut</th><th class="text-end">Actions</th></tr></thead>
+        <tbody>
+        {% for e in evaluations %}
+          <tr>
+            <td><a href="{% url 'espace_formateur_evaluation' e.id %}" class="fw-semibold">{{ e.titre }}</a></td>
+            <td>{{ e.duree }} min</td>
+            <td>{{ e.note_minimale }}%</td>
+            <td>{% if e.nb_questions %}{{ e.nb_questions }}{% else %}<span class="pill pill-or">0</span>{% endif %}</td>
+            <td>{{ e.nb_resultats }}</td>
+            <td>{% if e.actif %}<span class="pill pill-succes">Visible</span>{% else %}<span class="pill">Masquée</span>{% endif %}</td>
+            <td class="text-end text-nowrap">
+              <a href="{% url 'espace_formateur_evaluation' e.id %}" class="btn btn-sm btn-primary"><i class="bi bi-list-check"></i> Questions</a>
+              {% include 'formateur/_bouton_suppr.html' with action=e.id url_nom='espace_formateur_evaluation_suppr' libelle=e.titre avertissement="Les questions, réponses et résultats associés seront aussi supprimés." %}
+            </td>
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+      <div class="etat-vide"><i class="bi bi-ui-checks"></i>Aucune évaluation pour cette formation.</div>
+    {% endif %}
+
+  {% elif onglet == 'participants' %}
+    <!-- ================= PARTICIPANTS ================= -->
+    {% if nb_attente %}
+      <div class="alert alert-info small"><i class="bi bi-hourglass-split me-1"></i> {{ nb_attente }} inscription{{ nb_attente|pluralize }} en attente de validation par l'administration.</div>
+    {% endif %}
+    {% if inscriptions %}
+    <div class="table-responsive">
+      <table class="table table-hover align-middle">
+        <thead><tr><th>Participant</th><th>E-mail</th><th>Téléphone</th><th>Inscrit le</th></tr></thead>
+        <tbody>
+        {% for i in inscriptions %}
+          <tr>
+            <td><div class="d-flex align-items-center gap-2"><span class="avatar">{{ i.etudiant.prenom|first }}{{ i.etudiant.nom|first }}</span><span class="fw-semibold">{{ i.etudiant.prenom }} {{ i.etudiant.nom|upper }}</span></div></td>
+            <td><a href="mailto:{{ i.etudiant.email }}">{{ i.etudiant.email }}</a></td>
+            <td>{{ i.etudiant.telephone|default:"—" }}</td>
+            <td class="small text-secondary">{{ i.date_inscription|date:"d/m/Y" }}</td>
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+      <div class="etat-vide"><i class="bi bi-people"></i>Aucun participant accepté pour le moment.</div>
+    {% endif %}
+
+  {% elif onglet == 'resultats' %}
+    <!-- ================= RÉSULTATS ================= -->
+    {% if resultats %}
+    <div class="table-responsive">
+      <table class="table table-hover align-middle">
+        <thead><tr><th>Participant</th><th>Évaluation</th><th>Score</th><th>Résultat</th><th>Date</th></tr></thead>
+        <tbody>
+        {% for r in resultats %}
+          <tr>
+            <td class="fw-semibold">{{ r.etudiant.prenom }} {{ r.etudiant.nom }}</td>
+            <td><a href="{% url 'espace_formateur_evaluation' r.evaluation.id %}">{{ r.evaluation.titre }}</a></td>
+            <td>{{ r.score|floatformat:0 }}% <span class="small text-secondary">({{ r.bonnes_reponses }}/{{ r.total_questions }})</span>
+              {% if r.temps_ecoule %}<span class="pill pill-or ms-1" title="Temps écoulé">⏱</span>{% endif %}</td>
+            <td>{% if r.reussi %}<span class="pill pill-succes">Réussi</span>{% else %}<span class="pill pill-danger">Échoué</span>{% endif %}</td>
+            <td class="small text-secondary">{{ r.date_passage|date:"d/m/Y H:i" }}</td>
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+      <div class="etat-vide"><i class="bi bi-clipboard-data"></i>Aucun résultat pour cette formation.</div>
+    {% endif %}
+  {% endif %}
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,18 @@
+<div class="col-md-6 col-xl-4">
+  <a href="{% url 'espace_formateur_formation' f.id %}" class="card carte-formation text-decoration-none">
+    <div class="visuel" {% if f.image %}style="background-image:linear-gradient(180deg,rgba(0,0,0,.05),rgba(0,0,0,.35)),url('{{ f.image.url }}')"{% endif %}>
+      {% if not f.publiee %}<span class="pill pill-or"><i class="bi bi-hourglass-split"></i> En attente de validation</span>
+      {% elif f.active %}<span class="pill pill-succes">Inscriptions ouvertes</span>{% else %}<span class="pill">Inscriptions fermées</span>{% endif %}
+    </div>
+    <div class="card-body">
+      {% if f.domaine %}<span class="small text-secondary">{{ f.domaine.nom }}</span>{% endif %}
+      <h3>{{ f.nom }}</h3>
+      <div class="chiffres flex-wrap mt-auto pt-2">
+        <span><i class="bi bi-list-columns"></i> <strong>{{ f.nb_sections }}</strong> section{{ f.nb_sections|pluralize }}</span>
+        <span><i class="bi bi-folder2-open"></i> <strong>{{ f.nb_ressources }}</strong> ressource{{ f.nb_ressources|pluralize }}</span>
+        <span><i class="bi bi-ui-checks"></i> <strong>{{ f.nb_evaluations }}</strong> éval.</span>
+        <span><i class="bi bi-people"></i> <strong>{{ f.nb_inscrits }}</strong> inscrit{{ f.nb_inscrits|pluralize }}</span>
+      </div>
+    </div>
+  </a>
+</div>

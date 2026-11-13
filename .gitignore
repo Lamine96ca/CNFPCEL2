@@ -1,0 +1,28 @@
+# Secrets et réglages propres à chaque machine
+config/local_settings.py
+credentials.json
+token.json
+.env
+COMPTES_TEST.txt
+
+# Environnement Python
+env/
+venv/
+.venv/
+__pycache__/
+*.py[cod]
+
+# Données locales
+db.sqlite3
+media/
+personnel/
+*.log
+*.sql
+
+# Éditeurs et outils
+.vscode/
+.idea/
+.claude/
+*.swp
+Thumbs.db
+desktop.ini

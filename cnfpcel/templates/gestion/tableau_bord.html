@@ -1,0 +1,246 @@
+{% extends 'gestion/base/base_gestion.html' %}
+{% load static %}
+
+{% block titre %}Tableau de bord{% endblock %}
+{% block retour %}Accueil{% endblock %}
+{% block titre_encours %}Vue d'ensemble{% endblock %}
+{% block actions %}
+  <a href="{% url 'formation' %}" class="btn btn-primary btn-sm"><i class="bi bi-plus-lg"></i> Formation</a>
+  <a href="{% url 'article' %}" class="btn btn-soft btn-sm"><i class="bi bi-pencil-square"></i> Article</a>
+{% endblock %}
+
+{% block corps %}
+{% include 'gestion/base/_messages.html' %}
+<div class="bandeau-accueil mb-4">
+  <div class="date">{{ maintenant|date:"l j F Y" }}</div>
+  <h2>Bonjour {{ utilisateur.prenom }} 👋</h2>
+  <p>
+    {% if total_inscription_attente %}{{ total_inscription_attente }} inscription{{ total_inscription_attente|pluralize }} en attente de validation{% else %}Aucune inscription en attente{% endif %}
+    · {% if total_message_non_lu %}{{ total_message_non_lu }} message{{ total_message_non_lu|pluralize }} non lu{{ total_message_non_lu|pluralize }}{% else %}tous les messages sont lus{% endif %}.
+  </p>
+</div>
+
+{% if formations_a_valider %}
+<div class="card mb-4" style="border-left:4px solid var(--or)">
+  <div class="card-header d-flex align-items-center">
+    <h3 class="card-titre"><i class="bi bi-hourglass-split" style="color:var(--or-fonce)"></i> Formations proposées à valider</h3>
+    <span class="pill pill-or ms-2">{{ formations_a_valider|length }}</span>
+  </div>
+  <div class="card-body pt-1">
+    <ul class="liste-simple">
+      {% for f in formations_a_valider %}
+      <li class="flex-wrap">
+        <span class="tuile tuile-or avatar"><i class="bi bi-mortarboard"></i></span>
+        <div class="flex-grow-1" style="min-width:0">
+          <div class="fw-semibold text-truncate">{{ f.nom }}</div>
+          <div class="meta">{% if f.cree_par %}Proposée par {{ f.cree_par }}{% endif %}{% if f.domaine %} · {{ f.domaine.nom }}{% endif %} · {{ f.duree }}</div>
+        </div>
+        <a href="{% url 'list_section_formation' f.id %}" target="_blank" class="btn btn-sm btn-soft"><i class="bi bi-eye"></i> Aperçu</a>
+        <form method="post" action="{% url 'formation_publier' f.id %}">{% csrf_token %}
+          <input type="hidden" name="suivant" value="{% url 'gestion' %}">
+          <button class="btn btn-sm btn-success"><i class="bi bi-check2-circle"></i> Valider et publier</button>
+        </form>
+      </li>
+      {% endfor %}
+    </ul>
+  </div>
+</div>
+{% endif %}
+
+<!-- Indicateurs -->
+<div class="row g-3 mb-4">
+  <div class="col-sm-6 col-xl-3">
+    <a href="{% url 'formation' %}" class="card kpi">
+      <div class="haut"><span class="tuile tuile-bleu"><i class="bi bi-mortarboard"></i></span>
+        <div><div class="lib">Formations</div><div class="val">{{ total_formation }}</div></div></div>
+      <div class="bas"><div class="jauge"><div class="jauge-bleu" style="width:{{ pct_formation_active }}%"></div></div>{{ pct_formation_active }}% actives</div>
+    </a>
+  </div>
+  <div class="col-sm-6 col-xl-3">
+    <a href="{% url 'etudiant' %}" class="card kpi">
+      <div class="haut"><span class="tuile tuile-or"><i class="bi bi-people"></i></span>
+        <div><div class="lib">Inscriptions</div><div class="val">{{ total_inscription }}</div></div></div>
+      <div class="bas"><div class="jauge"><div class="jauge-or" style="width:{{ pct_inscription_acceptee }}%"></div></div>{{ pct_inscription_acceptee }}% acceptées</div>
+    </a>
+  </div>
+  <div class="col-sm-6 col-xl-3">
+    <a href="{% url 'evaluation' %}" class="card kpi">
+      <div class="haut"><span class="tuile tuile-vert"><i class="bi bi-patch-check"></i></span>
+        <div><div class="lib">Évaluations passées</div><div class="val">{{ total_resultat }}</div></div></div>
+      <div class="bas"><div class="jauge"><div class="jauge-vert" style="width:{{ pct_reussite }}%"></div></div>{{ pct_reussite }}% de réussite</div>
+    </a>
+  </div>
+  <div class="col-sm-6 col-xl-3">
+    <a href="{% url 'article' %}" class="card kpi">
+      <div class="haut"><span class="tuile tuile-rouge"><i class="bi bi-newspaper"></i></span>
+        <div><div class="lib">Articles</div><div class="val">{{ total_article }}</div></div></div>
+      <div class="bas"><div class="jauge"><div class="jauge-rouge" style="width:{{ pct_article_pub }}%"></div></div>{{ pct_article_pub }}% publiés</div>
+    </a>
+  </div>
+</div>
+
+<div class="row g-3 mb-4">
+  <!-- Graphique inscriptions par formation -->
+  <div class="col-xl-8">
+    <div class="card h-100">
+      <div class="card-header d-flex align-items-center">
+        <h3 class="card-titre"><i class="bi bi-bar-chart"></i> Inscriptions par formation</h3>
+        <a href="{% url 'formation' %}" class="ms-auto small">Toutes les formations</a>
+      </div>
+      <div class="card-body">
+        {% if formations_stats %}
+          <div id="graphe-formations" style="min-height:300px"></div>
+        {% else %}
+          <div class="etat-vide"><i class="bi bi-bar-chart"></i>Aucune formation pour le moment.</div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <!-- Chiffres clés -->
+  <div class="col-xl-4">
+    <div class="card h-100">
+      <div class="card-header"><h3 class="card-titre"><i class="bi bi-speedometer2"></i> En un coup d'œil</h3></div>
+      <div class="card-body">
+        <ul class="liste-simple">
+          <li><span class="tuile tuile-bleu avatar"><i class="bi bi-diagram-3"></i></span> Domaines de formation <strong class="ms-auto">{{ total_domaine }}</strong></li>
+          <li><span class="tuile tuile-violet avatar"><i class="bi bi-person-video3"></i></span> Formateurs <strong class="ms-auto">{{ total_formateur }}</strong></li>
+          <li><span class="tuile tuile-or avatar"><i class="bi bi-person-check"></i></span> Participants <strong class="ms-auto">{{ total_etudiant }}</strong></li>
+          <li><span class="tuile tuile-vert avatar"><i class="bi bi-ui-checks"></i></span> Évaluations créées <strong class="ms-auto">{{ total_evaluation }}</strong></li>
+          <li><span class="tuile tuile-bleu avatar"><i class="bi bi-person-badge"></i></span> Personnel <strong class="ms-auto">{{ total_personnel }}</strong></li>
+          <li><span class="tuile tuile-rouge avatar"><i class="bi bi-calendar-event"></i></span> Événements à venir <strong class="ms-auto">{{ total_evenement }}</strong></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row g-3 mb-4">
+  <!-- Inscriptions en attente -->
+  <div class="col-xl-6">
+    <div class="card h-100">
+      <div class="card-header d-flex align-items-center">
+        <h3 class="card-titre"><i class="bi bi-hourglass-split"></i> Inscriptions en attente</h3>
+        {% if total_inscription_attente %}<span class="pill pill-or ms-2">{{ total_inscription_attente }}</span>{% endif %}
+        <a href="{% url 'etudiant' %}" class="ms-auto small">Voir les participants</a>
+      </div>
+      <div class="card-body pt-1">
+        {% if inscriptions_attente %}
+        <ul class="liste-simple">
+          {% for i in inscriptions_attente %}
+          <li>
+            <span class="avatar">{{ i.etudiant.prenom|first }}{{ i.etudiant.nom|first }}</span>
+            <div class="flex-grow-1" style="min-width:0">
+              <div class="fw-semibold text-truncate">{{ i.etudiant.prenom }} {{ i.etudiant.nom }}</div>
+              <div class="meta text-truncate">{{ i.formation.nom }} · {{ i.date_inscription|date:"d/m/Y" }}</div>
+            </div>
+            <a href="{% url 'etudiant_et_ses_formation' i.etudiant.id %}" class="btn btn-sm btn-outline-primary">Traiter</a>
+          </li>
+          {% endfor %}
+        </ul>
+        {% else %}
+          <div class="etat-vide"><i class="bi bi-check2-circle"></i>Toutes les inscriptions sont traitées.</div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <!-- Messages -->
+  <div class="col-xl-6">
+    <div class="card h-100">
+      <div class="card-header d-flex align-items-center">
+        <h3 class="card-titre"><i class="bi bi-envelope-paper"></i> Derniers messages</h3>
+        {% if total_message_non_lu %}<span class="pill pill-danger ms-2">{{ total_message_non_lu }} non lu{{ total_message_non_lu|pluralize }}</span>{% endif %}
+        <a href="{% url 'lire_message_contact' %}" class="ms-auto small">Tous les messages</a>
+      </div>
+      <div class="card-body pt-1">
+        {% if derniers_messages %}
+        <ul class="liste-simple">
+          {% for m in derniers_messages %}
+          <li>
+            <span class="avatar">{{ m.nom|first }}</span>
+            <div class="flex-grow-1" style="min-width:0">
+              <div class="fw-semibold text-truncate">{{ m.sujet|default:"(sans sujet)" }} {% if not m.lu %}<span class="pill pill-cnf ms-1">Nouveau</span>{% endif %}</div>
+              <div class="meta text-truncate">{{ m.nom }} · {{ m.date_envoi|date:"d/m/Y H:i" }}</div>
+            </div>
+          </li>
+          {% endfor %}
+        </ul>
+        {% else %}
+          <div class="etat-vide"><i class="bi bi-inbox"></i>Aucun message reçu.</div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row g-3">
+  <div class="col-xl-8">
+    <div class="card h-100">
+      <div class="card-header"><h3 class="card-titre"><i class="bi bi-lightning-charge"></i> Accès rapides</h3></div>
+      <div class="card-body">
+        <div class="acces-rapide">
+          <a href="{% url 'domaine_formation' %}"><i class="bi bi-diagram-3"></i> Domaines</a>
+          <a href="{% url 'formation' %}"><i class="bi bi-mortarboard"></i> Formations</a>
+          <a href="{% url 'formateur' %}"><i class="bi bi-person-video3"></i> Formateurs</a>
+          <a href="{% url 'etudiant' %}"><i class="bi bi-people"></i> Participants</a>
+          <a href="{% url 'evaluation' %}"><i class="bi bi-ui-checks"></i> Évaluations</a>
+          <a href="{% url 'article' %}"><i class="bi bi-newspaper"></i> Articles</a>
+          <a href="{% url 'evenement' %}"><i class="bi bi-calendar-event"></i> Événements</a>
+          <a href="{% url 'galerie' %}"><i class="bi bi-images"></i> Galerie</a>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-xl-4">
+    <div class="card h-100">
+      <div class="card-header d-flex align-items-center">
+        <h3 class="card-titre"><i class="bi bi-calendar-week"></i> Prochains événements</h3>
+        <a href="{% url 'evenement' %}" class="ms-auto small">Gérer</a>
+      </div>
+      <div class="card-body pt-1">
+        {% if prochains_evenements %}
+        <ul class="liste-simple">
+          {% for e in prochains_evenements %}
+          <li>
+            <span class="tuile tuile-bleu avatar text-center lh-1" style="width:44px;height:44px;border-radius:10px">
+              <span><strong class="d-block">{{ e.date|date:"d" }}</strong><small style="font-size:.65rem">{{ e.date|date:"M" }}</small></span>
+            </span>
+            <div style="min-width:0">
+              <div class="fw-semibold text-truncate">{{ e.titre }}</div>
+              <div class="meta text-truncate"><i class="bi bi-geo-alt"></i> {{ e.lieu }}</div>
+            </div>
+          </li>
+          {% endfor %}
+        </ul>
+        {% else %}
+          <div class="etat-vide"><i class="bi bi-calendar-x"></i>Aucun événement programmé.</div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+{% if formations_stats %}
+<script src="{% static 'gestion/assets/vendor/apexcharts/apexcharts.min.js' %}"></script>
+{{ graphe_formations|json_script:"g-noms" }}
+{{ graphe_inscrits|json_script:"g-valeurs" }}
+<script>
+  new ApexCharts(document.querySelector('#graphe-formations'), {
+    chart: { type: 'bar', height: 320, toolbar: { show: false }, fontFamily: 'inherit' },
+    series: [{ name: 'Inscrits', data: JSON.parse(document.getElementById('g-valeurs').textContent) }],
+    xaxis: { categories: JSON.parse(document.getElementById('g-noms').textContent),
+             tickAmount: Math.max(1, Math.min(10, Math.max(...JSON.parse(document.getElementById('g-valeurs').textContent)))),
+             decimalsInFloat: 0, labels: { style: { colors: '#6b7c8c' } } },
+    yaxis: { labels: { maxWidth: 260, style: { colors: '#36495a', fontSize: '12px' } } },
+    plotOptions: { bar: { horizontal: true, borderRadius: 6, barHeight: '55%' } },
+    colors: ['#0077B6'],
+    dataLabels: { enabled: true, style: { colors: ['#fff'] } },
+    grid: { borderColor: '#e5ebf1', strokeDashArray: 4 },
+    tooltip: { y: { formatter: v => v + ' inscrit(s)' } }
+  }).render();
+</script>
+{% endif %}
+{% endblock %}

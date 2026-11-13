@@ -1,0 +1,1674 @@
+```html
+{% extends 'accueil/base/base.html' %}
+
+{% block content %}
+{% load static %}
+
+<style>
+
+/* =========================================================
+   VARIABLES
+========================================================= */
+
+:root {
+    --primary: #0077B6;
+    --primary-dark: #005b8a;
+    --primary-light: #eaf7fc;
+
+    --text: #243746;
+    --muted: #718096;
+
+    --bg: #f6f9fb;
+    --white: #ffffff;
+
+    --border: #e5edf2;
+
+    --success: #198754;
+    --warning: #f5a800;
+    --danger: #dc3545;
+
+    --radius: 17px;
+
+    --shadow:
+        0 6px 24px rgba(25, 55, 75, .07);
+
+    --shadow-hover:
+        0 15px 35px rgba(25, 55, 75, .14);
+}
+
+
+/* =========================================================
+   PAGE
+========================================================= */
+
+#list_formation {
+    padding-top: 100px;
+    padding-bottom: 55px;
+}
+
+@media (max-width: 1199px) {
+    #list_formation {
+        padding-top: 75px;
+    }
+}
+
+@media (max-width: 767px) {
+    #list_formation {
+        padding-top: 60px;
+    }
+}
+
+
+/* =========================================================
+   TITRE
+========================================================= */
+
+.page-header {
+    margin-bottom: 38px;
+}
+
+.page-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+
+    padding: 7px 14px;
+
+    background: var(--primary-light);
+    color: var(--primary);
+
+    border-radius: 50px;
+
+    font-size: .75rem;
+    font-weight: 800;
+
+    text-transform: uppercase;
+    letter-spacing: .5px;
+}
+
+.page-header h1 {
+    margin: 13px 0 7px;
+
+    color: var(--text);
+
+    font-size: clamp(1.6rem, 3.5vw, 2.35rem);
+    font-weight: 800;
+
+    line-height: 1.2;
+}
+
+.page-header h1 span {
+    color: var(--primary);
+}
+
+.page-domain {
+    margin: 0;
+
+    color: var(--muted);
+
+    font-size: .95rem;
+}
+
+.page-domain strong {
+    color: var(--text);
+}
+
+.page-line {
+    width: 65px;
+    height: 4px;
+
+    margin-top: 17px;
+
+    border: 0;
+    border-radius: 50px;
+
+    background: var(--primary);
+}
+
+
+/* =========================================================
+   GRILLE FORMATIONS
+========================================================= */
+
+.formation-grid {
+    row-gap: 25px;
+}
+
+
+/* =========================================================
+   CARTE FORMATION
+========================================================= */
+
+.formation-link {
+    display: block;
+    height: 100%;
+
+    color: inherit;
+    text-decoration: none;
+}
+
+.formation-card {
+    position: relative;
+
+    height: 100%;
+
+    overflow: hidden;
+
+    background: var(--white);
+
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+
+    box-shadow: var(--shadow);
+
+    transition:
+        transform .35s ease,
+        box-shadow .35s ease,
+        border-color .35s ease;
+}
+
+.formation-card:hover {
+    transform: translateY(-7px);
+
+    border-color: rgba(0,119,182,.20);
+
+    box-shadow: var(--shadow-hover);
+}
+
+
+/* =========================================================
+   IMAGE FORMATION
+========================================================= */
+
+.formation-image-wrapper {
+    position: relative;
+
+    height: 205px;
+
+    overflow: hidden;
+
+    background: #edf3f6;
+}
+
+.formation-img {
+    width: 100%;
+    height: 100%;
+
+    object-fit: cover;
+
+    display: block;
+
+    transition: transform .6s ease;
+}
+
+.formation-card:hover .formation-img {
+    transform: scale(1.05);
+}
+
+
+/* Overlay */
+
+.formation-image-wrapper::after {
+    content: "";
+
+    position: absolute;
+    inset: 0;
+
+    background:
+        linear-gradient(
+            to bottom,
+            rgba(0,0,0,0) 45%,
+            rgba(0,0,0,.35) 100%
+        );
+
+    pointer-events: none;
+}
+
+
+/* =========================================================
+   BADGE STATUT
+========================================================= */
+
+.status-badge {
+    position: absolute;
+
+    top: 13px;
+    right: 13px;
+
+    z-index: 3;
+
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+
+    padding: 7px 11px;
+
+    background: rgba(220,53,69,.94);
+    color: #fff;
+
+    border-radius: 50px;
+
+    font-size: .70rem;
+    font-weight: 800;
+
+    box-shadow: 0 4px 12px rgba(0,0,0,.14);
+}
+
+
+/* =========================================================
+   BADGE FORMATION
+========================================================= */
+
+.formation-type {
+    position: absolute;
+
+    left: 13px;
+    top: 13px;
+
+    z-index: 3;
+
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+
+    padding: 6px 10px;
+
+    background: rgba(255,255,255,.94);
+    color: var(--primary);
+
+    border-radius: 50px;
+
+    font-size: .70rem;
+    font-weight: 800;
+}
+
+
+/* =========================================================
+   FORMATION INACTIVE
+========================================================= */
+
+.formation-inactive {
+    opacity: .67;
+}
+
+.formation-inactive:hover {
+    transform: translateY(-3px);
+}
+
+.formation-inactive .status-badge {
+    opacity: 1;
+}
+
+
+/* =========================================================
+   CORPS CARTE
+========================================================= */
+
+.formation-body {
+    display: flex;
+    flex-direction: column;
+
+    min-height: 185px;
+
+    padding: 18px;
+}
+
+.formation-title {
+    margin-bottom: 8px;
+
+    color: var(--text);
+
+    font-size: 1rem;
+    font-weight: 800;
+
+    line-height: 1.4;
+
+    transition: color .25s ease;
+}
+
+.formation-card:hover .formation-title {
+    color: var(--primary);
+}
+
+
+/* =========================================================
+   DESCRIPTION — HTML ENRICHI
+========================================================= */
+
+.formation-desc {
+    margin-bottom: 15px;
+
+    color: var(--muted);
+
+    font-size: .84rem;
+    line-height: 1.65;
+
+    /*
+       On limite visuellement la hauteur,
+       sans tronquer le HTML côté Django.
+    */
+    max-height: 82px;
+
+    overflow: hidden;
+}
+
+
+/* IMPORTANT :
+   Le contenu peut contenir :
+   strong, em, br, a, p, ul, li
+*/
+
+.formation-desc strong {
+    color: var(--text);
+    font-weight: 800;
+}
+
+.formation-desc em {
+    font-style: italic;
+}
+
+.formation-desc a {
+    color: var(--primary);
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.formation-desc a:hover {
+    color: var(--primary-dark);
+    text-decoration: underline;
+}
+
+.formation-desc p {
+    margin-bottom: 5px;
+}
+
+.formation-desc p:last-child {
+    margin-bottom: 0;
+}
+
+.formation-desc ul {
+    margin-top: 5px;
+    margin-bottom: 5px;
+
+    padding-left: 19px;
+}
+
+.formation-desc li {
+    margin-bottom: 2px;
+}
+
+
+/* =========================================================
+   META FORMATION
+========================================================= */
+
+.formation-meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 10px;
+
+    margin-top: auto;
+    padding-top: 13px;
+
+    border-top: 1px solid #edf1f4;
+}
+
+.meta-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+
+    color: var(--muted);
+
+    font-size: .77rem;
+    font-weight: 600;
+}
+
+.meta-item i {
+    color: var(--primary);
+}
+
+.meta-price {
+    color: var(--primary);
+    font-weight: 800;
+}
+
+
+/* =========================================================
+   SECTION CONDITIONS
+========================================================= */
+
+.criteria-card {
+    height: 100%;
+
+    padding: 24px;
+
+    background: #fff;
+
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+
+    box-shadow: var(--shadow);
+
+    transition: .3s ease;
+}
+
+.criteria-card:hover {
+    box-shadow: var(--shadow-hover);
+    transform: translateY(-3px);
+}
+
+.criteria-icon {
+    width: 44px;
+    height: 44px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    margin-bottom: 13px;
+
+    background: var(--primary-light);
+    color: var(--primary);
+
+    border-radius: 12px;
+
+    font-size: 1.2rem;
+}
+
+.criteria-card h5 {
+    margin-bottom: 12px;
+
+    color: var(--text);
+
+    font-size: 1rem;
+    font-weight: 800;
+}
+
+.criteria-card p {
+    color: var(--muted);
+
+    font-size: .86rem;
+    line-height: 1.7;
+}
+
+.criteria-list {
+    padding-left: 20px;
+
+    color: var(--muted);
+
+    font-size: .85rem;
+}
+
+.criteria-list li {
+    margin-bottom: 8px;
+}
+
+.criteria-list li::marker {
+    color: var(--primary);
+}
+
+.criteria-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+
+    padding: 8px 14px;
+
+    border: 1px solid var(--primary);
+
+    border-radius: 9px;
+
+    color: var(--primary);
+
+    font-size: .78rem;
+    font-weight: 700;
+
+    text-decoration: none;
+
+    transition: .25s ease;
+}
+
+.criteria-btn:hover {
+    background: var(--primary);
+    color: #fff;
+}
+
+
+/* =========================================================
+   SEPARATEUR VIDEO
+========================================================= */
+
+.video-section {
+    padding-top: 55px;
+    padding-bottom: 65px;
+}
+
+.video-section-header {
+    margin-bottom: 28px;
+}
+
+.video-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+
+    padding: 7px 13px;
+
+    background: var(--primary-light);
+    color: var(--primary);
+
+    border-radius: 50px;
+
+    font-size: .74rem;
+    font-weight: 800;
+
+    text-transform: uppercase;
+}
+
+.video-section-header h2 {
+    margin-top: 13px;
+
+    color: var(--text);
+
+    font-size: clamp(1.4rem, 3vw, 1.9rem);
+    font-weight: 800;
+}
+
+.video-section-header p {
+    max-width: 650px;
+
+    margin: 8px auto 0;
+
+    color: var(--muted);
+
+    font-size: .9rem;
+}
+
+
+/* =========================================================
+   CARTE VIDEO
+========================================================= */
+
+.video-card {
+    overflow: hidden;
+
+    background: #fff;
+
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+
+    box-shadow: var(--shadow);
+
+    transition:
+        transform .35s ease,
+        box-shadow .35s ease;
+}
+
+.video-card:hover {
+    transform: translateY(-6px);
+
+    box-shadow: var(--shadow-hover);
+}
+
+
+/* =========================================================
+   MINIATURE VIDEO
+========================================================= */
+
+.video-thumb-wrapper {
+    position: relative;
+
+    height: 195px;
+
+    overflow: hidden;
+
+    background: #16232c;
+}
+
+.video-thumb {
+    width: 100%;
+    height: 100%;
+
+    object-fit: cover;
+
+    display: block;
+
+    transition: transform .55s ease;
+}
+
+.video-card:hover .video-thumb {
+    transform: scale(1.045);
+}
+
+
+/* Overlay */
+
+.video-thumb-wrapper::after {
+    content: "";
+
+    position: absolute;
+    inset: 0;
+
+    background: rgba(0,0,0,.16);
+
+    transition: background .3s ease;
+}
+
+.video-card:hover .video-thumb-wrapper::after {
+    background: rgba(0,0,0,.28);
+}
+
+
+/* =========================================================
+   PLAY
+========================================================= */
+
+.play-icon {
+    position: absolute;
+
+    z-index: 2;
+
+    width: 58px;
+    height: 58px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    background: rgba(255,255,255,.95);
+
+    color: var(--primary);
+
+    border-radius: 50%;
+
+    font-size: 1.8rem;
+
+    box-shadow: 0 8px 25px rgba(0,0,0,.25);
+
+    transition:
+        transform .3s ease,
+        background .3s ease;
+}
+
+.video-card:hover .play-icon {
+    transform: translate(-50%, -50%) scale(1.08);
+
+    background: var(--primary);
+    color: #fff;
+}
+
+
+/* =========================================================
+   INFO VIDEO
+========================================================= */
+
+.video-body {
+    padding: 17px;
+}
+
+.video-title {
+    margin-bottom: 7px;
+
+    color: var(--text);
+
+    font-size: .98rem;
+    font-weight: 800;
+
+    line-height: 1.4;
+}
+
+.video-description {
+    margin: 0;
+
+    color: var(--muted);
+
+    font-size: .82rem;
+    line-height: 1.65;
+
+    max-height: 65px;
+
+    overflow: hidden;
+}
+
+
+/* HTML riche dans description vidéo */
+
+.video-description strong {
+    color: var(--text);
+    font-weight: 800;
+}
+
+.video-description em {
+    font-style: italic;
+}
+
+.video-description a {
+    color: var(--primary);
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.video-description a:hover {
+    text-decoration: underline;
+}
+
+.video-description p {
+    margin-bottom: 4px;
+}
+
+.video-description ul {
+    padding-left: 18px;
+}
+
+
+/* =========================================================
+   MODAL VIDEO
+========================================================= */
+
+.video-modal .modal-content {
+    overflow: hidden;
+
+    border: 0;
+    border-radius: 16px;
+
+    background: #101820;
+
+    box-shadow: 0 25px 70px rgba(0,0,0,.35);
+}
+
+.video-modal .modal-header {
+    padding: 15px 20px;
+
+    background: #fff;
+
+    border: 0;
+}
+
+.video-modal .modal-title {
+    color: var(--text);
+
+    font-size: 1rem;
+    font-weight: 800;
+}
+
+.video-modal .modal-body {
+    padding: 0;
+
+    background: #000;
+}
+
+.video-modal video {
+    width: 100%;
+    max-height: 70vh;
+
+    display: block;
+
+    background: #000;
+}
+
+.video-modal .modal-footer {
+    padding: 14px 18px;
+
+    background: #fff;
+
+    border: 0;
+}
+
+
+/* =========================================================
+   TOAST
+========================================================= */
+
+#modificationToast {
+    min-width: 290px;
+
+    border-radius: 12px !important;
+
+    box-shadow:
+        0 12px 35px rgba(0,0,0,.15);
+}
+
+
+/* =========================================================
+   ANIMATION
+========================================================= */
+
+.formation-item,
+.video-item {
+    animation: fadeUp .55s ease both;
+}
+
+@keyframes fadeUp {
+
+    from {
+        opacity: 0;
+        transform: translateY(18px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 575px) {
+
+    #list_formation {
+        padding-left: 13px;
+        padding-right: 13px;
+    }
+
+    .page-header h1 {
+        font-size: 1.55rem;
+    }
+
+    .formation-image-wrapper {
+        height: 195px;
+    }
+
+    .formation-body {
+        padding: 16px;
+    }
+
+    .criteria-card {
+        padding: 19px;
+    }
+
+    .video-thumb-wrapper {
+        height: 190px;
+    }
+
+    .video-modal .modal-footer {
+        flex-direction: column;
+        align-items: stretch !important;
+        gap: 10px;
+    }
+
+}
+
+</style>
+
+
+<!-- =========================================================
+     TOAST
+========================================================= -->
+
+<div class="position-fixed top-0 start-50 translate-middle-x p-3"
+     style="z-index:1055;">
+
+    <div id="modificationToast"
+         class="toast align-items-center fw-bold bg-white border-0"
+         role="alert"
+         aria-live="assertive"
+         aria-atomic="true">
+
+        <div class="d-flex">
+
+            <div class="toast-body">
+
+                {% if messages %}
+
+                    {% for message in messages %}
+
+                        {% if message.tags == 'error' %}
+
+                            ❌
+                            <span class="text-danger">
+                                {{ message }}
+                            </span>
+
+                        {% else %}
+
+                            <span class="text-info">
+                                {{ message }}
+                            </span>
+
+                        {% endif %}
+
+                    {% endfor %}
+
+                {% endif %}
+
+            </div>
+
+            <button type="button"
+                    class="btn-close me-2 m-auto"
+                    data-bs-dismiss="toast"
+                    aria-label="Fermer">
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+{% if messages %}
+
+<script>
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    const toastElement =
+        document.getElementById("modificationToast");
+
+    if (toastElement) {
+
+        const toast =
+            new bootstrap.Toast(toastElement);
+
+        toast.show();
+
+    }
+
+});
+
+</script>
+
+{% endif %}
+
+
+
+<!-- =========================================================
+     FORMATIONS
+========================================================= -->
+
+<section class="container"
+         id="list_formation">
+
+
+    <!-- HEADER -->
+
+    <div class="page-header">
+
+        <span class="page-eyebrow">
+
+            <i class="bi bi-mortarboard-fill"></i>
+
+            Catalogue des formations
+
+        </span>
+
+
+        <h1>
+
+            Choisissez la
+            <span>formation</span>
+            que vous souhaitez suivre
+
+        </h1>
+
+
+        <p class="page-domain">
+
+            Domaine :
+            <strong>{{ domaine.nom }}</strong>
+
+        </p>
+
+
+        <div class="page-line"></div>
+
+    </div>
+
+
+
+    <div class="row g-4">
+
+
+        <!-- =================================================
+             FORMATIONS
+        ================================================== -->
+
+        <div class="col-lg-9">
+
+            <div class="row formation-grid">
+
+
+                {% for d in formation %}
+
+                <div class="col-12 col-md-6 col-xl-4 formation-item">
+
+
+                    <a href="{% url 'list_section_formation' d.id %}"
+                       class="formation-link">
+
+
+                        <article class="formation-card
+                            {% if not d.active %}
+                                formation-inactive
+                            {% endif %}">
+
+
+                            <!-- IMAGE -->
+
+                            <div class="formation-image-wrapper">
+
+
+                                <span class="formation-type">
+
+                                    <i class="bi bi-book-half"></i>
+
+                                    Formation
+
+                                </span>
+
+
+                                {% if not d.active %}
+
+                                <span class="status-badge">
+
+                                    <i class="bi bi-lock-fill"></i>
+
+                                    Inscriptions fermées
+
+                                </span>
+
+                                {% endif %}
+
+
+                                <img src="{% if d.image %}{{ d.image.url }}{% else %}{% static 'assets/img/Imagepardefaut.png' %}{% endif %}"
+                                     alt="{{ d.nom }}"
+                                     class="formation-img">
+
+                            </div>
+
+
+
+                            <!-- CORPS -->
+
+                            <div class="formation-body">
+
+
+                                <div class="formation-title">
+
+                                    {{ d.nom }}
+
+                                </div>
+
+
+                                <!--
+                                    IMPORTANT :
+                                    On conserve le HTML autorisé.
+                                    Pas de truncatechars ici.
+                                -->
+
+                                <div class="formation-desc">
+
+                                    {{ d.description }}
+
+                                </div>
+
+
+                                <!-- META -->
+
+                                <div class="formation-meta">
+
+
+                                    <span class="meta-item">
+
+                                        <i class="bi bi-clock-fill"></i>
+
+                                        {{ d.duree }}
+
+                                    </span>
+
+
+                                    <span class="meta-item meta-price">
+
+                                        <i class="bi bi-cash-stack"></i>
+
+                                        {{ d.prix }}
+
+                                    </span>
+
+
+                                </div>
+
+
+                            </div>
+
+
+                        </article>
+
+
+                    </a>
+
+
+                </div>
+
+                {% empty %}
+
+
+                <div class="col-12">
+
+                    <div class="text-center py-5">
+
+                        <i class="bi bi-journal-x fs-1 text-primary"></i>
+
+                        <h5 class="fw-bold mt-3">
+                            Aucune formation disponible
+                        </h5>
+
+                        <p class="text-muted">
+                            Les formations de ce domaine
+                            seront bientôt disponibles.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                {% endfor %}
+
+
+            </div>
+
+        </div>
+
+
+
+        <!-- =================================================
+             CONDITIONS D'INSCRIPTION
+        ================================================== -->
+
+        <div class="col-lg-3">
+
+            <div class="criteria-card">
+
+
+                <div class="criteria-icon">
+
+                    <i class="bi bi-clipboard-check"></i>
+
+                </div>
+
+
+                <h5>
+
+                    Conditions d'inscription
+
+                </h5>
+
+
+                <p>
+
+                    L'inscription aux formations du CNFPCEL
+                    est soumise au respect de critères
+                    académiques et administratifs.
+
+                </p>
+
+
+                <ul class="criteria-list">
+
+                    <li>
+                        Être titulaire du baccalauréat
+                    </li>
+
+                    <li>
+                        Dossier administratif complet
+                    </li>
+
+                    <li>
+                        Pièce d'identité valide
+                    </li>
+
+                    <li>
+                        Frais d'inscription acquittés
+                    </li>
+
+                </ul>
+
+
+                <div class="text-center mt-4">
+
+                    <a href="#"
+                       class="criteria-btn">
+
+                        Consulter les détails
+
+                        <i class="bi bi-arrow-right"></i>
+
+                    </a>
+
+                </div>
+
+
+            </div>
+
+        </div>
+
+
+    </div>
+
+</section>
+
+
+
+<!-- =========================================================
+     SEPARATEUR
+========================================================= -->
+
+<section class="container">
+
+    <hr class="my-0">
+
+</section>
+
+
+
+<!-- =========================================================
+     COURS VIDEOS
+========================================================= -->
+
+<section id="list_video"
+         class="container video-section">
+
+
+    <!-- HEADER -->
+
+    <div class="video-section-header text-center">
+
+
+        <span class="video-eyebrow">
+
+            <i class="bi bi-play-btn-fill"></i>
+
+            Ressources pédagogiques
+
+        </span>
+
+
+        <h2>
+
+            Nos cours vidéos
+
+        </h2>
+
+
+        <p>
+
+            Cliquez sur une vidéo pour la regarder
+            directement depuis la plateforme.
+
+        </p>
+
+
+    </div>
+
+
+
+    <!-- VIDEOS -->
+
+    <div class="row g-4">
+
+
+        {% for video in formation %}
+
+        {% if video.video %}
+
+
+        <div class="col-12 col-md-6 col-lg-4 video-item">
+
+
+            <article class="video-card">
+
+
+                <!-- MINIATURE -->
+
+                <div class="video-thumb-wrapper"
+                     data-bs-toggle="modal"
+                     data-bs-target="#videoModal{{ video.id }}"
+                     role="button"
+                     tabindex="0"
+                     aria-label="Regarder {{ video.nom }}">
+
+
+                    <img src="{% if video.image %}{{ video.image.url }}{% else %}{% static 'assets/img/Imagepardefaut.png' %}{% endif %}"
+                         alt="{{ video.nom }}"
+                         class="video-thumb">
+
+
+                    <span class="play-icon
+                                 top-50
+                                 start-50
+                                 translate-middle">
+
+                        <i class="bi bi-play-fill"></i>
+
+                    </span>
+
+
+                </div>
+
+
+
+                <!-- INFORMATIONS -->
+
+                <div class="video-body">
+
+
+                    <h5 class="video-title">
+
+                        {{ video.nom }}
+
+                    </h5>
+
+
+                    <!-- HTML enrichi conservé -->
+                    <div class="video-description">
+
+                        {{ video.description }}
+
+                    </div>
+
+                </div>
+
+
+            </article>
+
+
+        </div>
+
+
+
+        <!-- =================================================
+             MODAL VIDEO
+        ================================================== -->
+
+        <div class="modal fade video-modal"
+             id="videoModal{{ video.id }}"
+             tabindex="-1"
+             aria-hidden="true">
+
+
+            <div class="modal-dialog
+                        modal-dialog-centered
+                        modal-xl">
+
+
+                <div class="modal-content">
+
+
+                    <div class="modal-header">
+
+                        <h5 class="modal-title">
+
+                            {{ video.nom }}
+
+                        </h5>
+
+
+                        <button type="button"
+                                class="btn-close"
+                                data-bs-dismiss="modal"
+                                aria-label="Fermer">
+
+                        </button>
+
+                    </div>
+
+
+
+                    <div class="modal-body">
+
+                        <video id="videoPlayer{{ video.id }}"
+                               class="w-100"
+                               controls
+                               preload="metadata">
+
+                            <source src="{{ video.video.url }}"
+                                    type="video/mp4">
+
+                            Votre navigateur ne supporte pas
+                            la lecture vidéo.
+
+                        </video>
+
+                    </div>
+
+
+
+                    <div class="modal-footer
+                                d-flex
+                                justify-content-between">
+
+
+                        <!-- VOLUME -->
+
+                        <div class="d-flex gap-2">
+
+                            <button class="btn btn-outline-secondary"
+                                    onclick="adjustVolume('{{ video.id }}', -0.1)"
+                                    title="Diminuer le volume">
+
+                                <i class="bi bi-volume-down-fill"></i>
+
+                            </button>
+
+
+                            <button class="btn btn-outline-secondary"
+                                    onclick="adjustVolume('{{ video.id }}', 0.1)"
+                                    title="Augmenter le volume">
+
+                                <i class="bi bi-volume-up-fill"></i>
+
+                            </button>
+
+                        </div>
+
+
+
+                        <!-- ACTIONS -->
+
+                        <div class="d-flex gap-2 flex-wrap">
+
+
+                            <a href="{{ video.video.url }}"
+                               download
+                               class="btn btn-primary">
+
+                                <i class="bi bi-download me-1"></i>
+
+                                Télécharger
+
+                            </a>
+
+
+                            <button class="btn btn-info text-white"
+                                    onclick="shareVideo('{{ video.id }}')">
+
+                                <i class="bi bi-share-fill me-1"></i>
+
+                                Partager
+
+                            </button>
+
+
+                        </div>
+
+
+                    </div>
+
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        {% endif %}
+
+        {% empty %}
+
+
+        <div class="col-12">
+
+            <div class="text-center py-5">
+
+                <i class="bi bi-camera-video-off fs-1 text-primary"></i>
+
+                <h5 class="fw-bold mt-3">
+                    Aucun cours vidéo disponible
+                </h5>
+
+                <p class="text-muted mb-0">
+                    Les cours vidéos seront bientôt disponibles.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        {% endfor %}
+
+
+    </div>
+
+</section>
+
+
+
+<!-- =========================================================
+     JAVASCRIPT VIDEOS
+========================================================= -->
+
+<script>
+
+/* =========================================================
+   PARTAGE VIDEO
+========================================================= */
+
+function shareVideo(videoId) {
+
+    const url =
+        window.location.origin +
+        window.location.pathname +
+        "#video-" + videoId;
+
+    const title =
+        document.title;
+
+    if (navigator.share) {
+
+        navigator.share({
+
+            title: title,
+
+            text: "Regarde cette vidéo de formation",
+
+            url: url
+
+        }).catch(function (error) {
+
+            console.log(
+                "Partage annulé :",
+                error
+            );
+
+        });
+
+    } else if (navigator.clipboard) {
+
+        navigator.clipboard
+            .writeText(url)
+            .then(function () {
+
+                alert("Lien copié !");
+
+            });
+
+    } else {
+
+        alert("Le partage n'est pas disponible sur ce navigateur.");
+
+    }
+
+}
+
+
+/* =========================================================
+   VOLUME
+========================================================= */
+
+function adjustVolume(videoId, amount) {
+
+    const player =
+        document.getElementById(
+            "videoPlayer" + videoId
+        );
+
+    if (!player) {
+        return;
+    }
+
+    let volume =
+        player.volume + amount;
+
+    volume =
+        Math.max(
+            0,
+            Math.min(
+                1,
+                volume
+            )
+        );
+
+    player.volume = volume;
+
+}
+
+
+/* =========================================================
+   ARRET VIDEO A LA FERMETURE DU MODAL
+========================================================= */
+
+document.addEventListener(
+    "DOMContentLoaded",
+    function () {
+
+        document
+            .querySelectorAll(".video-modal")
+            .forEach(function (modal) {
+
+                modal.addEventListener(
+                    "hidden.bs.modal",
+                    function () {
+
+                        const player =
+                            modal.querySelector("video");
+
+                        if (player) {
+
+                            player.pause();
+
+                            player.currentTime = 0;
+
+                        }
+
+                    }
+                );
+
+            });
+
+    }
+);
+
+</script>
+
+
+{% endblock %}

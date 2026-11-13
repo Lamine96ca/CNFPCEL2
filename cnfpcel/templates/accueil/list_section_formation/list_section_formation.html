@@ -1,0 +1,1406 @@
+```html
+{% extends 'accueil/base/base.html' %}
+{% load cnf_filtres %}
+
+{% block content %}
+{% load static %}
+
+<style>
+
+/* =========================================================
+   VARIABLES
+========================================================= */
+:root {
+    --primary: #0077B6;
+    --primary-dark: #005b8a;
+    --primary-light: #eaf7fc;
+    --secondary: #024d5a;
+    --success: #198754;
+    --warning: #f5a800;
+    --danger: #dc3545;
+    --text: #243746;
+    --muted: #718096;
+    --bg: #f5f8fa;
+    --white: #ffffff;
+    --border: #e7edf2;
+    --radius: 18px;
+    --shadow: 0 8px 30px rgba(24, 55, 75, 0.08);
+    --shadow-hover: 0 15px 35px rgba(24, 55, 75, 0.13);
+}
+
+/* =========================================================
+   PAGE
+========================================================= */
+body {
+    background: var(--bg);
+    color: var(--text);
+}
+
+#list_section_formation {
+    padding-top: 100px;
+    padding-bottom: 70px;
+}
+
+@media (max-width: 991px) {
+    #list_section_formation {
+        padding-top: 80px;
+    }
+}
+
+
+/* =========================================================
+   TITRE FORMATION
+========================================================= */
+.formation-heading {
+    margin-bottom: 30px;
+}
+
+.formation-heading .eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 7px 13px;
+    margin-bottom: 12px;
+    background: var(--primary-light);
+    color: var(--primary);
+    border-radius: 50px;
+    font-size: 0.78rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .5px;
+}
+
+.formation-heading h1 {
+    margin: 0;
+    color: var(--primary);
+    font-size: clamp(1.6rem, 3vw, 2.25rem);
+    font-weight: 800;
+    line-height: 1.2;
+}
+
+.formation-heading .subtitle {
+    max-width: 700px;
+    margin: 12px auto 0;
+    color: var(--muted);
+    font-size: .95rem;
+    line-height: 1.7;
+}
+
+.student-name {
+    margin-top: 18px;
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--secondary);
+}
+
+
+/* =========================================================
+   ALERTES
+========================================================= */
+.custom-alert {
+    border: 0;
+    border-radius: 14px;
+    padding: 15px 18px;
+    box-shadow: 0 5px 20px rgba(0,0,0,.05);
+}
+
+
+/* =========================================================
+   BLOC PRINCIPAL
+========================================================= */
+.featured-formation {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--primary);
+    border-radius: var(--radius);
+    padding: clamp(20px, 4vw, 35px);
+    box-shadow: var(--shadow);
+    transition: .35s ease;
+}
+
+.featured-formation:hover {
+    box-shadow: var(--shadow-hover);
+}
+
+.featured-img-wrapper {
+    position: relative;
+    overflow: hidden;
+    max-width: 650px;
+    margin: 0 auto 30px;
+    border-radius: 16px;
+}
+
+.featured-img {
+    width: 100%;
+    max-height: 360px;
+    object-fit: cover;
+    display: block;
+    transition: transform .6s ease;
+}
+
+.featured-img-wrapper:hover .featured-img {
+    transform: scale(1.025);
+}
+
+.formation-description {
+    color: #5f7180;
+    font-size: .97rem;
+    line-height: 1.85;
+    text-align: justify;
+}
+
+.formation-description p:last-child {
+    margin-bottom: 0;
+}
+
+
+/* =========================================================
+   TITRE CONTENU
+========================================================= */
+.content-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 32px 0 18px;
+    font-size: 1.2rem;
+    font-weight: 800;
+    color: var(--text);
+}
+
+.content-title .icon {
+    width: 38px;
+    height: 38px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 11px;
+    background: var(--primary-light);
+    color: var(--primary);
+}
+
+
+/* =========================================================
+   ACCORDION
+========================================================= */
+#accordionFormation {
+    display: flex;
+    flex-direction: column;
+    gap: 11px;
+}
+
+#accordionFormation .accordion-item {
+    border: 1px solid var(--border) !important;
+    border-radius: 14px !important;
+    overflow: hidden;
+    background: #fff;
+    box-shadow: 0 3px 12px rgba(0,0,0,.035);
+    transition: .3s ease;
+}
+
+#accordionFormation .accordion-item:hover {
+    border-color: rgba(0,119,182,.25) !important;
+    box-shadow: 0 8px 20px rgba(0,119,182,.08);
+    transform: translateY(-2px);
+}
+
+#accordionFormation .accordion-button {
+    min-height: 58px;
+    padding: 15px 18px;
+    background: #fff;
+    color: var(--text);
+    font-size: .94rem;
+    font-weight: 700;
+    box-shadow: none !important;
+}
+
+#accordionFormation .accordion-button::after {
+    background-size: 13px;
+}
+
+#accordionFormation .accordion-button:not(.collapsed) {
+    background: var(--primary);
+    color: #fff;
+}
+
+#accordionFormation .accordion-button:not(.collapsed)::after {
+    filter: brightness(0) invert(1);
+}
+
+#accordionFormation .accordion-body {
+    padding: 20px;
+    background: #fbfdfe;
+    color: #617281;
+    font-size: .92rem;
+    line-height: 1.75;
+    border-top: 1px solid var(--border);
+}
+
+
+/* =========================================================
+   LOCK MESSAGE
+========================================================= */
+.lock-message {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 15px;
+    padding: 11px 14px;
+    background: #fff8e6;
+    border: 1px solid #ffe5a8;
+    border-radius: 10px;
+    color: #a66b00;
+    font-size: .85rem;
+    font-weight: 700;
+}
+
+
+/* =========================================================
+   BOUTONS
+========================================================= */
+.btn-primary-modern {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px 23px;
+    border: 0;
+    border-radius: 11px;
+    background: var(--primary);
+    color: #fff !important;
+    font-weight: 700;
+    text-decoration: none;
+    box-shadow: 0 6px 16px rgba(0,119,182,.20);
+    transition: .3s ease;
+}
+
+.btn-primary-modern:hover {
+    background: var(--primary-dark);
+    transform: translateY(-2px);
+    box-shadow: 0 9px 20px rgba(0,119,182,.27);
+}
+
+.btn-success-modern {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 11px 20px;
+    border-radius: 11px;
+    background: #198754;
+    color: #fff !important;
+    text-decoration: none;
+    font-weight: 700;
+    transition: .3s ease;
+}
+
+.btn-success-modern:hover {
+    background: #157347;
+    color: #fff !important;
+    transform: translateY(-2px);
+}
+
+.btn-warning-modern {
+    border: 0;
+    border-radius: 11px;
+    padding: 12px 22px;
+    font-weight: 700;
+}
+
+
+/* =========================================================
+   SIDEBAR
+========================================================= */
+.sidebar-wrapper {
+    position: sticky;
+    top: 95px;
+}
+
+.sidebar-card {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+    margin-bottom: 18px;
+    box-shadow: var(--shadow);
+    transition: .3s ease;
+}
+
+.sidebar-card:hover {
+    box-shadow: var(--shadow-hover);
+    transform: translateY(-2px);
+}
+
+.sidebar-card-header {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    margin-bottom: 16px;
+}
+
+.sidebar-icon {
+    width: 40px;
+    height: 40px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 11px;
+    background: var(--primary-light);
+    color: var(--primary);
+    font-size: 1.15rem;
+}
+
+.sidebar-card-header h5 {
+    margin: 0;
+    font-size: .98rem;
+    font-weight: 800;
+    color: var(--text);
+}
+
+
+/* =========================================================
+   LISTE RESSOURCES
+========================================================= */
+.resource-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.resource-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 12px 13px;
+    background: #f8fafc;
+    border: 1px solid #edf1f4;
+    border-radius: 10px;
+    color: var(--text);
+    text-decoration: none;
+    font-size: .86rem;
+    font-weight: 600;
+    transition: .25s ease;
+}
+
+.resource-item:hover {
+    background: var(--primary-light);
+    border-color: rgba(0,119,182,.15);
+    color: var(--primary);
+    transform: translateX(3px);
+}
+
+.resource-item i {
+    flex-shrink: 0;
+    color: var(--primary);
+}
+
+.empty-message {
+    margin: 0;
+    color: var(--muted);
+    font-size: .87rem;
+}
+
+
+/* =========================================================
+   EVALUATIONS
+========================================================= */
+.evaluation-item {
+    padding: 14px;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    background: #fafcfd;
+}
+
+.evaluation-item h6 {
+    margin-bottom: 4px;
+    font-weight: 800;
+    color: var(--text);
+}
+
+.evaluation-item small {
+    color: var(--muted);
+    line-height: 1.4;
+}
+
+.btn-evaluation {
+    flex-shrink: 0;
+    border: 1px solid rgba(0,119,182,.25);
+    border-radius: 50px;
+    padding: 6px 13px;
+    color: var(--primary);
+    background: var(--primary-light);
+    text-decoration: none;
+    font-size: .78rem;
+    font-weight: 700;
+    transition: .25s ease;
+}
+
+.btn-evaluation:hover {
+    background: var(--primary);
+    color: #fff;
+}
+
+
+/* =========================================================
+   ACTIONS SIDEBAR
+========================================================= */
+.sidebar-actions {
+    display: grid;
+    gap: 9px;
+}
+
+.sidebar-actions a,
+.sidebar-actions button {
+    width: 100%;
+}
+
+
+/* =========================================================
+   MODAL
+========================================================= */
+#ModalAjout .modal-content {
+    border: 0;
+    border-radius: 18px;
+    overflow: hidden;
+    box-shadow: 0 25px 70px rgba(0,0,0,.20);
+}
+
+#ModalAjout .modal-header {
+    padding: 18px 22px;
+    background: var(--primary);
+    border: 0;
+}
+
+#ModalAjout .modal-title {
+    font-size: 1.05rem;
+    font-weight: 800;
+    color: #fff !important;
+}
+
+#ModalAjout .modal-body {
+    padding: 25px;
+}
+
+#ModalAjout .modal-footer {
+    padding: 18px 0 0;
+    border-top: 1px solid var(--border);
+}
+
+#ModalAjout input,
+#ModalAjout select,
+#ModalAjout textarea {
+    border: 1px solid #dce5eb;
+    border-radius: 9px;
+    padding: 10px 12px;
+    transition: .25s ease;
+}
+
+#ModalAjout input:focus,
+#ModalAjout select:focus,
+#ModalAjout textarea:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(0,119,182,.10);
+}
+
+#ModalAjout .form-label {
+    font-weight: 700;
+    color: var(--text);
+}
+
+
+/* =========================================================
+   TOAST
+========================================================= */
+#modificationToast {
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0,0,0,.15);
+    min-width: 280px;
+}
+
+
+/* =========================================================
+   LIENS
+========================================================= */
+a {
+    color: var(--primary);
+}
+
+a:hover {
+    color: var(--primary-dark);
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+@media (max-width: 991px) {
+
+    .sidebar-wrapper {
+        position: static;
+        margin-top: 25px;
+    }
+
+    .featured-formation {
+        border-left-width: 3px;
+    }
+
+    .formation-heading {
+        margin-bottom: 22px;
+    }
+}
+
+@media (max-width: 575px) {
+
+    #list_section_formation {
+        padding-left: 12px;
+        padding-right: 12px;
+    }
+
+    .featured-formation {
+        padding: 18px;
+        border-radius: 15px;
+    }
+
+    .featured-img-wrapper {
+        border-radius: 12px;
+    }
+
+    .content-title {
+        font-size: 1.05rem;
+    }
+
+    #accordionFormation .accordion-button {
+        font-size: .86rem;
+        padding: 13px 14px;
+    }
+
+    #accordionFormation .accordion-body {
+        padding: 16px;
+        font-size: .86rem;
+    }
+
+    .sidebar-card {
+        padding: 16px;
+        border-radius: 15px;
+    }
+
+    .btn-primary-modern {
+        width: 100%;
+    }
+
+}
+
+
+/* =========================================================
+   ANIMATIONS
+========================================================= */
+.animate-card {
+    animation: fadeUp .55s ease both;
+}
+
+@keyframes fadeUp {
+    from {
+        opacity: 0;
+        transform: translateY(15px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+</style>
+
+
+<!-- =========================================================
+     MODAL INSCRIPTION
+========================================================= -->
+<div class="modal fade" id="ModalAjout" tabindex="-1" aria-hidden="true">
+
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+
+        <div class="modal-content">
+
+            <div class="modal-header">
+
+                <h4 class="modal-title">
+                    <i class="bi bi-person-plus-fill me-2"></i>
+                    Inscription à la formation {{ formation.nom }}
+                </h4>
+
+                <button type="button"
+                        class="btn-close btn-close-white"
+                        data-bs-dismiss="modal">
+                </button>
+
+            </div>
+
+            <div class="modal-body">
+
+                <form id="form" method="POST" enctype="multipart/form-data">
+
+                    {% csrf_token %}
+
+                    <div class="table-responsive">
+
+                        <table class="table table-borderless align-middle mb-0">
+
+                            <tbody>
+
+                                {% for field in form %}
+
+                                <tr>
+
+                                    <th scope="row" style="width:30%;">
+
+                                        <label for="{{ field.id_for_label }}"
+                                               class="form-label mb-0">
+
+                                            {{ field.label }}
+
+                                        </label>
+
+                                    </th>
+
+                                    <td>
+
+                                        {{ field }}
+
+                                        {% if field.errors %}
+
+                                        <div class="text-danger small mt-1">
+
+                                            {% for error in field.errors %}
+
+                                            <i class="bi bi-exclamation-circle-fill me-1"></i>
+                                            {{ error }}<br>
+
+                                            {% endfor %}
+
+                                        </div>
+
+                                        {% else %}
+
+                                        <div class="text-danger small mt-1 error-{{ field.name }}"></div>
+
+                                        {% endif %}
+
+                                        {% if field.help_text %}
+
+                                        <div class="form-text">
+                                            {{ field.help_text }}
+                                        </div>
+
+                                        {% endif %}
+
+                                    </td>
+
+                                </tr>
+
+                                {% endfor %}
+
+                            </tbody>
+
+                        </table>
+
+                    </div>
+
+                    <div class="modal-footer">
+
+                        <button type="submit"
+                                id="btnSave"
+                                class="btn-primary-modern">
+
+                            <i class="bi bi-check-circle"></i>
+                            S'inscrire
+
+                        </button>
+
+                        <button type="button"
+                                class="btn btn-light fw-bold"
+                                data-bs-dismiss="modal">
+
+                            <i class="bi bi-x-circle me-1"></i>
+                            Fermer
+
+                        </button>
+
+                    </div>
+
+                </form>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- =========================================================
+     TOAST
+========================================================= -->
+<div class="position-fixed top-0 start-50 translate-middle-x p-3"
+     style="z-index:1055;">
+
+    <div id="modificationToast"
+         class="toast align-items-center bg-white border-0"
+         role="alert"
+         aria-live="assertive"
+         aria-atomic="true">
+
+        <div class="d-flex">
+
+            <div class="toast-body fw-bold">
+
+                {% if messages %}
+
+                    {% for message in messages %}
+
+                        {% if message.tags == 'error' %}
+
+                            ❌ <span class="text-danger">
+                                {{ message }}
+                            </span>
+
+                        {% elif message.tags == 'warning' %}
+
+                            ⚠️ <span class="text-warning">
+                                {{ message }}
+                            </span>
+
+                        {% else %}
+
+                            ✅ <span class="text-success">
+                                {{ message }}
+                            </span>
+
+                        {% endif %}
+
+                    {% endfor %}
+
+                {% endif %}
+
+            </div>
+
+            <button type="button"
+                    class="btn-close me-2 m-auto"
+                    data-bs-dismiss="toast"
+                    aria-label="Fermer">
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+{% if messages %}
+
+<script>
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    const toastElement =
+        document.getElementById("modificationToast");
+
+    if (toastElement) {
+
+        const toast =
+            new bootstrap.Toast(toastElement);
+
+        toast.show();
+
+    }
+
+});
+
+</script>
+
+{% endif %}
+
+
+{% if show_modal %}
+
+<script>
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    const modalElement =
+        document.getElementById("ModalAjout");
+
+    if (modalElement) {
+
+        const modal =
+            new bootstrap.Modal(modalElement);
+
+        modal.show();
+
+    }
+
+});
+
+</script>
+
+{% endif %}
+
+
+
+<!-- =========================================================
+     CONTENU PRINCIPAL
+========================================================= -->
+
+<section class="container-lg"
+         id="list_section_formation">
+
+    <div class="row g-4 g-xl-5">
+
+
+        <!-- =================================================
+             COLONNE PRINCIPALE
+        ================================================== -->
+
+        <div class="col-lg-8">
+
+            <div class="formation-heading text-center">
+
+                <span class="eyebrow">
+
+                    <i class="bi bi-mortarboard-fill"></i>
+
+                    Formation
+
+                </span>
+
+                <h1>
+                    {{ formation.nom }}
+                </h1>
+
+                <p class="subtitle">
+
+                    Découvrez une formation conçue pour
+                    développer des compétences solides,
+                    pratiques et directement utiles.
+
+                </p>
+
+                {% if etudiant %}
+
+                <div class="student-name">
+
+                    <i class="bi bi-person-circle me-1"></i>
+
+                    {{ etudiant.prenom|upper }}
+                    {{ etudiant.nom|upper }}
+
+                </div>
+
+                {% endif %}
+
+            </div>
+
+
+            <!-- ALERTES -->
+
+            {% if info %}
+
+            <div class="alert alert-success custom-alert text-center fw-bold mb-4">
+
+                <i class="bi bi-check-circle-fill me-2"></i>
+
+                {{ info }}
+
+            </div>
+
+            {% endif %}
+
+
+            {% if erreur %}
+
+            <div class="alert alert-warning custom-alert text-center fw-bold mb-4">
+
+                <i class="bi bi-exclamation-triangle-fill me-2"></i>
+
+                {{ erreur }}
+
+            </div>
+
+            {% endif %}
+
+
+            <!-- FORMATION -->
+
+            <div class="featured-formation animate-card">
+
+
+                <!-- IMAGE -->
+
+                <div class="featured-img-wrapper">
+
+                    <img src="{% if formation.image %}{{ formation.image.url }}{% else %}{% static 'assets/img/Imagepardefaut.png' %}{% endif %}"
+                         alt="{{ formation.nom }}"
+                         class="featured-img">
+
+                </div>
+
+
+                <!-- DESCRIPTION -->
+
+                <div class="formation-description">
+
+                    {{ formation.description|nettoyer }}
+
+                </div>
+
+
+                <!-- CONTENU -->
+
+                <div class="content-title">
+
+                    <span class="icon">
+
+                        <i class="bi bi-journal-text"></i>
+
+                    </span>
+
+                    <span>
+                        Contenu de la formation
+                    </span>
+
+                </div>
+
+
+                <!-- ACCORDION -->
+
+                <div class="accordion"
+                     id="accordionFormation">
+
+                    {% for section in formation.sections.all|dictsort:"id" %}
+
+                    <div class="accordion-item">
+
+                        <h2 class="accordion-header"
+                            id="heading{{ section.id }}">
+
+                            <button class="accordion-button collapsed"
+                                    type="button"
+                                    data-bs-toggle="collapse"
+                                    data-bs-target="#collapse{{ section.id }}"
+                                    aria-expanded="false"
+                                    aria-controls="collapse{{ section.id }}">
+
+                                <i class="bi bi-chevron-right me-2"></i>
+
+                                {{ section.titre }}
+
+                            </button>
+
+                        </h2>
+
+
+                        <div id="collapse{{ section.id }}"
+                             class="accordion-collapse collapse"
+                             aria-labelledby="heading{{ section.id }}"
+                             data-bs-parent="#accordionFormation">
+
+                            <div class="accordion-body">
+
+                                {% if not inscription %}
+
+                                    {{ section.contenu|truncatechars:300|nettoyer }}
+
+                                    <div class="lock-message">
+
+                                        <i class="bi bi-lock-fill"></i>
+
+                                        Inscrivez-vous pour accéder
+                                        au contenu complet.
+
+                                    </div>
+
+                                {% else %}
+
+                                    {{ section.contenu|nettoyer }}
+
+                                {% endif %}
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    {% endfor %}
+
+                </div>
+
+
+                <!-- INSCRIPTION -->
+
+                <div class="text-center mt-4 pt-2">
+
+                    {% if inscription %}
+
+                        <button class="btn btn-warning btn-warning-modern"
+                                disabled>
+
+                            <i class="bi bi-check-circle-fill me-1"></i>
+
+                            Vous êtes déjà inscrit à cette formation
+
+                        </button>
+
+                    {% else %}
+
+                        {% if formation.active %}
+
+                            <a href="#"
+                               class="btn-primary-modern"
+                               data-bs-toggle="modal"
+                               data-bs-target="#ModalAjout">
+
+                                <i class="bi bi-person-plus-fill"></i>
+
+                                S'inscrire à cette formation
+
+                            </a>
+
+                        {% else %}
+
+                            <button class="btn btn-secondary btn-lg"
+                                    disabled>
+
+                                <i class="bi bi-pause-circle me-1"></i>
+
+                                Formation actuellement indisponible
+
+                            </button>
+
+                        {% endif %}
+
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- =================================================
+             SIDEBAR
+        ================================================== -->
+
+        <div class="col-lg-4">
+
+            <aside class="sidebar-wrapper">
+
+
+                <!-- ================= PDF ================= -->
+
+                <div class="sidebar-card animate-card">
+
+                    <div class="sidebar-card-header">
+
+                        <span class="sidebar-icon">
+
+                            <i class="bi bi-file-earmark-pdf-fill"></i>
+
+                        </span>
+
+                        <h5>
+                            Ressources PDF
+                        </h5>
+
+                    </div>
+
+
+                    <div class="resource-list">
+
+                        {% if inscription %}
+
+                            {% for pdf in formation.ressourceformation_set.all|dictsort:"id" %}
+
+                                {% if pdf.pdf %}
+
+                                <a href="{{ pdf.pdf.url }}"
+                                   target="_blank"
+                                   class="resource-item">
+
+                                    <span>
+
+                                        <i class="bi bi-file-earmark-text me-2"></i>
+
+                                        {{ pdf.titre }}
+
+                                    </span>
+
+                                    <i class="bi bi-download"></i>
+
+                                </a>
+
+                                {% endif %}
+
+                            {% empty %}
+
+                                <p class="empty-message">
+                                    Aucun PDF disponible.
+                                </p>
+
+                            {% endfor %}
+
+                        {% else %}
+
+                            <p class="text-warning small mb-0">
+
+                                <i class="bi bi-lock-fill me-1"></i>
+
+                                Inscrivez-vous pour accéder
+                                aux ressources PDF.
+
+                            </p>
+
+                        {% endif %}
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- ================= VIDEOS ================= -->
+
+                <div class="sidebar-card animate-card">
+
+                    <div class="sidebar-card-header">
+
+                        <span class="sidebar-icon">
+
+                            <i class="bi bi-play-btn-fill"></i>
+
+                        </span>
+
+                        <h5>
+                            Vidéos de formation
+                        </h5>
+
+                    </div>
+
+
+                    <div class="resource-list">
+
+                        {% if inscription %}
+
+                            {% for video in formation.ressourceformation_set.all|dictsort:"id" %}
+
+                                {% if video.video %}
+
+                                <a href="{{ video.video.url }}"
+                                   target="_blank"
+                                   class="resource-item">
+
+                                    <span>
+
+                                        <i class="bi bi-play-circle me-2"></i>
+
+                                        {{ video.titre }}
+
+                                    </span>
+
+                                    <i class="bi bi-arrow-up-right"></i>
+
+                                </a>
+
+                                {% endif %}
+
+                            {% empty %}
+
+                                <p class="empty-message">
+                                    Aucune vidéo disponible.
+                                </p>
+
+                            {% endfor %}
+
+                        {% else %}
+
+                            <p class="text-warning small mb-0">
+
+                                <i class="bi bi-lock-fill me-1"></i>
+
+                                Inscrivez-vous pour accéder
+                                aux vidéos.
+
+                            </p>
+
+                        {% endif %}
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- ================= EVALUATIONS ================= -->
+
+                <div class="sidebar-card animate-card">
+
+                    <div class="sidebar-card-header">
+
+                        <span class="sidebar-icon">
+
+                            <i class="bi bi-clipboard-check-fill"></i>
+
+                        </span>
+
+                        <h5>
+                            Évaluations
+                        </h5>
+
+                    </div>
+
+
+                    <div class="d-flex flex-column gap-2">
+
+                        {% if inscription %}
+
+                            {% for evaluation in evaluation %}
+
+                            <div class="evaluation-item">
+
+                                <div class="d-flex justify-content-between align-items-center gap-2">
+
+                                    <div>
+
+                                        <h6>
+                                            {{ evaluation.titre }}
+                                        </h6>
+
+                                        <small>
+
+                                            {{ evaluation.description|default:"Évaluation en ligne" }}
+
+                                        </small>
+
+                                    </div>
+
+
+                                    <a href="{% url 'passer_evaluation' evaluation.id %}"
+                                       class="btn-evaluation">
+
+                                        <i class="bi bi-play-fill"></i>
+
+                                        Passer
+
+                                    </a>
+
+                                </div>
+
+                            </div>
+
+                            {% empty %}
+
+                            <p class="empty-message text-center">
+
+                                Aucune évaluation disponible
+                                pour le moment.
+
+                            </p>
+
+                            {% endfor %}
+
+                        {% else %}
+
+                            <p class="text-warning small text-center mb-0">
+
+                                <i class="bi bi-lock-fill me-1"></i>
+
+                                Inscrivez-vous pour accéder
+                                aux évaluations.
+
+                            </p>
+
+                        {% endif %}
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- ================= ACTIONS ================= -->
+
+                <div class="sidebar-actions animate-card">
+
+                    {% if inscription %}
+
+                        <a href="{% url 'logout' %}"
+                           class="btn btn-warning fw-bold rounded-3 py-2">
+
+                            <i class="bi bi-box-arrow-right me-1"></i>
+
+                            Déconnexion
+
+                        </a>
+
+                    {% else %}
+
+                        {% if formation.active %}
+
+                            <a href="#"
+                               class="btn-primary-modern"
+                               data-bs-toggle="modal"
+                               data-bs-target="#ModalAjout">
+
+                                <i class="bi bi-person-plus-fill"></i>
+
+                                Inscrivez-vous
+
+                            </a>
+
+
+                            <a href="{% url 'login' %}"
+                               class="btn-success-modern">
+
+                                <i class="bi bi-box-arrow-in-right"></i>
+
+                                Se connecter
+
+                            </a>
+
+                        {% else %}
+
+                            <button class="btn btn-secondary rounded-3 py-2"
+                                    disabled>
+
+                                Formation actuellement indisponible
+
+                            </button>
+
+                        {% endif %}
+
+                    {% endif %}
+
+                </div>
+
+
+            </aside>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =========================================================
+     ANIMATE.CSS
+========================================================= -->
+
+<link rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+
+
+{% endblock %}

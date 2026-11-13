@@ -1,0 +1,18 @@
+{% extends 'gestion/base/base_gestion.html' %}
+
+{% block titre %}{{ fiche.prenom }} {{ fiche.nom }}{% endblock %}
+{% block lientitre %}{% url 'formateur' %}{% endblock %}
+{% block retour %}Formateurs{% endblock %}
+{% block titre_encours %}Modifier{% endblock %}
+
+{% block corps %}
+{% include 'gestion/base/_messages.html' %}
+<form method="post" class="card" style="max-width:900px">{% csrf_token %}
+  <div class="card-header"><h3 class="card-titre"><i class="bi bi-pencil-square"></i> Informations du formateur</h3></div>
+  <div class="card-body">{% include 'gestion/formateur/_champs.html' %}</div>
+  <div class="card-footer d-flex gap-2 justify-content-end">
+    <a href="{% url 'formateur' %}" class="btn btn-soft">Annuler</a>
+    <button class="btn btn-primary"><i class="bi bi-save"></i> Enregistrer</button>
+  </div>
+</form>
+{% endblock %}

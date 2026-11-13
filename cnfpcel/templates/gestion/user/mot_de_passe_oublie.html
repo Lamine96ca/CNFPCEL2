@@ -1,0 +1,96 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Mot de passe oublié | CNFPCEL</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Favicons -->
+  <link href="{% static 'gestion/assets/img/favicon1.png' %}" rel="icon">
+  <link href="{% static 'gestion/assets/img/favicon1.png' %}" rel="apple-touch-icon">
+  <!-- Bootstrap 5 -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Icônes Bootstrap -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+  <style>
+    body {
+      background: linear-gradient(135deg, #00527e, #54c2fd43);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: "Century Gothic", "Century Gothic";
+    }
+    .login-card {
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 0 25px rgba(0,0,0,0.1);
+      padding: 2rem;
+      width: 100%;
+      max-width: 420px;
+    }
+    .login-card h4 {
+      font-weight: 600;
+      color: #0077B6;
+    }
+    .form-control:focus {
+      border-color: #0077B6;
+      box-shadow: 0 0 0 0.2rem rgba(0,119,204,0.25);
+    }
+    .btn-primary {
+      background-color: #0077B6;
+      border: none;
+    }
+    .btn-primary:hover {
+      background-color: #0077B6;
+  
+    }
+    .btn:hover {
+      transform: scale(1.02);
+      transition: all 0.3s ease;
+    }
+    .logo-cnfpcel {
+      width: 60px;
+      margin-bottom: 1rem;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="login-card text-center">
+    <img src="{% static 'assets/img/logo1.png' %}" alt="Logo CNFPCEL" class="logo-cnfpcel">
+    <h4 class="mb-3">Recupération de votre mot de passe</h4>
+    <p class="text-muted mb-4">Centre National de Formation et de Perfectionnement des Cadres et des Elus locaux</p>
+    <a href="{% url 'login' %}" class="">Retour à la page de connexion</a>
+
+    <form method="POST" action="{% url 'mot_de_passe_oublie' %}" class="m-1">
+      {% csrf_token %}
+      <div class="mb-3 text-start">
+        <label for="email" class="form-label fw-bold">Entrer votre e-mail</label>
+        <input type="text" class="form-control p-2" id="email" name="email" placeholder="ex@hot.gov.gn" required>
+      </div>
+
+      {% if info != "" %}
+        <div class="alert alert-success py-2">
+          <i class="bi-check-circle-fill me-2"></i> {{info}}
+        </div>
+      {% endif %}
+
+      {% if erreur != "" %}
+        <div class="alert alert-danger py-2">
+          <i class="bi bi-exclamation-triangle-fill me-2"></i> {{erreur}}
+        </div>
+      {% endif %}
+      <button type="submit" class="btn btn-primary w-100 p-2">Envoyer</button>
+
+    </form>
+
+    <div class="mt-4">
+      <small class="text-muted">CNFPCEL • République de Guinée 🇬🇳</small>
+    </div>
+  </div>
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

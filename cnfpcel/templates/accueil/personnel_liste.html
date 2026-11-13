@@ -1,0 +1,597 @@
+{% extends 'accueil/base/base.html' %}
+
+{% block content %}
+{% load static %}
+
+<style>
+
+/* =========================================================
+   PERSONNEL — CNFPCEL
+========================================================= */
+
+:root {
+    --personnel-primary: #0077B6;
+    --personnel-primary-dark: #005b8a;
+    --personnel-primary-light: #eaf7fc;
+
+    --personnel-text: #243746;
+    --personnel-muted: #718096;
+
+    --personnel-bg: #f5f8fa;
+    --personnel-white: #ffffff;
+
+    --personnel-border: #e3ebf0;
+
+    --personnel-shadow:
+        0 8px 28px rgba(30, 60, 80, .07);
+
+    --personnel-shadow-hover:
+        0 16px 35px rgba(30, 60, 80, .13);
+}
+
+
+/* =========================================================
+   SECTION
+========================================================= */
+
+#personnel {
+    padding-top: 95px;
+    padding-bottom: 65px;
+}
+
+@media (max-width: 1199px) {
+
+    #personnel {
+        padding-top: 75px;
+    }
+
+}
+
+@media (max-width: 767px) {
+
+    #personnel {
+        padding-top: 60px;
+        padding-bottom: 45px;
+    }
+
+}
+
+
+/* =========================================================
+   HEADER
+========================================================= */
+
+.personnel-header {
+    margin-bottom: 38px;
+
+    text-align: center;
+}
+
+.personnel-eyebrow {
+    display: inline-flex;
+
+    align-items: center;
+
+    gap: 7px;
+
+    padding: 7px 14px;
+
+    background: var(--personnel-primary-light);
+
+    color: var(--personnel-primary);
+
+    border-radius: 50px;
+
+    font-size: .74rem;
+
+    font-weight: 800;
+
+    text-transform: uppercase;
+
+    letter-spacing: .5px;
+}
+
+.personnel-header h1 {
+    margin: 13px 0 8px;
+
+    color: var(--personnel-text);
+
+    font-size: clamp(1.7rem, 4vw, 2.35rem);
+
+    font-weight: 800;
+}
+
+.personnel-header h1 span {
+    color: var(--personnel-primary);
+}
+
+.personnel-header p {
+    max-width: 650px;
+
+    margin: 0 auto;
+
+    color: var(--personnel-muted);
+
+    font-size: .92rem;
+
+    line-height: 1.65;
+}
+
+.personnel-line {
+    width: 65px;
+    height: 4px;
+
+    margin: 17px auto 0;
+
+    border-radius: 50px;
+
+    background: var(--personnel-primary);
+}
+
+
+/* =========================================================
+   GRILLE
+========================================================= */
+
+.personnel-grid {
+    row-gap: 28px;
+}
+
+
+/* =========================================================
+   CARTE
+========================================================= */
+
+.personnel-card {
+    position: relative;
+
+    height: 100%;
+
+    overflow: hidden;
+
+    background: var(--personnel-white);
+
+    border: 1px solid var(--personnel-border);
+
+    border-radius: 18px;
+
+    box-shadow: var(--personnel-shadow);
+
+    transition:
+        transform .35s ease,
+        box-shadow .35s ease,
+        border-color .35s ease;
+}
+
+.personnel-card:hover {
+    transform: translateY(-7px);
+
+    border-color: rgba(0,119,182,.18);
+
+    box-shadow: var(--personnel-shadow-hover);
+}
+
+
+/* =========================================================
+   PHOTO
+========================================================= */
+
+.personnel-photo-wrapper {
+    position: relative;
+
+    height: 300px;
+
+    overflow: hidden;
+
+    background:
+        linear-gradient(
+            135deg,
+            #edf5f8,
+            #dfeaf0
+        );
+}
+
+.personnel-photo {
+    width: 100%;
+    height: 100%;
+
+    display: block;
+
+    object-fit: cover;
+
+    object-position: center top;
+
+    transition:
+        transform .6s ease;
+}
+
+.personnel-card:hover .personnel-photo {
+    transform: scale(1.035);
+}
+
+
+/* =========================================================
+   OVERLAY
+========================================================= */
+
+.personnel-photo-wrapper::after {
+    content: "";
+
+    position: absolute;
+
+    inset: 0;
+
+    background:
+        linear-gradient(
+            to bottom,
+            rgba(0,0,0,0) 55%,
+            rgba(0,0,0,.35) 100%
+        );
+
+    pointer-events: none;
+}
+
+
+/* =========================================================
+   BADGE
+========================================================= */
+
+.personnel-badge {
+    position: absolute;
+
+    z-index: 3;
+
+    top: 13px;
+    left: 13px;
+
+    display: inline-flex;
+
+    align-items: center;
+
+    gap: 6px;
+
+    padding: 7px 11px;
+
+    background: rgba(255,255,255,.94);
+
+    color: var(--personnel-primary);
+
+    border-radius: 50px;
+
+    font-size: .68rem;
+
+    font-weight: 800;
+
+    box-shadow:
+        0 4px 12px rgba(0,0,0,.10);
+}
+
+
+/* =========================================================
+   CORPS
+========================================================= */
+
+.personnel-body {
+    padding: 18px;
+
+    text-align: center;
+}
+
+
+/* =========================================================
+   NOM
+========================================================= */
+
+.personnel-name {
+    margin: 0 0 7px;
+
+    color: var(--personnel-text);
+
+    font-size: 1rem;
+
+    font-weight: 800;
+
+    line-height: 1.4;
+
+    transition: color .25s ease;
+}
+
+.personnel-card:hover .personnel-name {
+    color: var(--personnel-primary);
+}
+
+
+/* =========================================================
+   FONCTION
+========================================================= */
+
+.personnel-function {
+    margin: 0;
+
+    color: var(--personnel-muted);
+
+    font-size: .76rem;
+
+    font-weight: 700;
+
+    line-height: 1.5;
+}
+
+
+/* =========================================================
+   LIGNE DECORATIVE
+========================================================= */
+
+.personnel-divider {
+    width: 35px;
+    height: 3px;
+
+    margin: 12px auto 0;
+
+    border-radius: 50px;
+
+    background: var(--personnel-primary);
+
+    transition:
+        width .3s ease;
+}
+
+.personnel-card:hover .personnel-divider {
+    width: 55px;
+}
+
+
+/* =========================================================
+   ETAT VIDE
+========================================================= */
+
+.personnel-empty {
+    padding: 60px 20px;
+
+    background: #fff;
+
+    border: 1px dashed #cbd7de;
+
+    border-radius: 17px;
+
+    color: var(--personnel-muted);
+
+    text-align: center;
+}
+
+.personnel-empty i {
+    display: block;
+
+    margin-bottom: 12px;
+
+    color: var(--personnel-primary);
+
+    font-size: 2.3rem;
+}
+
+
+/* =========================================================
+   ANIMATION
+========================================================= */
+
+.personnel-card {
+    animation: personnelFade .5s ease both;
+}
+
+@keyframes personnelFade {
+
+    from {
+        opacity: 0;
+
+        transform: translateY(15px);
+    }
+
+    to {
+        opacity: 1;
+
+        transform: translateY(0);
+    }
+
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 575px) {
+
+    .personnel-photo-wrapper {
+        height: 285px;
+    }
+
+    .personnel-body {
+        padding: 16px;
+    }
+
+    .personnel-name {
+        font-size: .95rem;
+    }
+
+}
+
+</style>
+
+
+
+<!-- =========================================================
+     PERSONNEL
+========================================================= -->
+
+<section class="container"
+         id="personnel">
+
+
+    <!-- =====================================================
+         HEADER
+    ====================================================== -->
+
+    <div class="personnel-header">
+
+
+        <span class="personnel-eyebrow">
+
+            <i class="bi bi-people-fill"></i>
+
+            Équipe
+
+        </span>
+
+
+        <h1>
+
+            Notre <span>personnel</span>
+
+        </h1>
+
+
+        <p>
+
+            Découvrez les femmes et les hommes qui
+            contribuent chaque jour aux missions du CNFPCEL.
+
+        </p>
+
+
+        <div class="personnel-line"></div>
+
+
+    </div>
+
+
+
+    <!-- =====================================================
+         LISTE DU PERSONNEL
+    ====================================================== -->
+
+    <div class="row personnel-grid justify-content-center">
+
+
+        {% for p in personnel %}
+
+
+        <div class="col-12 col-sm-6 col-lg-4">
+
+
+            <article class="personnel-card">
+
+
+                <!-- ================= PHOTO ================= -->
+
+                <div class="personnel-photo-wrapper">
+
+
+                    {% if p.photo %}
+
+                        <img src="{{ p.photo.url }}"
+                             class="personnel-photo"
+                             alt="{{ p.prenom }} {{ p.nom }}">
+
+                    {% else %}
+
+                        <img src="{% static 'assets/img/Imagepardefaut.png' %}"
+                             class="personnel-photo"
+                             alt="Personnel CNFPCEL">
+
+                    {% endif %}
+
+
+
+                    <span class="personnel-badge">
+
+                        <i class="bi bi-person-badge-fill"></i>
+
+                        CNFPCEL
+
+                    </span>
+
+
+                </div>
+
+
+
+                <!-- ================= INFORMATIONS ================= -->
+
+                <div class="personnel-body">
+
+
+                    <h2 class="personnel-name">
+
+                        {{ p.prenom }}
+
+                        {{ p.nom|upper }}
+
+                    </h2>
+
+
+                    <p class="personnel-function">
+
+                        {{ p.fonc|upper }}
+
+                    </p>
+
+
+                    <div class="personnel-divider"></div>
+
+
+                </div>
+
+
+            </article>
+
+
+        </div>
+
+
+        {% empty %}
+
+
+        <!-- =================================================
+             AUCUN PERSONNEL
+        ================================================== -->
+
+        <div class="col-12">
+
+
+            <div class="personnel-empty">
+
+
+                <i class="bi bi-people"></i>
+
+
+                <h5 class="fw-bold">
+
+                    Aucun membre du personnel disponible
+
+                </h5>
+
+
+                <p class="mb-0">
+
+                    Les informations relatives au personnel
+                    seront bientôt disponibles.
+
+                </p>
+
+
+            </div>
+
+
+        </div>
+
+
+        {% endfor %}
+
+
+    </div>
+
+
+</section>
+
+
+{% endblock %}

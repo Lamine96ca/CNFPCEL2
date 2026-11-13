@@ -1,0 +1,76 @@
+{% extends 'gestion/base/_squelette.html' %}
+{% load static %}
+
+
+{% block notifications %}
+<a href="{% url 'lire_message_contact' %}" class="btn btn-entete" title="Messages non lus">
+  <i class="bi bi-bell fs-5"></i>
+  {% if nb_messages_non_lus %}<span class="compteur-notif">{{ nb_messages_non_lus }}</span>{% endif %}
+</a>
+{% endblock %}
+
+{% block menu_compte %}
+<li><a class="dropdown-item" href="{% url 'profil_user' %}"><i class="bi bi-person-gear"></i> Mon profil</a></li>
+<li><a class="dropdown-item" href="{% url 'profil_user' %}#mot-de-passe"><i class="bi bi-shield-lock"></i> Mot de passe</a></li>
+<li><hr class="dropdown-divider"></li>
+{% endblock %}
+
+{% block role_menu %}{% if cnf_personnel %}{{ cnf_personnel.fonc|default:"Administration" }}{% else %}Administration{% endif %}{% endblock %}
+
+{% block menu %}
+{% with menu=active|stringformat:"s" %}
+  <a class="nav-link {% if menu == '1' %}active{% endif %}" href="{% url 'gestion' %}"><i class="bi bi-grid-1x2"></i> Tableau de bord</a>
+
+  <div class="cnf-nav-titre">Formations</div>
+  {% if menu == '6' or menu == '6-2' or menu == '6-3' or menu == '6-4' or menu == 'resultat_evaluation' or menu == 'formateur' %}{% firstof 'show' as form_ouvert %}{% else %}{% firstof '' as form_ouvert %}{% endif %}
+  <div class="groupe-menu">
+    <button type="button" class="nav-link groupe-titre {% if not form_ouvert %}collapsed{% endif %}"
+            data-bs-toggle="collapse" data-bs-target="#sous-menu-formations"
+            aria-expanded="{% if form_ouvert %}true{% else %}false{% endif %}" aria-controls="sous-menu-formations">
+      <i class="bi bi-mortarboard"></i> Formations
+      {% if not form_ouvert %}{% if nb_inscriptions_attente or nb_formations_a_valider %}<span class="compteur" title="Éléments en attente">{{ nb_inscriptions_attente|add:nb_formations_a_valider }}</span>{% endif %}{% endif %}
+      <span class="chevron bi bi-chevron-down"></span>
+    </button>
+    <div class="collapse sous-menu {{ form_ouvert }}" id="sous-menu-formations">
+      <a class="nav-link {% if menu == '6' %}active{% endif %}" href="{% url 'domaine_formation' %}">Domaines</a>
+      <a class="nav-link {% if menu == '6-2' %}active{% endif %}" href="{% url 'formation' %}">Formations
+        {% if nb_formations_a_valider %}<span class="compteur" title="Formations à valider">{{ nb_formations_a_valider }}</span>{% endif %}</a>
+      <a class="nav-link {% if menu == 'formateur' %}active{% endif %}" href="{% url 'formateur' %}">Formateurs</a>
+      <a class="nav-link {% if menu == '6-3' %}active{% endif %}" href="{% url 'etudiant' %}">Participants
+        {% if nb_inscriptions_attente %}<span class="compteur" title="Inscriptions en attente">{{ nb_inscriptions_attente }}</span>{% endif %}</a>
+      <a class="nav-link {% if menu == '6-4' or menu == 'resultat_evaluation' %}active{% endif %}" href="{% url 'evaluation' %}">Évaluations</a>
+    </div>
+  </div>
+
+  <div class="cnf-nav-titre">Site & communication</div>
+  <a class="nav-link {% if menu == '3' %}active{% endif %}" href="{% url 'article' %}"><i class="bi bi-newspaper"></i> Articles</a>
+  <a class="nav-link {% if menu == '4' %}active{% endif %}" href="{% url 'evenement' %}"><i class="bi bi-calendar-event"></i> Événements</a>
+  <a class="nav-link {% if menu == '7' %}active{% endif %}" href="{% url 'galerie' %}"><i class="bi bi-images"></i> Galerie</a>
+  <a class="nav-link {% if menu == '5' %}active{% endif %}" href="{% url 'lire_message_contact' %}"><i class="bi bi-envelope-paper"></i> Messages
+    {% if nb_messages_non_lus %}<span class="compteur">{{ nb_messages_non_lus }}</span>{% endif %}</a>
+
+  <div class="cnf-nav-titre">Administration</div>
+  <a class="nav-link {% if menu == '2' %}active{% endif %}" href="{% url 'personnel' %}"><i class="bi bi-person-badge"></i> Personnel</a>
+  <a class="nav-link {% if menu == 'profil' %}active{% endif %}" href="{% url 'profil_user' %}"><i class="bi bi-person-gear"></i> Mon profil</a>
+  {% if user.is_staff %}
+    <a class="btn btn-or-plein w-100 mt-3" href="{% url 'admin:index' %}"><i class="bi bi-sliders"></i> Administration Django</a>
+  {% endif %}
+{% endwith %}
+{% endblock %}
+
+{% block page %}
+<div class="titre-page">
+  <div style="min-width:0">
+    <h1 id="titre-page">{% block titre %}{% endblock %}</h1>
+    <div class="fil-ariane">
+      <a href="{% url 'gestion' %}"><i class="bi bi-house-door"></i></a>
+      <span class="sep">/</span>
+      <a href="{% block lientitre %}{% url 'gestion' %}{% endblock %}">{% block retour %}Accueil{% endblock %}</a>
+      <span class="sep">/</span>
+      <span>{% block titre_encours %}{% endblock %}</span>
+    </div>
+  </div>
+  <div class="ms-auto d-flex gap-2 flex-wrap">{% block actions %}{% endblock %}</div>
+</div>
+{% block corps %}{% endblock %}
+{% endblock %}

@@ -1,0 +1,729 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="CNFPATEL - Centre National de Formation et de Perfectionnement des Cadres et Élus Locaux">
+  <meta name="theme-color" content="#0077B6">
+
+  <title>{% block title %}CNFPATEL — Formation & Gouvernance locale{% endblock %}</title>
+
+  <link rel="icon" href="{% static 'assets/img/logo1.png' %}">
+  <link rel="apple-touch-icon" href="{% static 'assets/img/apple-touch-icon.png' %}">
+
+  <!-- Typographie -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Vendor -->
+  <link href="{% static 'assets/vendor/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
+  <link href="{% static 'assets/vendor/bootstrap-icons/bootstrap-icons.css' %}" rel="stylesheet">
+  <link href="{% static 'assets/vendor/aos/aos.css' %}" rel="stylesheet">
+  <link href="{% static 'assets/vendor/glightbox/css/glightbox.min.css' %}" rel="stylesheet">
+  <link href="{% static 'assets/vendor/swiper/swiper-bundle.min.css' %}" rel="stylesheet">
+
+  <!-- CSS principal existant -->
+  <link href="{% static 'assets/css/main.css' %}" rel="stylesheet">
+
+  <style>
+    :root {
+      --cnf-primary: #0077B6;
+      --cnf-primary-2: #005b8a;
+      --cnf-accent: #f5a800;
+      --cnf-accent-2: #ffd36b;
+      --cnf-red: #DC2128;
+      --cnf-gold: #f2b84b;
+      --cnf-ink: #1F2937;
+      --cnf-muted: #66757d;
+      --cnf-bg: #f5f8fa;
+      --cnf-card: #ffffff;
+      --cnf-border: #e4eaee;
+      --cnf-radius: 18px;
+      --cnf-shadow: 0 16px 45px rgba(0, 119, 182, .09);
+      --cnf-shadow-hover: 0 22px 55px rgba(0, 119, 182, .15);
+    }
+
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      background: #fff;
+      color: var(--cnf-ink);
+      font-family: "Inter", sans-serif;
+      overflow-x: hidden;
+    }
+
+    h1,h2,h3,h4,h5,h6 {
+      font-family: "Plus Jakarta Sans", sans-serif;
+      letter-spacing: -.02em;
+    }
+
+    a { transition: all .25s ease; }
+
+    /* ================= TOP BAR ================= */
+    .cnf-topbar {
+      position: fixed;
+      left: 0;
+      top: 0;
+      width: 100%;
+      min-height: 38px;
+      display: flex;
+      background: var(--cnf-primary-2);
+      color: rgba(255,255,255,.88);
+      font-size: .78rem;
+      z-index: 1041;
+    }
+    .cnf-topbar .container {
+      min-height: 38px;
+    }
+    .cnf-topbar a {
+      color: inherit;
+      text-decoration: none;
+    }
+    .cnf-topbar a:hover { color: #fff; }
+    .cnf-topbar i { color: var(--cnf-gold); }
+
+    /* ================= HEADER ================= */
+    .cnf-header {
+      position: fixed;
+      top: 38px;
+      left: 0;
+      width: 100%;
+      z-index: 1040;
+      background: rgba(255,255,255,.94);
+      border-bottom: 1px solid rgba(0,119,182,.08);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      transition: box-shadow .3s ease, background .3s ease, top .3s ease;
+    }
+
+    .cnf-header.scrolled {
+      box-shadow: 0 10px 35px rgba(0,119,182,.10);
+      background: rgba(255,255,255,.98);
+    }
+
+    .cnf-brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 11px;
+      text-decoration: none;
+      color: var(--cnf-primary);
+      min-width: 230px;
+    }
+
+    .cnf-brand-logo {
+      width: 47px;
+      height: 47px;
+      object-fit: contain;
+      border-radius: 12px;
+    }
+
+    .cnf-brand-title {
+      display: flex;
+      flex-direction: column;
+      line-height: 1.05;
+    }
+    .cnf-brand-title strong {
+      font-size: 1.12rem;
+      font-weight: 800;
+    }
+    .cnf-brand-title span {
+      margin-top: 4px;
+      color: var(--cnf-muted);
+      font-size: .61rem;
+      font-weight: 700;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+    }
+
+    .cnf-nav {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+    }
+    .cnf-nav > ul {
+      list-style: none;
+      display: flex;
+      align-items: center;
+      gap: 3px;
+      margin: 0;
+      padding: 0;
+    }
+    .cnf-nav li { position: relative; list-style: none; }
+    .cnf-nav > ul > li > a {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 12px 13px;
+      border-radius: 11px;
+      color: #33434c;
+      font-size: .87rem;
+      font-weight: 700;
+      text-decoration: none;
+    }
+    .cnf-nav > ul > li > a:hover,
+    .cnf-nav > ul > li > a.active {
+      background: #edf5f8;
+      color: var(--cnf-primary);
+    }
+
+    .cnf-nav .dropdown-menu-custom {
+      position: absolute;
+      top: calc(100% + 8px);
+      left: 0;
+      min-width: 245px;
+      padding: 8px;
+      background: #fff;
+      border: 1px solid var(--cnf-border);
+      border-radius: 15px;
+      box-shadow: var(--cnf-shadow-hover);
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(8px);
+      transition: all .2s ease;
+      z-index: 20;
+    }
+    .cnf-nav .dropdown:hover > .dropdown-menu-custom {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0);
+    }
+    .cnf-nav .dropdown-menu-custom a {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 11px 12px;
+      color: #34444c;
+      text-decoration: none;
+      border-radius: 10px;
+      font-size: .83rem;
+      font-weight: 600;
+    }
+    .cnf-nav .dropdown-menu-custom a:hover {
+      background: #f2f7f9;
+      color: var(--cnf-primary);
+    }
+
+    .cnf-nav-cta {
+      background: var(--cnf-accent) !important;
+      color: #fff !important;
+      box-shadow: 0 8px 18px rgba(245,168,0,.22);
+    }
+    .cnf-nav-cta:hover {
+      background: #d99400 !important;
+      transform: translateY(-1px);
+    }
+
+    .cnf-mobile-toggle {
+      display: none;
+      width: 44px;
+      height: 44px;
+      border: 0;
+      border-radius: 12px;
+      background: var(--cnf-primary);
+      color: #fff;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.35rem;
+    }
+
+    /* ================= PAGE OFFSET ================= */
+    .cnf-page {
+      padding-top: 118px;
+      min-height: 60vh;
+    }
+
+    /* ================= COMMON COMPONENTS ================= */
+    .cnf-section {
+      padding: 92px 0;
+      position: relative;
+    }
+    .cnf-section-soft { background: var(--cnf-bg); }
+
+    .cnf-eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--cnf-accent);
+      font-size: .74rem;
+      font-weight: 800;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+    }
+    .cnf-eyebrow::before {
+      content: "";
+      width: 26px;
+      height: 2px;
+      background: currentColor;
+      border-radius: 4px;
+    }
+
+    .cnf-section-title {
+      font-size: clamp(1.8rem, 3vw, 2.7rem);
+      font-weight: 800;
+      margin-bottom: 12px;
+      color: var(--cnf-primary);
+    }
+    .cnf-section-lead {
+      color: var(--cnf-muted);
+      max-width: 720px;
+      font-size: .98rem;
+      line-height: 1.75;
+    }
+
+    .cnf-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      border: 0;
+      border-radius: 12px;
+      padding: 12px 19px;
+      font-weight: 700;
+      font-size: .84rem;
+      text-decoration: none;
+      transition: all .25s ease;
+    }
+    .cnf-btn-primary {
+      color: #fff;
+      background: var(--cnf-primary);
+      box-shadow: 0 10px 22px rgba(0,119,182,.18);
+    }
+    .cnf-btn-primary:hover {
+      color: #fff;
+      background: #005b8a;
+      transform: translateY(-2px);
+    }
+    .cnf-btn-accent {
+      color: #fff;
+      background: var(--cnf-accent);
+      box-shadow: 0 10px 22px rgba(245,168,0,.18);
+    }
+    .cnf-btn-accent:hover {
+      color: #fff;
+      background: #d99400;
+      transform: translateY(-2px);
+    }
+    .cnf-btn-outline {
+      color: var(--cnf-primary);
+      background: #fff;
+      border: 1px solid var(--cnf-border);
+    }
+    .cnf-btn-outline:hover {
+      color: var(--cnf-primary);
+      border-color: var(--cnf-primary);
+      transform: translateY(-2px);
+    }
+
+    /* ================= FOOTER ================= */
+    .cnf-footer {
+      color: rgba(255,255,255,.78);
+      background: #04314d;
+    }
+    .cnf-footer-main { padding: 60px 0 35px; }
+    .cnf-footer h5 {
+      color: #fff;
+      font-size: .92rem;
+      font-weight: 800;
+      margin-bottom: 17px;
+    }
+    .cnf-footer p {
+      color: rgba(255,255,255,.68);
+      font-size: .83rem;
+      line-height: 1.8;
+    }
+    .cnf-footer-links {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+    .cnf-footer-links li { margin-bottom: 9px; }
+    .cnf-footer-links a {
+      color: rgba(255,255,255,.68);
+      text-decoration: none;
+      font-size: .82rem;
+    }
+    .cnf-footer-links a:hover { color: #fff; padding-left: 3px; }
+    .cnf-footer-social {
+      display: flex;
+      gap: 8px;
+      margin-top: 18px;
+    }
+    .cnf-footer-social a {
+      width: 36px;
+      height: 36px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 10px;
+      color: #fff;
+      background: rgba(255,255,255,.08);
+      text-decoration: none;
+    }
+    .cnf-footer-social a:hover { background: var(--cnf-accent); transform: translateY(-2px); }
+    .cnf-footer-bottom {
+      border-top: 1px solid rgba(255,255,255,.09);
+      padding: 18px 0;
+      font-size: .76rem;
+      color: rgba(255,255,255,.58);
+    }
+
+    /* ================= FLOATING BUTTONS ================= */
+    .cnf-scroll-top {
+      position: fixed;
+      right: 18px;
+      bottom: 18px;
+      z-index: 1030;
+      width: 43px;
+      height: 43px;
+      border-radius: 13px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--cnf-accent);
+      color: #fff;
+      text-decoration: none;
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(10px);
+      box-shadow: 0 12px 25px rgba(245,168,0,.28);
+      transition: all .3s ease;
+    }
+    .cnf-scroll-top.active {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0);
+    }
+    .cnf-scroll-top:hover { color: #fff; transform: translateY(-3px); }
+
+    /* ================= PRELOADER ================= */
+    #preloader {
+      position: fixed;
+      inset: 0;
+      z-index: 99999;
+      background: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: opacity .35s ease, visibility .35s ease;
+    }
+    #preloader::before {
+      content: "";
+      width: 48px;
+      height: 48px;
+      border: 4px solid #e6eef2;
+      border-top-color: var(--cnf-accent);
+      border-right-color: var(--cnf-primary);
+      border-radius: 50%;
+      animation: cnf-spin .8s linear infinite;
+    }
+    #preloader.preloader-hidden {
+      opacity: 0;
+      visibility: hidden;
+    }
+    @keyframes cnf-spin { to { transform: rotate(360deg); } }
+
+    /* ================= MOBILE ================= */
+    @media (max-width: 1199.98px) {
+      .cnf-header { top: 0; }
+      .cnf-page { padding-top: 78px; }
+
+      .cnf-mobile-toggle { display: inline-flex; }
+      .cnf-nav {
+        position: fixed;
+        top: 70px;
+        left: 14px;
+        right: 14px;
+        padding: 10px;
+        background: #fff;
+        border: 1px solid var(--cnf-border);
+        border-radius: 18px;
+        box-shadow: var(--cnf-shadow-hover);
+        opacity: 0;
+        visibility: hidden;
+        transform: translateY(-10px);
+        transition: all .25s ease;
+      }
+      .cnf-nav.open {
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(0);
+      }
+      .cnf-nav > ul {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 3px;
+      }
+      .cnf-nav > ul > li > a {
+        width: 100%;
+        justify-content: space-between;
+        padding: 13px 14px;
+      }
+      .cnf-nav .dropdown-menu-custom {
+        position: static;
+        display: none;
+        opacity: 1;
+        visibility: visible;
+        transform: none;
+        min-width: 0;
+        margin: 0 7px 7px;
+        box-shadow: none;
+        background: #f5f8fa;
+        border: 0;
+      }
+      .cnf-nav .dropdown.active > .dropdown-menu-custom { display: block; }
+      .cnf-nav .dropdown-menu-custom a { padding: 10px 12px; }
+    }
+
+    @media (max-width: 767.98px) {
+      .cnf-topbar { display: none; }
+      .cnf-page { padding-top: 72px; }
+      .cnf-brand { min-width: 0; }
+      .cnf-brand-logo { width: 42px; height: 42px; }
+      .cnf-brand-title strong { font-size: .98rem; }
+      .cnf-brand-title span { font-size: .52rem; }
+      .cnf-section { padding: 65px 0; }
+    }
+  </style>
+
+  {% block extra_css %}{% endblock %}
+</head>
+
+<body class="{% block body_class %}{% endblock %}">
+
+  <!-- Barre institutionnelle -->
+  <div class="cnf-topbar d-none d-md-block">
+    <div class="container d-flex align-items-center justify-content-between gap-3">
+      <div class="d-flex align-items-center gap-4">
+        <span><i class="bi bi-geo-alt-fill me-1"></i> Conakry — Guinée</span>
+        <a href="mailto:contact@cnfpcel.gov.gn"><i class="bi bi-envelope-fill me-1"></i> contact@cnfpcel.gov.gn</a>
+        <a href="tel:+224627135613"><i class="bi bi-telephone-fill me-1"></i> +224 627 13 56 13</a>
+      </div>
+      <div class="d-flex align-items-center gap-2">
+        <a href="#" aria-label="Facebook"><i class="bi bi-facebook"></i></a>
+        <a href="#" aria-label="LinkedIn"><i class="bi bi-linkedin"></i></a>
+        <a href="#" aria-label="WhatsApp"><i class="bi bi-whatsapp"></i></a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Navigation principale -->
+  <header class="cnf-header" id="site-header">
+    <div class="container-xl">
+      <div class="d-flex align-items-center justify-content-between py-2">
+        <a href="{% url 'index' %}#hero" class="cnf-brand">
+          <img src="{% static 'assets/img/logo1.png' %}" class="cnf-brand-logo" alt="Logo CNFPATEL">
+          <span class="cnf-brand-title">
+            <strong>CNFPATEL</strong>
+            <span>Formation · Gouvernance · Territoires</span>
+          </span>
+        </a>
+
+        <nav class="cnf-nav" id="cnf-nav" aria-label="Navigation principale">
+          <ul>
+            <li><a href="{% url 'index' %}#hero">Accueil</a></li>
+
+            <li class="dropdown">
+              <a href="#" class="dropdown-toggle-link">
+                Formations <i class="bi bi-chevron-down small"></i>
+              </a>
+              <div class="dropdown-menu-custom">
+                <a href="{% url 'list_formation' 0 %}"><i class="bi bi-grid-3x3-gap"></i> Nos formations disponibles</a>
+                <a href="{% url 'formation_etudiant' %}"><i class="bi bi-person-workspace"></i> Mes formations</a>
+              </div>
+            </li>
+
+            <li><a href="{% url 'index' %}#actualites">Actualités</a></li>
+            <li><a href="{% url 'index' %}#contact">Contact</a></li>
+
+            <li class="dropdown">
+              <a href="#" class="dropdown-toggle-link">
+                Explorer <i class="bi bi-chevron-down small"></i>
+              </a>
+              <div class="dropdown-menu-custom">
+                <a href="{% url 'index' %}#presentation-cnfpcel"><i class="bi bi-building"></i> À propos</a>
+                <a href="{% url 'index' %}#personnel"><i class="bi bi-people"></i> Notre équipe</a>
+                <a href="{% url 'galerie_index' %}"><i class="bi bi-images"></i> Galerie</a>
+                <a href="{% url 'index' %}#partenaires"><i class="bi bi-diagram-3"></i> Partenaires</a>
+                <a href="{% url 'page_indisponible' %}"><i class="bi bi-journal-text"></i> Documentation</a>
+                <a href="{% url 'login' %}"><i class="bi bi-box-arrow-in-right"></i> Connexion</a>
+              </div>
+            </li>
+
+            <li>
+              <a href="{% url 'list_formation' 0 %}" class="cnf-nav-cta">
+                <i class="bi bi-mortarboard-fill"></i> Se former
+              </a>
+            </li>
+          </ul>
+        </nav>
+
+        <button class="cnf-mobile-toggle" id="cnf-mobile-toggle" type="button" aria-label="Ouvrir le menu" aria-expanded="false">
+          <i class="bi bi-list"></i>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="cnf-page">
+    {% block content %}{% endblock %}
+  </main>
+
+  <!-- Footer -->
+  <footer class="cnf-footer">
+    <div class="cnf-footer-main">
+      <div class="container">
+        <div class="row g-4">
+          <div class="col-lg-5">
+            <a href="{% url 'index' %}" class="cnf-brand text-white mb-3">
+              <img src="{% static 'assets/img/logo1.png' %}" class="cnf-brand-logo" alt="Logo CNFPATEL">
+              <span class="cnf-brand-title">
+                <strong class="text-white">CNFPATEL</strong>
+                <span class="text-white-50">Centre national de formation</span>
+              </span>
+            </a>
+            <p class="mt-3 mb-0">
+              Un espace dédié au renforcement des compétences des administrateurs territoriaux,
+              cadres et élus locaux au service d'une gouvernance locale plus efficace.
+            </p>
+            <div class="cnf-footer-social">
+              <a href="#" aria-label="Facebook"><i class="bi bi-facebook"></i></a>
+              <a href="#" aria-label="LinkedIn"><i class="bi bi-linkedin"></i></a>
+              <a href="#" aria-label="WhatsApp"><i class="bi bi-whatsapp"></i></a>
+            </div>
+          </div>
+
+          <div class="col-6 col-lg-2">
+            <h5>Navigation</h5>
+            <ul class="cnf-footer-links">
+              <li><a href="{% url 'index' %}#hero">Accueil</a></li>
+              <li><a href="{% url 'index' %}#presentation-cnfpcel">À propos</a></li>
+              <li><a href="{% url 'index' %}#actualites">Actualités</a></li>
+              <li><a href="{% url 'index' %}#contact">Contact</a></li>
+            </ul>
+          </div>
+
+          <div class="col-6 col-lg-2">
+            <h5>Formation</h5>
+            <ul class="cnf-footer-links">
+              <li><a href="{% url 'list_formation' 0 %}">Catalogue</a></li>
+              <li><a href="{% url 'formation_etudiant' %}">Mes formations</a></li>
+              <li><a href="{% url 'login' %}">Connexion</a></li>
+            </ul>
+          </div>
+
+          <div class="col-lg-3">
+            <h5>Nous contacter</h5>
+            <p class="mb-2"><i class="bi bi-geo-alt me-2"></i> Quartier administratif, Conakry</p>
+            <p class="mb-2"><i class="bi bi-envelope me-2"></i> contact@cnfpcel.gov.gn</p>
+            <p class="mb-0"><i class="bi bi-telephone me-2"></i> +224 627 13 56 13</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="cnf-footer-bottom">
+      <div class="container d-flex flex-wrap align-items-center justify-content-between gap-2">
+        <span>© {% now "Y" %} CNFPATEL — Tous droits réservés.</span>
+        <span>Plateforme numérique institutionnelle</span>
+      </div>
+    </div>
+  </footer>
+
+  <a href="#" class="cnf-scroll-top" id="cnf-scroll-top" aria-label="Retour en haut">
+    <i class="bi bi-arrow-up"></i>
+  </a>
+
+  <div id="preloader"></div>
+
+  <!-- Vendor JS -->
+  <script src="{% static 'assets/vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+  <script src="{% static 'assets/vendor/aos/aos.js' %}"></script>
+  <script src="{% static 'assets/vendor/glightbox/js/glightbox.min.js' %}"></script>
+  <script src="{% static 'assets/vendor/imagesloaded/imagesloaded.pkgd.min.js' %}"></script>
+  <script src="{% static 'assets/vendor/isotope-layout/isotope.pkgd.min.js' %}"></script>
+  <script src="{% static 'assets/vendor/swiper/swiper-bundle.min.js' %}"></script>
+  <script src="{% static 'assets/vendor/purecounter/purecounter_vanilla.js' %}"></script>
+  <script src="{% static 'assets/js/main.js' %}"></script>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const header = document.getElementById("site-header");
+      const mobileToggle = document.getElementById("cnf-mobile-toggle");
+      const nav = document.getElementById("cnf-nav");
+      const scrollTop = document.getElementById("cnf-scroll-top");
+      const preloader = document.getElementById("preloader");
+
+      function updateScrollUI() {
+        if (window.scrollY > 30) {
+          header.classList.add("scrolled");
+          scrollTop.classList.add("active");
+        } else {
+          header.classList.remove("scrolled");
+          scrollTop.classList.remove("active");
+        }
+      }
+
+      window.addEventListener("scroll", updateScrollUI, { passive: true });
+      updateScrollUI();
+
+      mobileToggle.addEventListener("click", function (event) {
+        event.stopPropagation();
+        const open = nav.classList.toggle("open");
+        mobileToggle.setAttribute("aria-expanded", open ? "true" : "false");
+        mobileToggle.querySelector("i").className = open ? "bi bi-x-lg" : "bi bi-list";
+      });
+
+      nav.querySelectorAll(".dropdown-toggle-link").forEach(link => {
+        link.addEventListener("click", function (event) {
+          if (window.innerWidth <= 1199) {
+            event.preventDefault();
+            const parent = this.closest(".dropdown");
+            nav.querySelectorAll(".dropdown").forEach(item => {
+              if (item !== parent) item.classList.remove("active");
+            });
+            parent.classList.toggle("active");
+          }
+        });
+      });
+
+      document.addEventListener("click", function (event) {
+        if (!nav.contains(event.target) && !mobileToggle.contains(event.target)) {
+          nav.classList.remove("open");
+          mobileToggle.setAttribute("aria-expanded", "false");
+          mobileToggle.querySelector("i").className = "bi bi-list";
+          nav.querySelectorAll(".dropdown").forEach(item => item.classList.remove("active"));
+        }
+      });
+
+      nav.querySelectorAll("a:not(.dropdown-toggle-link)").forEach(link => {
+        link.addEventListener("click", function () {
+          if (window.innerWidth <= 1199) {
+            nav.classList.remove("open");
+            mobileToggle.setAttribute("aria-expanded", "false");
+            mobileToggle.querySelector("i").className = "bi bi-list";
+          }
+        });
+      });
+
+      scrollTop.addEventListener("click", function (event) {
+        event.preventDefault();
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      });
+
+      window.addEventListener("load", function () {
+        setTimeout(() => preloader.classList.add("preloader-hidden"), 250);
+        if (typeof AOS !== "undefined") {
+          AOS.init({ duration: 650, once: true, offset: 60 });
+        }
+      });
+    });
+  </script>
+
+  {% block extra_js %}{% endblock %}
+</body>
+</html>

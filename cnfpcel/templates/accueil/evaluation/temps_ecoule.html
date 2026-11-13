@@ -1,0 +1,611 @@
+```html
+{% extends 'accueil/base/base.html' %}
+{% load static %}
+
+{% block content %}
+
+<style>
+
+/* =========================================================
+   TEMPS ECOULE — CNFPCEL
+========================================================= */
+
+:root {
+    --primary: #0077B6;
+    --primary-dark: #005b8a;
+    --primary-light: #eaf7fc;
+
+    --danger: #dc3545;
+    --danger-dark: #b02a37;
+    --danger-light: #fff0f1;
+
+    --warning: #f5a800;
+    --warning-light: #fff8e5;
+
+    --text: #243746;
+    --muted: #718096;
+
+    --bg: #f5f8fa;
+    --white: #ffffff;
+
+    --border: #e3ebf0;
+
+    --shadow:
+        0 10px 35px rgba(30, 60, 80, .08);
+}
+
+
+/* =========================================================
+   PAGE
+========================================================= */
+
+#temps-ecoule {
+    min-height: 100vh;
+
+    padding-top: 95px;
+    padding-bottom: 60px;
+
+    background: var(--bg);
+}
+
+.timeout-container {
+    width: 100%;
+    max-width: 800px;
+
+    margin: auto;
+}
+
+
+/* =========================================================
+   CARTE
+========================================================= */
+
+.timeout-card {
+    overflow: hidden;
+
+    background: var(--white);
+
+    border: 1px solid var(--border);
+
+    border-radius: 22px;
+
+    box-shadow: var(--shadow);
+
+    animation: timeoutAppear .55s ease both;
+}
+
+
+/* =========================================================
+   HEADER
+========================================================= */
+
+.timeout-header {
+    position: relative;
+
+    overflow: hidden;
+
+    padding: 32px 25px;
+
+    background:
+        linear-gradient(
+            135deg,
+            var(--danger),
+            var(--danger-dark)
+        );
+
+    color: #fff;
+
+    text-align: center;
+}
+
+
+/* Cercles décoratifs */
+
+.timeout-header::before {
+    content: "";
+
+    position: absolute;
+
+    width: 190px;
+    height: 190px;
+
+    top: -100px;
+    right: -70px;
+
+    border-radius: 50%;
+
+    background: rgba(255,255,255,.08);
+}
+
+.timeout-header::after {
+    content: "";
+
+    position: absolute;
+
+    width: 130px;
+    height: 130px;
+
+    bottom: -75px;
+    left: -45px;
+
+    border-radius: 50%;
+
+    background: rgba(255,255,255,.06);
+}
+
+.timeout-header-content {
+    position: relative;
+
+    z-index: 2;
+}
+
+
+/* =========================================================
+   ICONE
+========================================================= */
+
+.timeout-icon {
+    width: 62px;
+    height: 62px;
+
+    display: inline-flex;
+
+    align-items: center;
+    justify-content: center;
+
+    margin-bottom: 14px;
+
+    background: rgba(255,255,255,.15);
+
+    border: 1px solid rgba(255,255,255,.20);
+
+    border-radius: 50%;
+
+    font-size: 1.7rem;
+
+    backdrop-filter: blur(5px);
+
+    animation: clockPulse 1.8s ease-in-out infinite;
+}
+
+@keyframes clockPulse {
+
+    0%, 100% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.06);
+    }
+
+}
+
+
+/* =========================================================
+   TITRE
+========================================================= */
+
+.timeout-header h1 {
+    margin: 0 0 7px;
+
+    font-size: clamp(1.45rem, 3vw, 1.9rem);
+
+    font-weight: 800;
+
+    line-height: 1.25;
+}
+
+.timeout-header p {
+    margin: 0;
+
+    color: rgba(255,255,255,.86);
+
+    font-size: .92rem;
+}
+
+
+/* =========================================================
+   BODY
+========================================================= */
+
+.timeout-body {
+    padding: 35px 30px;
+
+    text-align: center;
+}
+
+
+/* =========================================================
+   MESSAGE PRINCIPAL
+========================================================= */
+
+.timeout-message {
+    max-width: 620px;
+
+    margin: 0 auto 12px;
+
+    color: var(--text);
+
+    font-size: 1rem;
+
+    font-weight: 700;
+
+    line-height: 1.65;
+}
+
+.timeout-description {
+    max-width: 620px;
+
+    margin: 0 auto 25px;
+
+    color: var(--muted);
+
+    font-size: .9rem;
+
+    line-height: 1.75;
+}
+
+
+/* =========================================================
+   HTML RICHE
+========================================================= */
+
+.timeout-message strong,
+.timeout-description strong {
+    color: var(--text);
+
+    font-weight: 800;
+}
+
+.timeout-message em,
+.timeout-description em {
+    font-style: italic;
+}
+
+.timeout-message a,
+.timeout-description a {
+    color: var(--primary);
+
+    font-weight: 700;
+
+    text-decoration: underline;
+}
+
+.timeout-message p,
+.timeout-description p {
+    margin-bottom: 5px;
+}
+
+.timeout-message ul,
+.timeout-description ul {
+    padding-left: 20px;
+
+    text-align: left;
+}
+
+
+/* =========================================================
+   ALERT IMPORTANT
+========================================================= */
+
+.timeout-alert {
+    max-width: 620px;
+
+    margin: 0 auto;
+
+    padding: 16px 18px;
+
+    background: var(--warning-light);
+
+    border: 1px solid rgba(245,168,0,.20);
+
+    border-radius: 14px;
+
+    color: #765700;
+
+    font-size: .85rem;
+
+    line-height: 1.6;
+}
+
+.timeout-alert-icon {
+    width: 34px;
+    height: 34px;
+
+    display: inline-flex;
+
+    align-items: center;
+    justify-content: center;
+
+    margin-bottom: 8px;
+
+    background: rgba(245,168,0,.13);
+
+    border-radius: 10px;
+
+    color: var(--warning);
+
+    font-size: 1rem;
+}
+
+
+/* =========================================================
+   FOOTER
+========================================================= */
+
+.timeout-footer {
+    display: flex;
+
+    justify-content: center;
+
+    padding: 20px 25px;
+
+    background: #fbfdfe;
+
+    border-top: 1px solid var(--border);
+}
+
+
+/* =========================================================
+   BOUTON
+========================================================= */
+
+.dashboard-button {
+    display: inline-flex;
+
+    align-items: center;
+    justify-content: center;
+
+    gap: 8px;
+
+    min-width: 250px;
+
+    padding: 12px 24px;
+
+    background: var(--primary);
+
+    border: 0;
+
+    border-radius: 11px;
+
+    color: #fff !important;
+
+    font-size: .88rem;
+
+    font-weight: 800;
+
+    text-decoration: none;
+
+    box-shadow:
+        0 7px 17px rgba(0,119,182,.18);
+
+    transition: .3s ease;
+}
+
+.dashboard-button:hover {
+    background: var(--primary-dark);
+
+    color: #fff !important;
+
+    transform: translateY(-2px);
+
+    box-shadow:
+        0 10px 22px rgba(0,119,182,.25);
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 767px) {
+
+    #temps-ecoule {
+        padding-top: 65px;
+        padding-bottom: 35px;
+    }
+
+    .timeout-container {
+        padding-left: 10px;
+        padding-right: 10px;
+    }
+
+    .timeout-card {
+        border-radius: 17px;
+    }
+
+    .timeout-header {
+        padding: 27px 18px;
+    }
+
+    .timeout-body {
+        padding: 25px 17px;
+    }
+
+    .timeout-message {
+        font-size: .92rem;
+    }
+
+    .timeout-description {
+        font-size: .84rem;
+    }
+
+    .timeout-footer {
+        padding: 17px 15px;
+    }
+
+    .dashboard-button {
+        width: 100%;
+        min-width: 0;
+    }
+
+}
+
+
+/* =========================================================
+   ANIMATION
+========================================================= */
+
+@keyframes timeoutAppear {
+
+    from {
+        opacity: 0;
+
+        transform:
+            translateY(18px);
+    }
+
+    to {
+        opacity: 1;
+
+        transform:
+            translateY(0);
+    }
+
+}
+
+</style>
+
+
+
+<!-- =========================================================
+     TEMPS ECOULE
+========================================================= -->
+
+<section id="temps-ecoule">
+
+    <div class="container timeout-container">
+
+
+        <div class="timeout-card">
+
+
+            <!-- =================================================
+                 HEADER
+            ================================================== -->
+
+            <div class="timeout-header">
+
+                <div class="timeout-header-content">
+
+
+                    <div class="timeout-icon">
+
+                        <i class="bi bi-clock-history"></i>
+
+                    </div>
+
+
+                    <h1>
+
+                        Temps écoulé
+
+                    </h1>
+
+
+                    <p>
+
+                        Évaluation terminée automatiquement
+
+                    </p>
+
+
+                </div>
+
+            </div>
+
+
+
+            <!-- =================================================
+                 BODY
+            ================================================== -->
+
+            <div class="timeout-body">
+
+
+                <!-- MESSAGE -->
+
+                <div class="timeout-message">
+
+                    Le temps imparti pour cette évaluation
+                    est arrivé à expiration.
+
+                </div>
+
+
+                <!-- DESCRIPTION -->
+
+                <div class="timeout-description">
+
+                    Conformément aux règles de l’évaluation,
+                    vos réponses ont été automatiquement
+                    enregistrées à la fin du temps réglementaire.
+
+                </div>
+
+
+
+                <!-- =================================================
+                     IMPORTANT
+                ================================================== -->
+
+                <div class="timeout-alert">
+
+
+                    <div class="timeout-alert-icon">
+
+                        <i class="bi bi-exclamation-triangle-fill"></i>
+
+                    </div>
+
+
+                    <div>
+
+                        <strong>Important</strong>
+
+                        <br>
+
+                        Toute réponse non soumise avant la fin
+                        du temps imparti n’a pas été prise en compte.
+
+                    </div>
+
+
+                </div>
+
+
+            </div>
+
+
+
+            <!-- =================================================
+                 FOOTER
+            ================================================== -->
+
+            <div class="timeout-footer">
+
+
+                <a href="{% url 'dashboard_etudiant' %}"
+                   class="dashboard-button">
+
+
+                    <i class="bi bi-grid-1x2-fill"></i>
+
+                    Retour au tableau de bord
+
+
+                </a>
+
+
+            </div>
+
+
+        </div>
+
+
+    </div>
+
+</section>
+
+
+{% endblock %}

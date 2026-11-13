@@ -1,0 +1,151 @@
+{% extends 'gestion/base/base_gestion.html' %}
+{% load static %}
+
+{% block titre %} Profil utilisateur {% endblock %}
+{% block lientitre%} {% url 'gestion' %} {% endblock %}
+{% block retour %} Accueil {% endblock %}
+{% block titre_encours%} Profil ustilisateur {%endblock%}
+
+{% block corps %}
+<style>
+    .card { animation: fadeInUp 0.6s ease-in-out; }
+        @keyframes fadeInUp {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+</style>
+
+<!--PROFIL -->
+<div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+  <div class="row g-0">
+    <!-- Photo -->
+    <div class=" btn col-md-4 bg-gradient p-4 text-center d-flex align-items-center justify-content-center" style="background: linear-gradient(135deg, #0077cc, #005c99);">
+      {% if utilisateur.photo %}
+        <img src="{{ utilisateur.photo.url }}" alt="{{ personnel.nom }}" class="img-fluid rounded-circle border border-white shadow" style="width: 180px; height: 180px; object-fit: cover;">
+      {% else %}
+        <i class="bi bi-person-circle display-1 text-white"></i>
+      {% endif %}
+    </div>
+
+    <!-- Infos -->
+    <div class="col-md-8 bg-white">
+      <div class="card-body p-4">
+        <p class="alert fs-4" style=" background-color: var(--main-color); color: var(--sidebar-bg);">Gestion des informations</p>
+        {% if info != '' %}
+        <p class=" alert alert-success text-center">{{ info }}  </p>
+        {% endif %}
+        {% if erreur != '' %}
+        <p class=" alert alert-danger text-center">{{ erreur }}  </p>
+        {% endif %}
+        <h4 class="card-title text-primary mb-1" >{{ utilisateur.prenom|title }} {{ utilisateur.nom|upper }} </h4>
+        <p class="text-muted mb-3"><i class="bi bi-person-badge-fill me-1"></i>{{ utilisateur.fonc }}</p>
+
+        <div class="row mb-2">
+          <div class="col-sm-6"><strong>Téléphone :</strong> {{ utilisateur.telephone }}</div>
+          <div class="col-sm-6"><strong>Email :</strong> {{ utilisateur.email }}</div>
+        </div>
+
+        <p class="mb-3"><strong>Biographie :</strong><br>{{ utilisateur.bio }}</p>
+
+        {% if user.is_active == 1 %}
+          <span class="badge bg-success"><i class="bi bi-person-check-fill me-1"></i>Compte utilisateur actif</span>
+        {% else %}
+          <span class="badge bg-secondary"><i class="bi bi-person-x-fill me-1"></i>Pas de compte utilisateur</span>
+        {% endif %}
+
+        <!-- Bouton de mise à jour -->
+        <div class="mt-4">
+          <a href="" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#ModalProfilUpdate">
+            <i class="bi bi-pencil-square me-1"></i> Mettre à jour le profil
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!--FIN PROFIL-->
+
+<!--MODAL MISE A JOUR-->
+<div class="modal fade" id="ModalProfilUpdate" tabindex="-1" aria-labelledby="ModalProfilUpdateLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content border-0 shadow rounded-4">
+      <div class="modal-header bg-primary text-white">
+        <h5 class="modal-title" id="ModalProfilUpdateLabel">
+          <i class="bi bi-person-lines-fill me-2"></i> Mise à jour du profil utilisateur
+        </h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Fermer"></button>
+      </div>
+
+      <div class="modal-body">
+        <div class="row g-4">
+          <!-- Section Informations -->
+          <div class="col-md-6">
+            <h6 class="text-primary mb-3"><i class="bi bi-pencil-fill me-1"></i> Informations personnelles</h6>
+            <form method="POST" action="{% url 'update_infos' %}">
+              {% csrf_token %}
+              <div class="mb-3">
+                <label for="prenom" class="form-label">Prénom</label>
+                <input type="text" class="form-control" id="prenom" name="prenom" value="{{ user.profil_personnel.prenom }}" required>
+              </div>
+              <div class="mb-3">
+                <label for="nom" class="form-label">Nom</label>
+                <input type="text" class="form-control" id="nom" name="nom" value="{{ user.profil_personnel.nom }}" required>
+              </div>
+            <div class="mb-3">
+                <label for="nom" class="form-label">Téléphone</label>
+                <input type="text" class="form-control" id="telephone" name="telephone" value="{{ user.profil_personnel.telephone }}" required>
+              </div>
+              <div class="mb-3">
+                <label for="email" class="form-label">Email</label>
+                <input type="email" class="form-control" id="email" name="email" value="{{ user.email }}" required>
+              </div>
+              <button type="submit" class="btn btn-outline-primary w-100">
+                <i class="bi bi-save me-1"></i> Enregistrer les informations
+              </button>
+            </form>
+          </div>
+
+          <!-- Section Mot de passe -->
+          <div class="col-md-6">
+            <h6 class="text-danger mb-3"><i class="bi bi-lock-fill me-1"></i> Changer le mot de passe</h6>
+            <form method="POST" action="{% url 'update_password' %}">
+              {% csrf_token %}
+              <div class="mb-3">
+                <label for="old_password" class="form-label">Mot de passe actuel</label>
+                <input type="password" class="form-control" id="old_password" name="old_password" required>
+              </div>
+              <div class="mb-3">
+                <label for="new_password" class="form-label">Nouveau mot de passe</label>
+                <input type="password" class="form-control" id="new_password" name="new_password" required>
+              </div>
+              <div class="mb-3">
+                <label for="confirm_password" class="form-label">Confirmer le mot de passe</label>
+                <input type="password" class="form-control" id="confirm_password" name="confirm_password" required>
+              </div>
+              <button type="submit" class="btn btn-outline-danger w-100">
+                <i class="bi bi-shield-lock me-1"></i> Mettre à jour le mot de passe
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer bg-light">
+        <small class="text-muted">CNFPCEL • Conakry • République de Guinée 🇬🇳</small>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% if show_modal %}
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const modal = new bootstrap.Modal(document.getElementById('ModalProfilUpdate'));
+    modal.show();
+  });
+</script>
+{% endif %}
+<!--FIN MODAL MISE A JOUR-->
+
+{% endblock %}

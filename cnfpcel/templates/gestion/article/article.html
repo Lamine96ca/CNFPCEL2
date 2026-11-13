@@ -1,0 +1,276 @@
+{% extends 'gestion/base/base_gestion.html' %}
+{% load static %}
+
+{% block titre %} Gestion des articles {% endblock %}
+{% block lientitre%} {% url 'gestion' %} {% endblock %}
+{% block retour %} Accueil {% endblock %}
+{% block titre_encours%} Gestion des articles {%endblock%}
+
+{% block corps %}
+
+
+<!--MODAL POUR ENREGISTRER-->
+<div class="modal fade" id="ModalAjout" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+
+      <div class="modal-header" style=" background-color: var(--sidebar-bg);">
+        <h4 class="modal-title text-white-50 fw-bold">{{titre_modal}}</h4>
+
+        <button type="button" id="closeModalRedirect" class="btn-close" data-bs-dismiss="modal"></button>
+        <script>
+            document.getElementById("closeModalRedirect").addEventListener("click", function () {
+                window.location.href = "{% url 'article' %}";
+            });
+        </script>
+
+      </div>
+
+      <div class="modal-body">
+        <form id="form" method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            <table class="table table-borderless align-middle">
+                <tbody>
+                    {% for field in form %}
+                    <tr>
+                    <th scope="row" style="width: 30%;">
+                        <label for="{{ field.id_for_label }}" class="form-label mb-0">{{ field.label }}</label>
+                    </th>
+                    <td>
+                        {{ field }}
+                        
+                        {% if field.errors %}
+                        <div class="text-danger small mt-1">
+                            {% for error in field.errors %}
+                            <i class="bi bi-exclamation-circle-fill me-1"></i>{{ error }}<br>
+                            {% endfor %}
+                        </div>
+                        {% else %}
+                        <div class="text-danger small mt-1 error-{{ field.name }}"></div>  {# Pour JS si besoin #}
+                        {% endif %}
+
+                        {% if field.help_text %}
+                        <div class="form-text">{{ field.help_text }}</div>
+                        {% endif %}
+                    </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+            <div class="modal-footer bg-white">
+                <button type="submit" id="btnSave" class="btn " style=" background-color: var(--sidebar-bg); color: #fff;">
+                {% if titre_btn == "Enregistrer" %} 
+                    <i class="bi bi-save me-1"></i> 
+                {% else %} 
+                    <i class="bi bi-pencil-square me-1"></i> 
+                {% endif %} {{ titre_btn }}
+                </button>
+
+                <a href="{% url 'article' %}" class="btn btn-secondary fw-bold">
+                    <i class="bi bi-x-circle me-1"></i> Fermer
+                </a>
+
+            </div>
+        </form>
+      </div>
+
+
+    </div>
+  </div>
+</div>
+
+<!--TOAST-->
+<div class="position-fixed top-0 start-50 translate-middle-x p-3" style="z-index: 1055">
+  <div id="modificationToast" class="toast align-items-center fw-bold bg-white border-0" role="alert" aria-live="assertive" aria-atomic="true">
+    <div class="d-flex">
+      <div class="toast-body">
+        {% if messages %}
+            {% for message in messages %}
+                {% if message.tags == 'error' %}
+                    ❌ <span class="text-danger ">{{ message }}</span> 
+                {% else %}
+                    ✅ <span class="text-success ">{{ message }}</span> 
+                {% endif %}
+                 
+            {% endfor %}
+        {% endif %}
+      </div>
+      <button type="button" class="btn-close btn-success me-2 m-auto" data-bs-dismiss="toast" aria-label="Fermer"></button>
+    </div>
+  </div>
+</div>
+
+{% if messages %}
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const toastElement = document.getElementById('modificationToast');
+    const toast = new bootstrap.Toast(toastElement);
+    toast.show();
+  });
+</script>
+{% endif %}
+
+{% if show_modal %}
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const modal = new bootstrap.Modal(document.getElementById('ModalAjout'));
+    modal.show();
+  });
+</script>
+{% endif %}
+
+
+<!--CONTENU PRINCIPALE-->
+<div class=" container card ">
+    <div class="container py-4">
+        <h2 class="text-center mb-2 text-primary"><i class="bi bi-card-text"></i> Gestion des article</h2>
+        <p class="text-muted text-center">Cette page consiste à gérer les actualités.</p>
+        <div class="text-center mb-4">
+            <a href="#" class="btn btn-warning " data-bs-toggle="modal" data-bs-target="#ModalAjout" ><i class="bi bi-plus-circle"></i> Ajouter un article</a> 
+        </div>
+        
+        <div class="table-responsive">
+            <table class="table table-bordered table-hover align-middle">
+                <thead class="table-success">
+                    <tr>
+                        <th>Date</th>
+                        <th>Titre</th>
+                        <th>Statut</th>
+                        <th>Paragraphe</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for titrearticle in titrearticle %}
+                    <tr>
+                        <td>{{ titrearticle.date_de_publication }}</td>
+                        <td>{{ titrearticle.titre|truncatechars:100 }}</td>
+                        <td>
+                            {% if titrearticle.statut %}
+                                <span class="badge bg-success">
+                                    <i class="bi bi-check-circle-fill me-1"></i> Publié
+                                </span>
+                            {% else %}
+                                <span class="badge bg-secondary">
+                                    <i class="bi bi-eye-slash-fill me-1"></i> Brouillon
+                                </span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <a href="{% url 'paragraphe' titrearticle.id %}"
+                            class="btn btn-sm btn-outline-warning"
+                            title="Ajouter un paragraphe">
+                                <i class="bi bi-file-earmark-plus"></i>
+                            </a>
+                        </td>
+                        <td>
+                            <a href="{% url 'article_edit' titrearticle.id %}"
+                            class="btn btn-sm btn-outline-primary">
+                                <i class="bi bi-pencil-square" title="Editer"></i>
+                            </a>
+
+                            <a href="#"
+                            class="btn btn-sm btn-outline-danger"
+                            data-bs-toggle="modal"
+                            data-bs-target="#deleteModal{{ titrearticle.id }}">
+                                <i class="bi bi-trash" title="Supprimer"></i>
+                            </a>
+                        </td>
+                    </tr>
+
+                    <!-- Modal suppression -->
+                    <div class="modal fade"
+                        id="deleteModal{{ titrearticle.id }}"
+                        tabindex="-1"
+                        aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered">
+                            <div class="modal-content">
+                                <div class="modal-header bg-danger text-white">
+                                    <h5 class="modal-title">
+                                        <i class="bi bi-exclamation-triangle"></i> Confirmation
+                                    </h5>
+                                    <button type="button"
+                                            class="btn-close btn-close-white"
+                                            data-bs-dismiss="modal"></button>
+                                </div>
+                                <div class="modal-body">
+                                    Voulez-vous vraiment supprimer :
+                                    <strong>{{ titrearticle.titre|truncatechars:60 }}</strong> ?
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button"
+                                            class="btn btn-secondary"
+                                            data-bs-dismiss="modal">
+                                        Annuler
+                                    </button>
+
+                                    <form method="post"
+                                        action="{% url 'article_delete' titrearticle.id %}">
+                                        {% csrf_token %}
+                                        <button type="submit"
+                                                class="btn btn-danger">
+                                            Oui, supprimer
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {% empty %}
+                    <tr>
+                        <td colspan="5" class="text-center text-muted">
+                            Aucun article enregistré.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <!-- Pagination sortie du table-responsive -->
+        <nav aria-label="Pagination CNFPCEL">
+            <ul class="pagination justify-content-center">
+                {% if titrearticle.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ titrearticle.previous_page_number }}">
+                            Précédent
+                        </a>
+                    </li>
+                {% else %}
+                    <li class="page-item disabled">
+                        <span class="page-link">Précédent</span>
+                    </li>
+                {% endif %}
+
+                {% for num in titrearticle.paginator.page_range %}
+                    {% if titrearticle.number == num %}
+                        <li class="page-item active">
+                            <span class="page-link">{{ num }}</span>
+                        </li>
+                    {% else %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                        </li>
+                    {% endif %}
+                {% endfor %}
+
+                {% if titrearticle.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ titrearticle.next_page_number }}">
+                            Suivant
+                        </a>
+                    </li>
+                {% else %}
+                    <li class="page-item disabled">
+                        <span class="page-link">Suivant</span>
+                    </li>
+                {% endif %}
+            </ul>
+        </nav>
+        
+    </div>
+</div>
+
+
+{% endblock %}

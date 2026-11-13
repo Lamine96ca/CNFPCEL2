@@ -1,0 +1,261 @@
+{% extends 'gestion/base/base_gestion.html' %}
+{% load static %}
+
+{% block titre %} Gestion des évaluations {% endblock %}
+{% block lientitre%} {% url 'gestion' %} {% endblock %}
+{% block retour %} Accueil {% endblock %}
+{% block titre_encours%} Gestion des évaluations {%endblock%}
+
+{% block corps %}
+
+<!-- CSS DataTables + Bootstrap 5 -->
+<link href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css" rel="stylesheet">
+<link href="https://cdn.datatables.net/responsive/2.5.0/css/responsive.bootstrap5.min.css" rel="stylesheet">
+
+<!-- JS jQuery + DataTables -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+<script src="https://cdn.datatables.net/responsive/2.5.0/js/dataTables.responsive.min.js"></script>
+<script src="https://cdn.datatables.net/responsive/2.5.0/js/responsive.bootstrap5.min.js"></script>
+
+<!-- ANIMATION DE CHARGEMENT -->
+<div id="loader" style="
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.7); /* 🌟 Transparence */
+    backdrop-filter: blur(1.2px);            /* 🌟 Flou léger (optionnel mais beau) */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1;
+">
+    <div class="spinner-border text-success fs-6" style="width: 4rem; height: 4rem;" role="status">
+
+    </div>
+</div>
+
+
+<!--MODAL POUR ENREGISTRER-->
+<div class="modal fade" id="ModalAjout" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+
+      <div class="modal-header" style=" background-color: var(--sidebar-bg);">
+        <h4 class="modal-title text-white-50 fw-bold">{{titre_modal}}</h4>
+
+        <button type="button" id="closeModalRedirect" class="btn-close" data-bs-dismiss="modal"></button>
+        <script>
+            document.getElementById("closeModalRedirect").addEventListener("click", function () {
+                window.location.href = "{% url 'evaluation' %}";
+            });
+        </script>
+
+      </div>
+
+      <div class="modal-body">
+        <form id="form" method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            <table class="table table-borderless align-middle">
+                <tbody>
+                    {% for field in form %}
+                    <tr>
+                    <th scope="row" style="width: 30%;">
+                        <label for="{{ field.id_for_label }}" class="form-label mb-0">{{ field.label }}</label>
+                    </th>
+                    <td>
+                        {{ field }}
+                        
+                        {% if field.errors %}
+                        <div class="text-danger small mt-1">
+                            {% for error in field.errors %}
+                            <i class="bi bi-exclamation-circle-fill me-1"></i>{{ error }}<br>
+                            {% endfor %}
+                        </div>
+                        {% else %}
+                        <div class="text-danger small mt-1 error-{{ field.name }}"></div>  {# Pour JS si besoin #}
+                        {% endif %}
+
+                        {% if field.help_text %}
+                        <div class="form-text">{{ field.help_text }}</div>
+                        {% endif %}
+                    </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+            <div class="modal-footer bg-white">
+                <button type="submit" id="btnSave" class="btn " style=" background-color: var(--sidebar-bg); color: #fff;">
+                {% if titre_btn == "Enregistrer" %} 
+                    <i class="bi bi-save me-1"></i> 
+                {% else %} 
+                    <i class="bi bi-pencil-square me-1"></i> 
+                {% endif %} {{ titre_btn }}
+                </button>
+
+                <a href="{% url 'evaluation' %}" class="btn btn-secondary fw-bold">
+                    <i class="bi bi-x-circle me-1"></i> Fermer
+                </a>
+
+            </div>
+        </form>
+      </div>
+
+
+    </div>
+  </div>
+</div>
+
+<!--TOAST-->
+<div class="position-fixed bottom-0 end-0 p-3" style="z-index: 1055">
+  <div id="modificationToast" class="toast align-items-center fw-bold bg-white border-0" role="alert" aria-live="assertive" aria-atomic="true">
+    <div class="d-flex">
+      <div class="toast-body">
+        {% if messages %}
+            {% for message in messages %}
+                {% if message.tags == 'error' %}
+                    ❌ <span class="text-danger ">{{ message }}</span> 
+                {% else %}
+                    ✅ <span class="text-success ">{{ message }}</span> 
+                {% endif %}
+                 
+            {% endfor %}
+        {% endif %}
+      </div>
+      <button type="button" class="btn-close btn-success me-2 m-auto" data-bs-dismiss="toast" aria-label="Fermer"></button>
+    </div>
+  </div>
+</div>
+{% if messages %}
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const toastElement = document.getElementById('modificationToast');
+    const toast = new bootstrap.Toast(toastElement);
+    toast.show();
+  });
+</script>
+{% endif %}
+
+{% if show_modal %}
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const modal = new bootstrap.Modal(document.getElementById('ModalAjout'));
+    modal.show();
+  });
+</script>
+{% endif %}
+
+
+
+<!--CONTENU PRINCIPALE-->
+
+<div class=" container card ">
+    <div class="container py-4">
+        <h2 class="text-center mb-2 text-primary"><i class="bi bi-people-fill" > </i>Gestion des évaluations</h2>
+        <p class="text-muted text-center">Cette page consiste à gérer les évaluation sur chaque formation.</p>
+        <div class="text-center mb-4">
+            <a href="#" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#ModalAjout"><i class="bi bi-plus-circle"></i> Nouveau</a> 
+        </div>
+        <hr>
+        <!-- Exporter Excel -->
+        <div class="col-md-2 m-1 mb-3">
+          <label class="form-label">&nbsp;</label>
+          <button id="exportExcel" class="btn btn-success w-100" type="button">
+            <i class="bi bi-file-earmark-excel"></i> Exporter Excel
+          </button>
+        </div>
+        <!-- FIN EXPORT EXCEL -->
+
+        <div class="p-2">
+
+            <!-- Scroll uniquement sur le tableau -->
+            <div class="table-responsive">
+                <table id="tableAffiche" class="table table-bordered table-hover align-middle w-100">
+                    <thead class="table-success">
+                        <tr>
+                            <th>Formation</th>
+                            <th>Evaluation</th>
+                            <th>Durée</th>
+                            <th>Note</th>
+                            <th>Actif</th>
+                            <th>Questions</th>
+                            <th>Résultats</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Rempli par DataTable -->
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+        <script>
+            $(document).ready(function() {
+
+                var table = $("#tableAffiche").DataTable({
+                    processing: true,
+                    serverSide: true,
+                    scrollX: true, // 🔥 Scroll horizontal propre sur mobile
+                    ajax: {
+                        url: "{% url 'evaluation_side' %}",
+                        type: "GET"
+                    },
+                    columns: [
+                        { data: 0 },  // Formation
+                        { data: 1 },  // Evaluation
+                        { data: 2 },  // Durée
+                        { data: 3 },  // Note
+                        { data: 4 },  // Actif
+                        { data: 5 },  // Questions
+                        { data: 6 },  // Résultats
+                        { data: 7, orderable: false, searchable: false } // Action
+                    ],
+                    language: {
+                        search: "_INPUT_",
+                        searchPlaceholder: "Rechercher...",
+                        paginate: { previous: "◀", next: "▶" },
+                        emptyTable: "Aucune donnée disponible",
+                        zeroRecords: "Aucun résultat trouvé",
+                        info: "Affichage de _START_ à _END_ sur _TOTAL_ entrées",
+                        infoEmpty: "Affichage de 0 à 0 sur 0 entrée",
+                        infoFiltered: "(filtré depuis _MAX_ entrées totales)",
+                        lengthMenu: "Afficher _MENU_ entrées"
+                    },
+                    pageLength: 5
+                });
+
+            });
+
+            // Export Excel
+            $("#exportExcel").on("click", function () {
+
+                let params = {};
+
+                let queryString = new URLSearchParams(params).toString();
+
+                window.location.href = "{% url 'export_evaluation_excel' %}?" + queryString;
+            });
+        </script>
+
+    </div>
+</div>
+
+<!--ANIMATION A L'AFFICHAGE-->
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+      // Simule un petit délai (optionnel)
+      setTimeout(() => {
+          document.getElementById("loader").style.opacity = "0";
+          setTimeout(() => {
+              document.getElementById("loader").style.display = "none";
+          }, 300);
+      }, 300); // 800 ms
+  });
+</script>
+
+{% endblock %}

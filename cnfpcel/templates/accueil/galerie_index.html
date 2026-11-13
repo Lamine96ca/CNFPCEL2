@@ -1,0 +1,1238 @@
+
+{% extends 'accueil/base/base.html' %}
+
+{% block content %}
+{% load static %}
+
+<style>
+
+/* =========================================================
+   GALERIE — CNFPCEL
+========================================================= */
+
+:root {
+    --gallery-primary: #0077B6;
+    --gallery-primary-dark: #005b8a;
+    --gallery-primary-light: #eaf7fc;
+
+    --gallery-text: #243746;
+    --gallery-muted: #718096;
+
+    --gallery-bg: #f5f8fa;
+    --gallery-white: #ffffff;
+
+    --gallery-border: #e3ebf0;
+
+    --gallery-shadow:
+        0 8px 28px rgba(30, 60, 80, .07);
+
+    --gallery-shadow-hover:
+        0 16px 35px rgba(30, 60, 80, .13);
+}
+
+
+/* =========================================================
+   SECTION
+========================================================= */
+
+#galerie {
+    padding-top: 95px !important;
+    padding-bottom: 65px !important;
+}
+
+@media (max-width: 1199px) {
+
+    #galerie {
+        padding-top: 75px !important;
+    }
+
+}
+
+@media (max-width: 767px) {
+
+    #galerie {
+        padding-top: 60px !important;
+        padding-bottom: 45px !important;
+    }
+
+}
+
+
+/* =========================================================
+   HEADER
+========================================================= */
+
+.gallery-header {
+    margin-bottom: 38px;
+
+    text-align: center;
+}
+
+.gallery-eyebrow {
+    display: inline-flex;
+
+    align-items: center;
+
+    gap: 7px;
+
+    padding: 7px 14px;
+
+    background: var(--gallery-primary-light);
+
+    color: var(--gallery-primary);
+
+    border-radius: 50px;
+
+    font-size: .74rem;
+
+    font-weight: 800;
+
+    text-transform: uppercase;
+
+    letter-spacing: .5px;
+}
+
+.gallery-header h1 {
+    margin: 13px 0 8px;
+
+    color: var(--gallery-text);
+
+    font-size: clamp(1.7rem, 4vw, 2.35rem);
+
+    font-weight: 800;
+}
+
+.gallery-header h1 span {
+    color: var(--gallery-primary);
+}
+
+.gallery-header p {
+    max-width: 650px;
+
+    margin: 0 auto;
+
+    color: var(--gallery-muted);
+
+    font-size: .92rem;
+
+    line-height: 1.65;
+}
+
+.gallery-line {
+    width: 65px;
+    height: 4px;
+
+    margin: 17px auto 0;
+
+    border-radius: 50px;
+
+    background: var(--gallery-primary);
+}
+
+
+/* =========================================================
+   GRILLE
+========================================================= */
+
+.gallery-grid {
+    row-gap: 28px;
+}
+
+
+/* =========================================================
+   CARTE GALERIE
+========================================================= */
+
+.gallery-card {
+    height: 100%;
+
+    overflow: hidden;
+
+    background: var(--gallery-white);
+
+    border: 1px solid var(--gallery-border);
+
+    border-radius: 18px;
+
+    box-shadow: var(--gallery-shadow);
+
+    transition:
+        transform .35s ease,
+        box-shadow .35s ease,
+        border-color .35s ease;
+}
+
+.gallery-card:hover {
+    transform: translateY(-7px);
+
+    border-color: rgba(0,119,182,.18);
+
+    box-shadow: var(--gallery-shadow-hover);
+}
+
+
+/* =========================================================
+   APERCU
+========================================================= */
+
+.gallery-preview {
+    position: relative;
+
+    height: 230px;
+
+    padding: 7px;
+
+    overflow: hidden;
+
+    background: #edf3f6;
+
+    cursor: pointer;
+}
+
+
+/* =========================================================
+   MOSAIQUE
+========================================================= */
+
+.gallery-mosaic {
+    display: grid;
+
+    grid-template-columns: 2fr 1fr;
+
+    gap: 5px;
+
+    width: 100%;
+    height: 100%;
+}
+
+.gallery-main-image {
+    width: 100%;
+    height: 100%;
+
+    overflow: hidden;
+
+    border-radius: 11px;
+}
+
+.gallery-main-image img {
+    width: 100%;
+    height: 100%;
+
+    display: block;
+
+    object-fit: cover;
+
+    transition: transform .55s ease;
+}
+
+.gallery-preview:hover .gallery-main-image img {
+    transform: scale(1.04);
+}
+
+
+/* =========================================================
+   PETITES IMAGES
+========================================================= */
+
+.gallery-small-grid {
+    display: grid;
+
+    grid-template-rows:
+        repeat(2, 1fr);
+
+    gap: 5px;
+}
+
+.gallery-small-image {
+    position: relative;
+
+    overflow: hidden;
+
+    border-radius: 9px;
+}
+
+.gallery-small-image img {
+    width: 100%;
+    height: 100%;
+
+    display: block;
+
+    object-fit: cover;
+
+    transition: transform .5s ease;
+}
+
+.gallery-preview:hover .gallery-small-image img {
+    transform: scale(1.05);
+}
+
+
+/* =========================================================
+   OVERLAY
+========================================================= */
+
+.gallery-overlay {
+    position: absolute;
+
+    inset: 0;
+
+    z-index: 5;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    background: rgba(0,45,70,.38);
+
+    opacity: 0;
+
+    transition: opacity .3s ease;
+}
+
+.gallery-preview:hover .gallery-overlay {
+    opacity: 1;
+}
+
+
+/* =========================================================
+   BOUTON OUVRIR
+========================================================= */
+
+.gallery-open-button {
+    display: inline-flex;
+
+    align-items: center;
+
+    gap: 7px;
+
+    padding: 9px 14px;
+
+    background: rgba(255,255,255,.95);
+
+    color: var(--gallery-primary);
+
+    border-radius: 50px;
+
+    font-size: .73rem;
+
+    font-weight: 800;
+
+    box-shadow:
+        0 5px 18px rgba(0,0,0,.14);
+}
+
+
+/* =========================================================
+   COMPTEUR
+========================================================= */
+
+.gallery-count {
+    position: absolute;
+
+    z-index: 7;
+
+    right: 14px;
+    bottom: 14px;
+
+    display: inline-flex;
+
+    align-items: center;
+
+    gap: 6px;
+
+    padding: 7px 11px;
+
+    background: rgba(0,0,0,.68);
+
+    color: #fff;
+
+    border-radius: 50px;
+
+    font-size: .70rem;
+
+    font-weight: 800;
+
+    backdrop-filter: blur(4px);
+}
+
+
+/* =========================================================
+   INFORMATIONS
+========================================================= */
+
+.gallery-body {
+    padding: 17px 18px 14px;
+}
+
+.gallery-title {
+    margin: 0 0 8px;
+
+    color: var(--gallery-text);
+
+    font-size: .95rem;
+
+    font-weight: 800;
+
+    line-height: 1.4;
+
+    display: -webkit-box;
+
+    -webkit-line-clamp: 2;
+
+    -webkit-box-orient: vertical;
+
+    overflow: hidden;
+}
+
+.gallery-date {
+    display: flex;
+
+    align-items: center;
+
+    gap: 6px;
+
+    color: var(--gallery-muted);
+
+    font-size: .72rem;
+}
+
+.gallery-date i {
+    color: var(--gallery-primary);
+}
+
+
+/* =========================================================
+   FOOTER
+========================================================= */
+
+.gallery-footer {
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    padding: 12px 18px;
+
+    background: #fbfdfe;
+
+    border-top: 1px solid var(--gallery-border);
+}
+
+
+/* =========================================================
+   BOUTON
+========================================================= */
+
+.gallery-button {
+    display: inline-flex;
+
+    align-items: center;
+
+    gap: 7px;
+
+    padding: 8px 12px;
+
+    background: transparent;
+
+    border: 1px solid var(--gallery-primary);
+
+    border-radius: 9px;
+
+    color: var(--gallery-primary);
+
+    font-size: .72rem;
+
+    font-weight: 800;
+
+    transition: .25s ease;
+}
+
+.gallery-button:hover {
+    background: var(--gallery-primary);
+
+    color: #fff;
+}
+
+.gallery-arrow {
+    width: 29px;
+    height: 29px;
+
+    display: inline-flex;
+
+    align-items: center;
+    justify-content: center;
+
+    background: var(--gallery-primary-light);
+
+    color: var(--gallery-primary);
+
+    border-radius: 8px;
+
+    transition: .25s ease;
+}
+
+.gallery-card:hover .gallery-arrow {
+    background: var(--gallery-primary);
+
+    color: #fff;
+}
+
+
+/* =========================================================
+   MODAL
+========================================================= */
+
+.gallery-modal .modal-dialog {
+    max-width: 1100px;
+}
+
+.gallery-modal .modal-content {
+    overflow: hidden;
+
+    background: #0f1720;
+
+    border: 0;
+
+    border-radius: 18px;
+
+    box-shadow:
+        0 25px 70px rgba(0,0,0,.35);
+}
+
+
+/* =========================================================
+   MODAL HEADER
+========================================================= */
+
+.gallery-modal .modal-header {
+    padding: 17px 20px;
+
+    background: #16232e;
+
+    border-bottom: 1px solid rgba(255,255,255,.08);
+}
+
+.gallery-modal .modal-title {
+    color: #fff;
+
+    font-size: .95rem;
+
+    font-weight: 800;
+}
+
+.gallery-modal .modal-date {
+    color: rgba(255,255,255,.55);
+
+    font-size: .72rem;
+}
+
+.gallery-modal .btn-close {
+    filter: invert(1);
+
+    opacity: .8;
+}
+
+
+/* =========================================================
+   MODAL BODY
+========================================================= */
+
+.gallery-modal .modal-body {
+    padding: 20px;
+
+    background: #0f1720;
+}
+
+
+/* =========================================================
+   IMAGE PRINCIPALE
+========================================================= */
+
+.gallery-main-display {
+    position: relative;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    min-height: 400px;
+
+    margin-bottom: 18px;
+
+    background: #080e13;
+
+    border-radius: 13px;
+
+    overflow: hidden;
+}
+
+.gallery-main-display img {
+    max-width: 100%;
+    max-height: 500px;
+
+    width: auto;
+    height: auto;
+
+    display: block;
+
+    object-fit: contain;
+
+    transition: opacity .2s ease;
+}
+
+
+/* =========================================================
+   MINIATURES MODAL
+========================================================= */
+
+.gallery-thumbnails {
+    display: flex;
+
+    flex-wrap: wrap;
+
+    gap: 8px;
+
+    justify-content: center;
+}
+
+.gallery-thumb-wrapper {
+    width: 85px;
+    height: 65px;
+
+    overflow: hidden;
+
+    border: 2px solid transparent;
+
+    border-radius: 9px;
+
+    cursor: pointer;
+
+    opacity: .65;
+
+    transition:
+        opacity .25s ease,
+        border-color .25s ease,
+        transform .25s ease;
+}
+
+.gallery-thumb-wrapper:hover {
+    opacity: 1;
+
+    transform: translateY(-2px);
+}
+
+.gallery-thumb-wrapper.active {
+    opacity: 1;
+
+    border-color: var(--gallery-primary);
+}
+
+.gallery-thumb {
+    width: 100%;
+    height: 100%;
+
+    display: block;
+
+    object-fit: cover;
+}
+
+
+/* =========================================================
+   ETAT VIDE
+========================================================= */
+
+.gallery-empty {
+    padding: 60px 20px;
+
+    background: #fff;
+
+    border: 1px dashed #ccd8df;
+
+    border-radius: 17px;
+
+    color: var(--gallery-muted);
+
+    text-align: center;
+}
+
+.gallery-empty i {
+    display: block;
+
+    margin-bottom: 12px;
+
+    color: var(--gallery-primary);
+
+    font-size: 2.3rem;
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 767px) {
+
+    .gallery-preview {
+        height: 210px;
+    }
+
+    .gallery-main-display {
+        min-height: 260px;
+    }
+
+    .gallery-main-display img {
+        max-height: 330px;
+    }
+
+    .gallery-thumb-wrapper {
+        width: 70px;
+        height: 55px;
+    }
+
+    .gallery-modal .modal-body {
+        padding: 12px;
+    }
+
+}
+
+@media (max-width: 575px) {
+
+    .gallery-preview {
+        height: 220px;
+    }
+
+    .gallery-body {
+        padding: 15px;
+    }
+
+}
+
+
+/* =========================================================
+   ANIMATION
+========================================================= */
+
+.gallery-card {
+    animation: galleryFade .5s ease both;
+}
+
+@keyframes galleryFade {
+
+    from {
+        opacity: 0;
+
+        transform: translateY(15px);
+    }
+
+    to {
+        opacity: 1;
+
+        transform: translateY(0);
+    }
+
+}
+
+</style>
+
+
+
+<!-- =========================================================
+     GALERIE
+========================================================= -->
+
+<section class="container"
+         id="galerie">
+
+
+    <!-- =====================================================
+         HEADER
+    ====================================================== -->
+
+    <div class="gallery-header">
+
+
+        <span class="gallery-eyebrow">
+
+            <i class="bi bi-images"></i>
+
+            Galerie
+
+        </span>
+
+
+        <h1>
+
+            Nos <span>souvenirs en images</span>
+
+        </h1>
+
+
+        <p>
+
+            Revivez en images nos activités,
+            formations et moments marquants du CNFPCEL.
+
+        </p>
+
+
+        <div class="gallery-line"></div>
+
+
+    </div>
+
+
+
+    <!-- =====================================================
+         GALERIES
+    ====================================================== -->
+
+    <div class="row gallery-grid">
+
+
+        {% for galerie in galeries %}
+
+
+        <div class="col-12 col-md-6 col-lg-4">
+
+
+            <article class="gallery-card">
+
+
+                <!-- =================================================
+                     APERCU MOSAIQUE
+                ================================================== -->
+
+                <div class="gallery-preview"
+                     data-bs-toggle="modal"
+                     data-bs-target="#galerieModal{{ galerie.id }}">
+
+
+                    <div class="gallery-mosaic">
+
+
+                        {% for img in galerie.images.all|slice:":5" %}
+
+
+                            {% if forloop.first %}
+
+
+                                <!-- GRANDE IMAGE -->
+
+                                <div class="gallery-main-image">
+
+                                    <img src="{{ img.image.url }}"
+                                         alt="{{ galerie.description }}">
+
+                                </div>
+
+
+                            {% elif forloop.counter <= 3 %}
+
+
+                                {% if forloop.counter == 2 %}
+
+                                <div class="gallery-small-grid">
+
+                                {% endif %}
+
+
+                                    <div class="gallery-small-image">
+
+                                        <img src="{{ img.image.url }}"
+                                             alt="{{ galerie.description }}">
+
+
+                                        {% if forloop.last and galerie.images.count > 5 %}
+
+                                            <div class="position-absolute
+                                                        top-0
+                                                        start-0
+                                                        w-100
+                                                        h-100
+                                                        d-flex
+                                                        align-items-center
+                                                        justify-content-center
+                                                        bg-dark
+                                                        bg-opacity-50
+                                                        text-white
+                                                        fw-bold">
+
+                                                +{{ galerie.images.count|add:"-5" }}
+
+                                            </div>
+
+                                        {% endif %}
+
+                                    </div>
+
+
+                                {% if forloop.counter == 3 %}
+
+                                </div>
+
+                                {% endif %}
+
+                            {% endif %}
+
+
+                        {% endfor %}
+
+
+                    </div>
+
+
+
+                    <!-- OVERLAY -->
+
+                    <div class="gallery-overlay">
+
+                        <span class="gallery-open-button">
+
+                            <i class="bi bi-arrows-fullscreen"></i>
+
+                            Ouvrir la galerie
+
+                        </span>
+
+                    </div>
+
+
+
+                    <!-- COMPTEUR -->
+
+                    <span class="gallery-count">
+
+                        <i class="bi bi-images"></i>
+
+                        {{ galerie.images.count }} photos
+
+                    </span>
+
+
+                </div>
+
+
+
+                <!-- =================================================
+                     INFORMATIONS
+                ================================================== -->
+
+                <div class="gallery-body">
+
+
+                    <h2 class="gallery-title">
+
+                        {{ galerie.description }}
+
+                    </h2>
+
+
+                    <div class="gallery-date">
+
+                        <i class="bi bi-calendar3"></i>
+
+                        {{ galerie.date_prise }}
+
+                    </div>
+
+
+                </div>
+
+
+
+                <!-- =================================================
+                     FOOTER
+                ================================================== -->
+
+                <div class="gallery-footer">
+
+
+                    <span class="gallery-button"
+                          data-bs-toggle="modal"
+                          data-bs-target="#galerieModal{{ galerie.id }}">
+
+                        <i class="bi bi-images"></i>
+
+                        Voir les photos
+
+                    </span>
+
+
+                    <span class="gallery-arrow">
+
+                        <i class="bi bi-arrow-up-right"></i>
+
+                    </span>
+
+
+                </div>
+
+
+            </article>
+
+
+
+            <!-- =================================================
+                 MODAL
+            ================================================== -->
+
+            <div class="modal fade gallery-modal"
+                 id="galerieModal{{ galerie.id }}"
+                 tabindex="-1"
+                 aria-hidden="true">
+
+
+                <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+
+
+                    <div class="modal-content">
+
+
+                        <!-- ================= HEADER ================= -->
+
+                        <div class="modal-header">
+
+
+                            <div>
+
+                                <h5 class="modal-title">
+
+                                    {{ galerie.description }}
+
+                                </h5>
+
+
+                                <div class="modal-date">
+
+                                    <i class="bi bi-calendar3 me-1"></i>
+
+                                    {{ galerie.date_prise }}
+
+                                </div>
+
+                            </div>
+
+
+                            <button type="button"
+                                    class="btn-close"
+                                    data-bs-dismiss="modal"
+                                    aria-label="Fermer">
+
+                            </button>
+
+
+                        </div>
+
+
+
+                        <!-- ================= BODY ================= -->
+
+                        <div class="modal-body">
+
+
+                            <!-- IMAGE PRINCIPALE -->
+
+                            <div class="gallery-main-display">
+
+
+                                {% with galerie.images.first as first %}
+
+
+                                    {% if first %}
+
+                                        <img id="mainImage{{ galerie.id }}"
+                                             src="{{ first.image.url }}"
+                                             alt="{{ galerie.description }}">
+
+                                    {% else %}
+
+                                        <img src="{% static 'assets/img/Imagepardefaut.png' %}"
+                                             alt="Galerie CNFPCEL">
+
+                                    {% endif %}
+
+
+                                {% endwith %}
+
+
+                            </div>
+
+
+
+                            <!-- MINIATURES -->
+
+                            <div class="gallery-thumbnails">
+
+
+                                {% for img in galerie.images.all %}
+
+
+                                <div class="gallery-thumb-wrapper
+                                            {% if forloop.first %}active{% endif %}"
+                                     data-target="mainImage{{ galerie.id }}"
+                                     data-src="{{ img.image.url }}">
+
+
+                                    <img src="{{ img.image.url }}"
+                                         class="gallery-thumb"
+                                         alt="{{ galerie.description }}">
+
+
+                                </div>
+
+
+                                {% endfor %}
+
+
+                            </div>
+
+
+                        </div>
+
+
+                    </div>
+
+
+                </div>
+
+
+            </div>
+
+
+        </div>
+
+
+        {% empty %}
+
+
+        <!-- =================================================
+             AUCUNE GALERIE
+        ================================================== -->
+
+        <div class="col-12">
+
+
+            <div class="gallery-empty">
+
+
+                <i class="bi bi-images"></i>
+
+
+                <h5 class="fw-bold">
+
+                    Aucune galerie disponible
+
+                </h5>
+
+
+                <p class="mb-0">
+
+                    Les photos des activités du CNFPCEL
+                    seront bientôt publiées.
+
+                </p>
+
+
+            </div>
+
+
+        </div>
+
+
+        {% endfor %}
+
+
+    </div>
+
+
+</section>
+
+
+
+<script>
+
+document.addEventListener("DOMContentLoaded", function () {
+
+
+    /* =====================================================
+       CHANGEMENT IMAGE PRINCIPALE
+    ====================================================== */
+
+    document.querySelectorAll(".gallery-thumb-wrapper")
+        .forEach(function (thumb) {
+
+
+            thumb.addEventListener("click", function () {
+
+
+                const targetId =
+                    this.dataset.target;
+
+
+                const source =
+                    this.dataset.src;
+
+
+                const mainImage =
+                    document.getElementById(targetId);
+
+
+                if (!mainImage) {
+                    return;
+                }
+
+
+                mainImage.style.opacity = "0";
+
+
+                setTimeout(function () {
+
+                    mainImage.src = source;
+
+                    mainImage.style.opacity = "1";
+
+                }, 120);
+
+
+
+                /* Active thumbnail */
+
+                const modal =
+                    this.closest(".gallery-modal");
+
+
+                if (modal) {
+
+                    modal
+                        .querySelectorAll(
+                            ".gallery-thumb-wrapper"
+                        )
+                        .forEach(function (item) {
+
+                            item.classList.remove("active");
+
+                        });
+
+                }
+
+
+                this.classList.add("active");
+
+
+            });
+
+
+        });
+
+
+});
+
+</script>
+
+
+{% endblock %}

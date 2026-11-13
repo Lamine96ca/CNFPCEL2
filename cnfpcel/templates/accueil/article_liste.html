@@ -1,0 +1,826 @@
+
+{% extends 'accueil/base/base.html' %}
+
+{% block content %}
+{% load static %}
+
+<style>
+
+/* =========================================================
+   ACTUALITES — DESIGN CNFPCEL
+========================================================= */
+
+:root {
+    --primary: #0077B6;
+    --primary-dark: #005b8a;
+    --primary-light: #eaf7fc;
+
+    --accent: #dc3545;
+
+    --text: #243746;
+    --muted: #718096;
+
+    --bg: #f5f8fa;
+    --white: #ffffff;
+
+    --border: #e3ebf0;
+
+    --shadow:
+        0 7px 25px rgba(30, 60, 80, .07);
+
+    --shadow-hover:
+        0 16px 35px rgba(30, 60, 80, .13);
+}
+
+
+/* =========================================================
+   SECTION
+========================================================= */
+
+#liste-actualites {
+    padding-top: 95px;
+    padding-bottom: 65px;
+}
+
+@media (max-width: 1199px) {
+    #liste-actualites {
+        padding-top: 75px;
+    }
+}
+
+@media (max-width: 767px) {
+    #liste-actualites {
+        padding-top: 60px;
+        padding-bottom: 45px;
+    }
+}
+
+
+/* =========================================================
+   HEADER
+========================================================= */
+
+.actualites-header {
+    margin-bottom: 35px;
+}
+
+.actualites-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+
+    padding: 7px 14px;
+
+    background: var(--primary-light);
+    color: var(--primary);
+
+    border-radius: 50px;
+
+    font-size: .74rem;
+    font-weight: 800;
+
+    text-transform: uppercase;
+    letter-spacing: .5px;
+}
+
+.actualites-header h1 {
+    margin: 13px 0 7px;
+
+    color: var(--text);
+
+    font-size: clamp(1.7rem, 4vw, 2.35rem);
+
+    font-weight: 800;
+
+    line-height: 1.2;
+}
+
+.actualites-header h1 span {
+    color: var(--primary);
+}
+
+.actualites-header p {
+    margin: 0;
+
+    max-width: 650px;
+
+    color: var(--muted);
+
+    font-size: .92rem;
+}
+
+.actualites-line {
+    width: 65px;
+    height: 4px;
+
+    margin-top: 17px;
+
+    border: 0;
+    border-radius: 50px;
+
+    background: var(--primary);
+}
+
+
+/* =========================================================
+   GRILLE
+========================================================= */
+
+.actualites-grid {
+    row-gap: 25px;
+}
+
+
+/* =========================================================
+   LIEN
+========================================================= */
+
+.article-link {
+    display: block;
+
+    height: 100%;
+
+    color: inherit;
+
+    text-decoration: none;
+}
+
+
+/* =========================================================
+   CARTE
+========================================================= */
+
+.article-card {
+    height: 100%;
+
+    overflow: hidden;
+
+    background: var(--white);
+
+    border: 1px solid var(--border);
+
+    border-radius: 17px;
+
+    box-shadow: var(--shadow);
+
+    transition:
+        transform .35s ease,
+        box-shadow .35s ease,
+        border-color .35s ease;
+}
+
+.article-card:hover {
+    transform: translateY(-7px);
+
+    border-color: rgba(0,119,182,.18);
+
+    box-shadow: var(--shadow-hover);
+}
+
+
+/* =========================================================
+   IMAGE
+========================================================= */
+
+.article-image-wrapper {
+    position: relative;
+
+    height: 220px;
+
+    overflow: hidden;
+
+    background: #edf3f6;
+}
+
+.article-image {
+    width: 100%;
+    height: 100%;
+
+    display: block;
+
+    object-fit: cover;
+
+    transition: transform .6s ease;
+}
+
+.article-card:hover .article-image {
+    transform: scale(1.055);
+}
+
+
+/* Overlay */
+
+.article-image-wrapper::after {
+    content: "";
+
+    position: absolute;
+
+    inset: 0;
+
+    background:
+        linear-gradient(
+            to bottom,
+            rgba(0,0,0,0) 45%,
+            rgba(0,0,0,.28) 100%
+        );
+
+    pointer-events: none;
+}
+
+
+/* =========================================================
+   DATE
+========================================================= */
+
+.article-date {
+    position: absolute;
+
+    left: 13px;
+    bottom: 13px;
+
+    z-index: 2;
+
+    display: inline-flex;
+
+    align-items: center;
+
+    gap: 6px;
+
+    padding: 7px 11px;
+
+    background: rgba(255,255,255,.94);
+
+    color: var(--text);
+
+    border-radius: 50px;
+
+    font-size: .70rem;
+
+    font-weight: 700;
+
+    box-shadow:
+        0 4px 12px rgba(0,0,0,.10);
+}
+
+
+/* =========================================================
+   CORPS
+========================================================= */
+
+.article-body {
+    display: flex;
+
+    flex-direction: column;
+
+    min-height: 220px;
+
+    padding: 19px;
+}
+
+
+/* =========================================================
+   TITRE
+========================================================= */
+
+.article-title {
+    margin-bottom: 9px;
+
+    color: var(--text);
+
+    font-size: 1.02rem;
+
+    font-weight: 800;
+
+    line-height: 1.4;
+
+    transition: color .25s ease;
+}
+
+.article-card:hover .article-title {
+    color: var(--primary);
+}
+
+
+/* =========================================================
+   CONTENU HTML RICHE
+========================================================= */
+
+.article-content {
+    max-height: 95px;
+
+    overflow: hidden;
+
+    margin-bottom: 15px;
+
+    color: var(--muted);
+
+    font-size: .85rem;
+
+    line-height: 1.65;
+}
+
+
+/*
+    Ton contenu peut contenir :
+
+    strong
+    em
+    br
+    a
+    p
+    ul
+    li
+*/
+
+.article-content strong {
+    color: var(--text);
+
+    font-weight: 800;
+}
+
+.article-content em {
+    font-style: italic;
+}
+
+.article-content a {
+    color: var(--primary);
+
+    font-weight: 700;
+
+    text-decoration: none;
+}
+
+.article-content a:hover {
+    color: var(--primary-dark);
+
+    text-decoration: underline;
+}
+
+.article-content p {
+    margin-bottom: 5px;
+}
+
+.article-content p:last-child {
+    margin-bottom: 0;
+}
+
+.article-content ul {
+    margin-top: 5px;
+    margin-bottom: 5px;
+
+    padding-left: 19px;
+}
+
+.article-content li {
+    margin-bottom: 2px;
+}
+
+
+/* =========================================================
+   FOOTER CARTE
+========================================================= */
+
+.article-footer {
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    gap: 10px;
+
+    margin-top: auto;
+
+    padding-top: 14px;
+
+    border-top: 1px solid #edf1f4;
+}
+
+
+/* =========================================================
+   LIRE PLUS
+========================================================= */
+
+.read-more {
+    display: inline-flex;
+
+    align-items: center;
+
+    gap: 6px;
+
+    color: var(--primary);
+
+    font-size: .78rem;
+
+    font-weight: 800;
+
+    transition: gap .25s ease;
+}
+
+.article-card:hover .read-more {
+    gap: 10px;
+}
+
+
+/* =========================================================
+   INDICATEUR
+========================================================= */
+
+.article-indicator {
+    width: 30px;
+    height: 30px;
+
+    display: inline-flex;
+
+    align-items: center;
+    justify-content: center;
+
+    background: var(--primary-light);
+
+    color: var(--primary);
+
+    border-radius: 9px;
+
+    font-size: .8rem;
+
+    transition:
+        background .25s ease,
+        color .25s ease;
+}
+
+.article-card:hover .article-indicator {
+    background: var(--primary);
+
+    color: #fff;
+}
+
+
+/* =========================================================
+   AUCUNE ACTUALITE
+========================================================= */
+
+.empty-articles {
+    padding: 60px 20px;
+
+    background: #fff;
+
+    border: 1px dashed #cbd7de;
+
+    border-radius: 17px;
+
+    text-align: center;
+
+    color: var(--muted);
+}
+
+.empty-articles i {
+    display: block;
+
+    margin-bottom: 12px;
+
+    color: var(--primary);
+
+    font-size: 2.2rem;
+}
+
+
+/* =========================================================
+   BOUTON RETOUR
+========================================================= */
+
+.back-button-wrapper {
+    margin-top: 35px;
+
+    text-align: center;
+}
+
+.back-button {
+    display: inline-flex;
+
+    align-items: center;
+
+    gap: 7px;
+
+    padding: 10px 20px;
+
+    border: 1px solid var(--primary);
+
+    border-radius: 10px;
+
+    background: transparent;
+
+    color: var(--primary);
+
+    font-size: .82rem;
+
+    font-weight: 700;
+
+    text-decoration: none;
+
+    transition: .3s ease;
+}
+
+.back-button:hover {
+    background: var(--primary);
+
+    color: #fff;
+
+    transform: translateY(-2px);
+}
+
+
+/* =========================================================
+   ANIMATION
+========================================================= */
+
+.article-item {
+    animation: articleFade .55s ease both;
+}
+
+@keyframes articleFade {
+
+    from {
+        opacity: 0;
+
+        transform:
+            translateY(18px);
+    }
+
+    to {
+        opacity: 1;
+
+        transform:
+            translateY(0);
+    }
+
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 575px) {
+
+    .actualites-header h1 {
+        font-size: 1.6rem;
+    }
+
+    .article-image-wrapper {
+        height: 210px;
+    }
+
+    .article-body {
+        padding: 17px;
+    }
+
+    .article-title {
+        font-size: .96rem;
+    }
+
+    .article-content {
+        font-size: .82rem;
+    }
+
+}
+
+</style>
+
+
+
+<!-- =========================================================
+     ACTUALITES
+========================================================= -->
+
+<section class="container"
+         id="liste-actualites">
+
+
+    <!-- =====================================================
+         HEADER
+    ====================================================== -->
+
+    <div class="actualites-header">
+
+        <span class="actualites-eyebrow">
+
+            <i class="bi bi-newspaper"></i>
+
+            Actualités
+
+        </span>
+
+
+        <h1>
+
+            Nos <span>actualités</span>
+
+        </h1>
+
+
+        <p>
+
+            Retrouvez les dernières informations,
+            annonces et activités du CNFPCEL.
+
+        </p>
+
+
+        <div class="actualites-line"></div>
+
+    </div>
+
+
+
+    <!-- =====================================================
+         LISTE DES ARTICLES
+    ====================================================== -->
+
+    <div class="row actualites-grid">
+
+
+        {% for article in article %}
+
+
+        <div class="col-12 col-md-6 col-lg-4 article-item">
+
+
+            <a href="{% url 'detail_article' article.id %}"
+               class="article-link">
+
+
+                <article class="article-card">
+
+
+                    {% with paragraphe=article.titre_paragraphe.first %}
+
+
+                    {% if paragraphe %}
+
+
+                        <!-- ================= IMAGE ================= -->
+
+                        <div class="article-image-wrapper">
+
+
+                            {% if paragraphe.image %}
+
+                                <img src="{{ paragraphe.image.url }}"
+                                     class="article-image"
+                                     alt="{{ article.titre }}">
+
+                            {% else %}
+
+                                <img src="{% static 'assets/img/logo1.png' %}"
+                                     class="article-image"
+                                     alt="CNFPCEL">
+
+                            {% endif %}
+
+
+                            <!-- DATE -->
+
+                            <span class="article-date">
+
+                                <i class="bi bi-calendar3"></i>
+
+                                {{ article.date_de_publication }}
+
+                            </span>
+
+
+                        </div>
+
+
+
+                        <!-- ================= CORPS ================= -->
+
+                        <div class="article-body">
+
+
+                            <!-- TITRE -->
+
+                            <h2 class="article-title"
+                                title="{{ article.titre }}">
+
+                                {{ article.titre }}
+
+                            </h2>
+
+
+                            <!--
+                                IMPORTANT :
+                                Le contenu est HTML enrichi.
+                                On ne fait PAS truncatechars.
+                            -->
+
+                            <div class="article-content">
+
+                                {{ paragraphe.contenu|safe }}
+
+                            </div>
+
+
+                            <!-- FOOTER -->
+
+                            <div class="article-footer">
+
+
+                                <span class="read-more">
+
+                                    Lire l'article
+
+                                    <i class="bi bi-arrow-right"></i>
+
+                                </span>
+
+
+                                <span class="article-indicator">
+
+                                    <i class="bi bi-chevron-right"></i>
+
+                                </span>
+
+
+                            </div>
+
+
+                        </div>
+
+
+                    {% endif %}
+
+
+                    {% endwith %}
+
+
+                </article>
+
+
+            </a>
+
+
+        </div>
+
+
+        {% empty %}
+
+
+        <!-- =================================================
+             AUCUN ARTICLE
+        ================================================== -->
+
+        <div class="col-12">
+
+            <div class="empty-articles">
+
+                <i class="bi bi-newspaper"></i>
+
+                <h5 class="fw-bold">
+
+                    Aucune actualité disponible
+
+                </h5>
+
+                <p class="mb-0">
+
+                    Les actualités du CNFPCEL
+                    seront bientôt publiées.
+
+                </p>
+
+            </div>
+
+        </div>
+
+
+        {% endfor %}
+
+
+    </div>
+
+
+
+    <!-- =====================================================
+         RETOUR
+    ====================================================== -->
+
+    <div class="back-button-wrapper">
+
+        <a href="{% url 'index' %}#actualites"
+           class="back-button">
+
+            <i class="bi bi-arrow-left"></i>
+
+            Retour aux actualités
+
+        </a>
+
+    </div>
+
+
+</section>
+
+
+{% endblock %}
+

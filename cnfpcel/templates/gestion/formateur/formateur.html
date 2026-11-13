@@ -1,0 +1,132 @@
+{% extends 'gestion/base/base_gestion.html' %}
+
+{% block titre %}Formateurs{% endblock %}
+{% block lientitre %}{% url 'formation' %}{% endblock %}
+{% block retour %}Formations{% endblock %}
+{% block titre_encours %}Formateurs{% endblock %}
+{% block actions %}
+  <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalAjout"><i class="bi bi-person-plus"></i> Nouveau formateur</button>
+{% endblock %}
+
+{% block corps %}
+{% include 'gestion/base/_messages.html' %}
+
+<div class="card">
+  <div class="card-header d-flex flex-wrap align-items-center gap-2">
+    <h3 class="card-titre"><i class="bi bi-person-video3"></i> {{ formateurs|length }} formateur{{ formateurs|length|pluralize }}</h3>
+    <form method="get" class="ms-auto d-flex gap-2">
+      <input type="search" name="q" value="{{ recherche }}" class="form-control form-control-sm" placeholder="Rechercher un formateur…" style="min-width:230px">
+      <button class="btn btn-soft btn-sm"><i class="bi bi-search"></i></button>
+    </form>
+  </div>
+  {% if formateurs %}
+  <div class="table-responsive">
+    <table class="table table-hover align-middle">
+      <thead>
+        <tr><th>Formateur</th><th>Contact</th><th>Formations</th><th>Compte</th><th class="text-end">Actions</th></tr>
+      </thead>
+      <tbody>
+        {% for f in formateurs %}
+        <tr>
+          <td>
+            <div class="d-flex align-items-center gap-2">
+              <span class="avatar">{{ f.prenom|first }}{{ f.nom|first }}</span>
+              <div>
+                <div class="fw-semibold">{{ f.prenom }} {{ f.nom|upper }}</div>
+                {% if f.bio %}<div class="small text-secondary text-truncate" style="max-width:260px">{{ f.bio }}</div>{% endif %}
+              </div>
+            </div>
+          </td>
+          <td class="small">
+            <div><i class="bi bi-envelope text-secondary"></i> {{ f.email }}</div>
+            <div><i class="bi bi-telephone text-secondary"></i> {{ f.telephone }}</div>
+          </td>
+          <td>
+            {% for d in f.formateur_dispenser.all %}
+              <span class="pill pill-cnf mb-1">{{ d.formation.nom|truncatechars:34 }}</span>
+            {% empty %}
+              <span class="pill pill-or">Aucune</span>
+            {% endfor %}
+          </td>
+          <td>
+            {% if not f.utilisateur %}<span class="pill pill-danger">Sans compte</span>
+            {% elif f.utilisateur.is_active %}<span class="pill pill-succes"><i class="bi bi-check-circle"></i> Actif</span>
+            {% else %}<span class="pill">Désactivé</span>{% endif %}
+            {% if f.utilisateur.last_login %}<div class="small text-secondary mt-1">Vu le {{ f.utilisateur.last_login|date:"d/m/Y" }}</div>{% endif %}
+          </td>
+          <td class="text-end text-nowrap">
+            <a href="{% url 'formateur_edit' f.id %}" class="btn btn-sm btn-outline-primary" title="Modifier"><i class="bi bi-pencil"></i></a>
+            <div class="dropdown d-inline-block">
+              <button class="btn btn-sm btn-soft" data-bs-toggle="dropdown" title="Plus d'actions"><i class="bi bi-three-dots"></i></button>
+              <ul class="dropdown-menu dropdown-menu-end">
+                <li>
+                  <form method="post" action="{% url 'formateur_acces' f.id %}">{% csrf_token %}
+                    <button class="dropdown-item"><i class="bi bi-key"></i> {% if f.utilisateur %}Nouveau mot de passe{% else %}Créer le compte{% endif %}</button>
+                  </form>
+                </li>
+                {% if f.utilisateur %}
+                <li>
+                  <form method="post" action="{% url 'formateur_activer' f.id %}">{% csrf_token %}
+                    <button class="dropdown-item"><i class="bi {% if f.utilisateur.is_active %}bi-pause-circle{% else %}bi-play-circle{% endif %}"></i>
+                      {% if f.utilisateur.is_active %}Désactiver le compte{% else %}Réactiver le compte{% endif %}</button>
+                  </form>
+                </li>
+                {% endif %}
+                <li><hr class="dropdown-divider"></li>
+                <li><button class="dropdown-item text-danger" data-bs-toggle="modal" data-bs-target="#suppr{{ f.id }}"><i class="bi bi-trash"></i> Supprimer</button></li>
+              </ul>
+            </div>
+
+            <div class="modal fade text-start" id="suppr{{ f.id }}" tabindex="-1">
+              <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                  <div class="modal-header"><h5 class="modal-title">Supprimer le formateur</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+                  <div class="modal-body">Supprimer <strong>{{ f.prenom }} {{ f.nom }}</strong> et son accès à l'espace formateur ? Le contenu de ses formations est conservé.</div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-soft" data-bs-dismiss="modal">Annuler</button>
+                    <form method="post" action="{% url 'formateur_delete' f.id %}">{% csrf_token %}<button class="btn btn-danger">Supprimer</button></form>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+    <div class="etat-vide">
+      <i class="bi bi-person-video3"></i>
+      {% if recherche %}Aucun formateur ne correspond à « {{ recherche }} ».{% else %}Aucun formateur pour le moment.{% endif %}
+      <div class="mt-3"><button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalAjout"><i class="bi bi-person-plus"></i> Ajouter un formateur</button></div>
+    </div>
+  {% endif %}
+</div>
+
+<div class="alert alert-info mt-3 small d-flex gap-2">
+  <i class="bi bi-info-circle-fill mt-1"></i>
+  <div>À la création, un compte est ouvert avec l'e-mail du formateur comme identifiant et un mot de passe provisoire envoyé par e-mail.
+    Le formateur se connecte ensuite à son <strong>espace formateur</strong>, limité aux formations que vous lui attribuez.</div>
+</div>
+
+<!-- Ajout -->
+<div class="modal fade" id="modalAjout" tabindex="-1" data-bs-backdrop="static">
+  <div class="modal-dialog modal-lg modal-dialog-scrollable">
+    <form method="post" class="modal-content">{% csrf_token %}
+      <div class="modal-header bg-cnf"><h5 class="modal-title"><i class="bi bi-person-plus me-1"></i> Nouveau formateur</h5><button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button></div>
+      <div class="modal-body">{% include 'gestion/formateur/_champs.html' %}</div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-soft" data-bs-dismiss="modal">Annuler</button>
+        <button class="btn btn-primary"><i class="bi bi-save"></i> Enregistrer et envoyer l'accès</button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+{% if show_modal %}
+<script>new bootstrap.Modal(document.getElementById('modalAjout')).show();</script>
+{% endif %}
+{% endblock %}

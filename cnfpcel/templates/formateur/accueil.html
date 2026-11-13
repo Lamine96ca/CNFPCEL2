@@ -1,0 +1,74 @@
+{% extends 'formateur/base_formateur.html' %}
+
+{% block titre %}Tableau de bord{% endblock %}
+{% block ariane %}<span class="sep">/</span><span>Espace formateur</span>{% endblock %}
+
+{% block corps %}
+<div class="bandeau-accueil mb-4">
+  <div class="date">{% now "l j F Y" %}</div>
+  <h2>Bienvenue {{ formateur.prenom }} 👋</h2>
+  <p>Gérez le contenu de vos formations, créez vos évaluations et suivez la progression de vos participants.</p>
+</div>
+
+<div class="row g-3 mb-4">
+  <div class="col-sm-6 col-xl-3">
+    <div class="card kpi"><div class="haut"><span class="tuile tuile-bleu"><i class="bi bi-mortarboard"></i></span>
+      <div><div class="lib">Mes formations</div><div class="val">{{ formations|length }}</div></div></div></div>
+  </div>
+  <div class="col-sm-6 col-xl-3">
+    <div class="card kpi"><div class="haut"><span class="tuile tuile-or"><i class="bi bi-people"></i></span>
+      <div><div class="lib">Participants inscrits</div><div class="val">{{ total_inscrits }}</div></div></div></div>
+  </div>
+  <div class="col-sm-6 col-xl-3">
+    <div class="card kpi"><div class="haut"><span class="tuile tuile-violet"><i class="bi bi-ui-checks"></i></span>
+      <div><div class="lib">Évaluations</div><div class="val">{{ total_evaluations }}</div></div></div>
+      <div class="bas">{{ stats.total }} passage{{ stats.total|pluralize }}</div></div>
+  </div>
+  <div class="col-sm-6 col-xl-3">
+    <div class="card kpi"><div class="haut"><span class="tuile tuile-vert"><i class="bi bi-patch-check"></i></span>
+      <div><div class="lib">Taux de réussite</div><div class="val">{{ taux_reussite }}%</div></div></div>
+      <div class="bas"><div class="jauge"><div class="jauge-vert" style="width:{{ taux_reussite }}%"></div></div>
+        {% if stats.moyenne is not None %}moy. {{ stats.moyenne|floatformat:0 }}%{% endif %}</div></div>
+  </div>
+</div>
+
+<div class="d-flex align-items-center mb-3">
+  <h2 class="h5 m-0">Mes formations</h2>
+  <a href="{% url 'espace_formateur_formation_ajout' %}" class="btn btn-primary btn-sm ms-auto me-2"><i class="bi bi-plus-lg"></i> Proposer une formation</a>
+  <a href="{% url 'espace_formateur_formations' %}" class="small">Tout voir</a>
+</div>
+{% if formations %}
+  <div class="row g-3 mb-4">
+    {% for f in formations|slice:":6" %}{% include 'formateur/_carte_formation.html' %}{% endfor %}
+  </div>
+{% else %}
+  <div class="card mb-4"><div class="etat-vide"><i class="bi bi-mortarboard"></i>
+    Aucune formation ne vous est encore attribuée.<br>L'administration peut vous en attribuer, ou vous pouvez en proposer une.
+    <div class="mt-3"><a href="{% url 'espace_formateur_formation_ajout' %}" class="btn btn-primary"><i class="bi bi-plus-lg"></i> Proposer une formation</a></div></div></div>
+{% endif %}
+
+<div class="card">
+  <div class="card-header"><h3 class="card-titre"><i class="bi bi-clock-history"></i> Derniers résultats d'évaluation</h3></div>
+  {% if derniers_resultats %}
+  <div class="table-responsive">
+    <table class="table table-hover align-middle">
+      <thead><tr><th>Participant</th><th>Évaluation</th><th>Score</th><th>Résultat</th><th>Date</th></tr></thead>
+      <tbody>
+      {% for r in derniers_resultats %}
+        <tr>
+          <td class="fw-semibold">{{ r.etudiant.prenom }} {{ r.etudiant.nom }}</td>
+          <td><a href="{% url 'espace_formateur_evaluation' r.evaluation.id %}">{{ r.evaluation.titre }}</a>
+            <div class="small text-secondary">{{ r.evaluation.formation.nom }}</div></td>
+          <td>{{ r.score|floatformat:0 }}% <span class="small text-secondary">({{ r.bonnes_reponses }}/{{ r.total_questions }})</span></td>
+          <td>{% if r.reussi %}<span class="pill pill-succes">Réussi</span>{% else %}<span class="pill pill-danger">Échoué</span>{% endif %}</td>
+          <td class="small text-secondary">{{ r.date_passage|date:"d/m/Y H:i" }}</td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+    <div class="etat-vide"><i class="bi bi-clipboard-data"></i>Aucun participant n'a encore passé d'évaluation.</div>
+  {% endif %}
+</div>
+{% endblock %}

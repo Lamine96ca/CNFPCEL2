@@ -1,0 +1,153 @@
+{% extends 'accueil/base/base.html' %}
+
+{% block content %}
+{% load static %}
+
+    <style>
+    /* FORMATIONS – LISTE INSTITUTIONNELLE */
+        .search-card {
+        background: #fff;
+        border: 1px solid #eee;
+        padding: 18px;
+        height: 100%;
+        transition: all 0.3s ease;
+        }
+
+        .search-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+        }
+
+        .search-title {
+        font-weight: 700;
+        color: #7a5c69;
+        margin-bottom: 8px;
+        }
+
+        .search-desc {
+        color: #555;
+        font-size: 15px;
+        margin-bottom: 12px;
+        }
+
+        .search-meta {
+        display: flex;
+        justify-content: space-between;
+        font-size: 14px;
+        color: #7a5c69;
+        }
+
+        .search-meta i {
+        margin-right: 4px;
+        }
+
+    </style>
+
+    <!-- LISTE FORMATIONS -->
+    <section class="container py-5" id="search-results" style="margin-top: 60px;">
+
+        <!-- TITRE -->
+        <div class="mb-5">
+            <h2 class="fw-bold text-uppercase" style="color:#7a5c69; font-size:40px;">
+            Résultats de la recherche
+            </h2>
+            <p class="text-muted">
+            Résultats trouvés pour : <strong>“{{ type_recherche }}”</strong>
+            </p>
+            <hr class="w-25 border-3" style="border-color:#0077B6;">
+        </div>
+
+        {% for f in formations %}
+        <div class="col-12 col-md-6 col-lg-4">
+            <a href="{% url 'list_section_formation' f.id %}" class="text-decoration-none">
+
+                <div class="search-card">
+
+                <span class="badge bg-secondary mb-2">
+                    🎓 Formation
+                </span>
+
+                <h5 class="search-title">{{ f.nom }}</h5>
+
+                <p class="search-desc">
+                    {{ f.description|truncatechars:90 }}
+                </p>
+
+                <div class="search-meta">
+                    <span><i class="bi bi-clock"></i> {{ f.duree }}</span>
+                    <span><i class="bi bi-currency-dollar"></i> {{ f.prix }}</span>
+                </div>
+
+                </div>
+
+            </a>
+        </div>
+        {% endfor %}
+
+        {% for a in articles %}
+        <div class="col-12 col-md-6 col-lg-4">
+            <a href="{% url 'detail_article' a.id %}" class="text-decoration-none">
+
+                <div class="search-card">
+
+                <span class="badge bg-info mb-2">
+                    📰 Actualité
+                </span>
+
+                <h5 class="search-title">{{ a.titre }}</h5>
+
+                <p class="search-desc">
+                    {{ a.titre|truncatechars:90 }}
+                </p>
+
+                <div class="search-meta">
+                    <span><i class="bi bi-calendar"></i> {{ a.date_de_publication }}</span>
+                </div>
+
+                </div>
+
+            </a>
+        </div>
+        {% endfor %}
+
+        {% for e in evenements %}
+        <div class="col-12 col-md-6 col-lg-4">
+            <a href="{% url 'evenement_detail' e.id %}" class="text-decoration-none">
+
+                <div class="search-card">
+
+                <span class="badge bg-warning mb-2">
+                    📅 Événement
+                </span>
+
+                <h5 class="search-title">{{ e.titre }}</h5>
+
+                <p class="search-desc">
+                    {{ e.description|truncatechars:90 }}
+                </p>
+
+                <div class="search-meta">
+                    <span><i class="bi bi-calendar-event"></i> {{ e.date }}</span>
+                    <span><i class="bi bi-geo-alt"></i> {{ e.lieu }}</span>
+                </div>
+
+                </div>
+
+            </a>
+        </div>
+        {% endfor %}
+
+    </section>
+
+<style>
+    footer{
+        display: none;
+    }
+</style>
+{% endblock%}
+
+
+
+
+
+

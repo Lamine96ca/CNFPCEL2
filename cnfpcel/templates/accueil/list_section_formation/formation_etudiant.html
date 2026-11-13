@@ -1,0 +1,600 @@
+```html
+{% extends 'accueil/base/base.html' %}
+
+{% block content %}
+{% load static %}
+
+<style>
+
+/* =========================================================
+   FORMATIONS — DESIGN MODERNE INSTITUTIONNEL
+========================================================= */
+
+:root {
+    --formation-primary: #0077B6;
+    --formation-primary-dark: #005b8a;
+    --formation-light: #eaf7fc;
+    --formation-text: #243746;
+    --formation-muted: #718096;
+    --formation-border: #e5edf2;
+    --formation-bg: #f6f9fb;
+}
+
+
+/* =========================================================
+   SECTION
+========================================================= */
+
+#list_formation {
+    padding-top: 100px;
+    padding-bottom: 70px;
+}
+
+@media (max-width: 1199px) {
+    #list_formation {
+        padding-top: 75px;
+    }
+}
+
+@media (max-width: 767px) {
+    #list_formation {
+        padding-top: 60px;
+        padding-bottom: 45px;
+    }
+}
+
+
+/* =========================================================
+   HEADER DE SECTION
+========================================================= */
+
+.formations-header {
+    margin-bottom: 38px;
+}
+
+.formations-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 7px 14px;
+    margin-bottom: 12px;
+    border-radius: 50px;
+    background: var(--formation-light);
+    color: var(--formation-primary);
+    font-size: .76rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: .6px;
+}
+
+.formations-header h1 {
+    margin: 0;
+    color: var(--formation-text);
+    font-size: clamp(1.7rem, 4vw, 2.4rem);
+    font-weight: 800;
+    line-height: 1.2;
+}
+
+.formations-header h1 span {
+    color: var(--formation-primary);
+}
+
+.formations-domain {
+    margin-top: 8px;
+    color: var(--formation-muted);
+    font-size: .95rem;
+}
+
+.formations-domain strong {
+    color: var(--formation-text);
+}
+
+.formations-line {
+    width: 70px;
+    height: 4px;
+    margin-top: 18px;
+    border: 0;
+    border-radius: 50px;
+    background: var(--formation-primary);
+}
+
+
+/* =========================================================
+   GRILLE
+========================================================= */
+
+.formations-grid {
+    row-gap: 25px;
+}
+
+
+/* =========================================================
+   CARTE FORMATION
+========================================================= */
+
+.formation-link {
+    display: block;
+    height: 100%;
+    color: inherit;
+    text-decoration: none;
+}
+
+.formation-card {
+    position: relative;
+    height: 100%;
+    overflow: hidden;
+    background: #fff;
+    border: 1px solid var(--formation-border);
+    border-radius: 16px;
+    box-shadow: 0 5px 20px rgba(30, 60, 80, .055);
+    transition:
+        transform .35s ease,
+        box-shadow .35s ease,
+        border-color .35s ease;
+}
+
+.formation-card:hover {
+    transform: translateY(-7px);
+    border-color: rgba(0,119,182,.18);
+    box-shadow: 0 16px 35px rgba(30, 60, 80, .13);
+}
+
+
+/* =========================================================
+   IMAGE
+========================================================= */
+
+.formation-image-wrapper {
+    position: relative;
+    height: 220px;
+    overflow: hidden;
+    background: #eef3f6;
+}
+
+.formation-img {
+    width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: cover;
+    transition: transform .6s ease;
+}
+
+.formation-card:hover .formation-img {
+    transform: scale(1.055);
+}
+
+
+/* Overlay léger */
+
+.formation-image-wrapper::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+        to bottom,
+        rgba(0,0,0,0) 50%,
+        rgba(0,0,0,.30) 100%
+    );
+    pointer-events: none;
+}
+
+
+/* Badge formation */
+
+.formation-badge {
+    position: absolute;
+    left: 14px;
+    top: 14px;
+    z-index: 2;
+
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+
+    padding: 6px 10px;
+
+    background: rgba(255,255,255,.94);
+    color: var(--formation-primary);
+
+    border-radius: 50px;
+
+    font-size: .72rem;
+    font-weight: 800;
+
+    box-shadow: 0 4px 12px rgba(0,0,0,.10);
+}
+
+
+/* =========================================================
+   CORPS CARTE
+========================================================= */
+
+.formation-body {
+    display: flex;
+    flex-direction: column;
+    min-height: 165px;
+    padding: 18px;
+}
+
+.formation-title {
+    margin-bottom: 7px;
+
+    color: var(--formation-text);
+
+    font-size: 1rem;
+    line-height: 1.35;
+    font-weight: 800;
+
+    transition: color .25s ease;
+}
+
+.formation-card:hover .formation-title {
+    color: var(--formation-primary);
+}
+
+
+/* =========================================================
+   DESCRIPTION
+========================================================= */
+
+.formation-desc {
+    margin: 0 0 16px;
+
+    color: var(--formation-muted);
+
+    font-size: .84rem;
+    line-height: 1.65;
+
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+
+/* =========================================================
+   META
+========================================================= */
+
+.formation-meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+
+    margin-top: auto;
+    padding-top: 13px;
+
+    border-top: 1px solid #edf1f4;
+}
+
+.formation-meta-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+
+    color: var(--formation-muted);
+
+    font-size: .78rem;
+    font-weight: 600;
+}
+
+.formation-meta-item i {
+    color: var(--formation-primary);
+    font-size: .9rem;
+}
+
+.formation-price {
+    color: var(--formation-primary);
+    font-weight: 800;
+}
+
+
+/* =========================================================
+   BOUTON / INDICATION
+========================================================= */
+
+.formation-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    margin-top: 14px;
+}
+
+.formation-more {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+
+    color: var(--formation-primary);
+
+    font-size: .76rem;
+    font-weight: 800;
+
+    transition: gap .25s ease;
+}
+
+.formation-card:hover .formation-more {
+    gap: 9px;
+}
+
+
+/* =========================================================
+   ETAT VIDE
+========================================================= */
+
+.empty-formations {
+    padding: 55px 25px;
+    text-align: center;
+
+    background: #fff;
+    border: 1px dashed #ccd8df;
+    border-radius: 16px;
+
+    color: var(--formation-muted);
+}
+
+.empty-formations i {
+    display: block;
+    margin-bottom: 12px;
+
+    color: var(--formation-primary);
+    font-size: 2rem;
+}
+
+
+/* =========================================================
+   ANIMATION
+========================================================= */
+
+.formation-item {
+    animation: formationFadeUp .55s ease both;
+}
+
+@keyframes formationFadeUp {
+
+    from {
+        opacity: 0;
+        transform: translateY(18px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+}
+
+
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 575px) {
+
+    .formations-header {
+        margin-bottom: 27px;
+    }
+
+    .formations-header h1 {
+        font-size: 1.65rem;
+    }
+
+    .formation-image-wrapper {
+        height: 205px;
+    }
+
+    .formation-body {
+        padding: 16px;
+    }
+
+    .formation-title {
+        font-size: .96rem;
+    }
+
+    .formation-desc {
+        font-size: .82rem;
+    }
+
+    .formation-meta-item {
+        font-size: .74rem;
+    }
+
+}
+
+</style>
+
+
+<!-- =========================================================
+     LISTE DES FORMATIONS
+========================================================= -->
+
+<section class="container"
+         id="list_formation">
+
+
+    <!-- =====================================================
+         HEADER
+    ====================================================== -->
+
+    <div class="formations-header">
+
+        <span class="formations-eyebrow">
+
+            <i class="bi bi-mortarboard-fill"></i>
+
+            Catalogue des formations
+
+        </span>
+
+
+        <h1>
+
+            Mes <span>formations</span>
+
+        </h1>
+
+
+        <p class="formations-domain">
+
+            Domaine :
+            <strong>{{ domaine.nom }}</strong>
+
+        </p>
+
+
+        <div class="formations-line"></div>
+
+    </div>
+
+    <!-- =====================================================
+         FORMATIONS
+    ====================================================== -->
+
+    <div class="row formations-grid">
+
+
+        {% for d in formation %}
+
+        <div class="col-12 col-sm-6 col-lg-4 formation-item">
+
+
+            <a href="{% url 'list_section_formation' d.id %}"
+               class="formation-link">
+
+
+                <article class="formation-card">
+
+
+                    <!-- ================= IMAGE ================= -->
+
+                    <div class="formation-image-wrapper">
+
+
+                        <span class="formation-badge">
+
+                            <i class="bi bi-book-half"></i>
+                            Formation
+                        </span>
+
+
+                        <img src="{% if d.image %}{{ d.image.url }}{% else %}{% static 'assets/img/Imagepardefaut.png' %}{% endif %}"
+                             alt="{{ d.nom }}"
+                             class="formation-img">
+
+
+                    </div>
+
+
+
+                    <!-- ================= CORPS ================= -->
+
+                    <div class="formation-body">
+
+
+                        <div class="formation-title">
+
+                            {{ d.nom }}
+
+                        </div>
+
+
+                        <div class="formation-desc">
+
+                            {{ d.description|truncatechars:100 }}
+
+                        </div>
+
+
+
+                        <!-- ================= META ================= -->
+
+                        <div class="formation-meta">
+
+
+                            <span class="formation-meta-item">
+
+                                <i class="bi bi-clock-fill"></i>
+
+                                {{ d.duree }}
+
+                            </span>
+
+
+                            <span class="formation-meta-item formation-price">
+
+                                <i class="bi bi-cash-stack"></i>
+
+                                {{ d.prix }}
+
+                            </span>
+
+
+                        </div>
+
+
+
+                        <!-- ================= FOOTER ================= -->
+
+                        <div class="formation-footer">
+
+                            <span class="formation-more">
+
+                                Découvrir la formation
+
+                                <i class="bi bi-arrow-right"></i>
+
+                            </span>
+
+                        </div>
+
+
+                    </div>
+
+
+                </article>
+
+
+            </a>
+
+
+        </div>
+
+        {% empty %}
+
+
+        <!-- ================= VIDE ================= -->
+
+        <div class="col-12">
+
+            <div class="empty-formations">
+
+                <i class="bi bi-journal-x"></i>
+
+                <h5 class="fw-bold">
+                    Aucune formation disponible
+                </h5>
+
+                <p class="mb-0">
+                    Les formations de ce domaine seront
+                    bientôt disponibles.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        {% endfor %}
+
+
+    </div>
+
+</section>
+
+
+{% endblock %}
+```

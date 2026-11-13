@@ -1,0 +1,43 @@
+{% extends 'gestion/base/_squelette.html' %}
+
+{% block lien_marque %}{% url 'espace_formateur' %}{% endblock %}
+{% block sous_marque %}Espace formateur{% endblock %}
+{% block role_menu %}Formateur{% endblock %}
+
+{% block menu_compte %}
+<li><a class="dropdown-item" href="{% url 'espace_formateur_profil' %}"><i class="bi bi-person-gear"></i> Mon profil</a></li>
+<li><a class="dropdown-item" href="{% url 'espace_formateur_profil' %}#mot-de-passe"><i class="bi bi-shield-lock"></i> Mot de passe</a></li>
+<li><hr class="dropdown-divider"></li>
+{% endblock %}
+
+{% block menu %}
+  <a class="nav-link {% if actif == 'accueil' %}active{% endif %}" href="{% url 'espace_formateur' %}"><i class="bi bi-grid-1x2"></i> Tableau de bord</a>
+  <a class="nav-link {% if actif == 'formations' %}active{% endif %}" href="{% url 'espace_formateur_formations' %}"><i class="bi bi-mortarboard"></i> Mes formations</a>
+  {% if formation %}
+    <div class="sous-menu">
+      <a class="nav-link {% if onglet == 'sections' %}active{% endif %}" href="{% url 'espace_formateur_formation' formation.id %}?onglet=sections">Sections</a>
+      <a class="nav-link {% if onglet == 'ressources' %}active{% endif %}" href="{% url 'espace_formateur_formation' formation.id %}?onglet=ressources">Ressources</a>
+      <a class="nav-link {% if onglet == 'evaluations' or evaluation %}active{% endif %}" href="{% url 'espace_formateur_formation' formation.id %}?onglet=evaluations">Évaluations</a>
+      <a class="nav-link {% if onglet == 'participants' %}active{% endif %}" href="{% url 'espace_formateur_formation' formation.id %}?onglet=participants">Participants</a>
+      <a class="nav-link {% if onglet == 'resultats' %}active{% endif %}" href="{% url 'espace_formateur_formation' formation.id %}?onglet=resultats">Résultats</a>
+    </div>
+  {% endif %}
+  <div class="cnf-nav-titre">Mon compte</div>
+  <a class="nav-link {% if actif == 'profil' %}active{% endif %}" href="{% url 'espace_formateur_profil' %}"><i class="bi bi-person-gear"></i> Mon profil</a>
+  <a class="nav-link" href="{% url 'index' %}" target="_blank"><i class="bi bi-globe2"></i> Site public</a>
+{% endblock %}
+
+{% block page %}
+<div class="titre-page">
+  <div style="min-width:0">
+    <h1 id="titre-page">{% block titre %}{% endblock %}</h1>
+    <div class="fil-ariane">
+      <a href="{% url 'espace_formateur' %}"><i class="bi bi-house-door"></i></a>
+      {% block ariane %}{% endblock %}
+    </div>
+  </div>
+  <div class="ms-auto d-flex gap-2 flex-wrap">{% block actions %}{% endblock %}</div>
+</div>
+{% include 'gestion/base/_messages.html' %}
+{% block corps %}{% endblock %}
+{% endblock %}

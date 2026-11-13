@@ -1,0 +1,1562 @@
+{% extends 'accueil/base/base.html' %}
+{% load static %}
+
+{% block title %}CNFPATEL — Formation & Gouvernance locale{% endblock %}
+
+{% block extra_css %}
+<style>
+  /* ================= HERO ================= */
+  .cnf-hero {
+    position: relative;
+    overflow: hidden;
+    background:
+      radial-gradient(circle at 85% 15%, rgba(193,88,138,.15), transparent 30%),
+      radial-gradient(circle at 10% 85%, rgba(18,86,111,.12), transparent 32%),
+      linear-gradient(135deg, #f7fbfc 0%, #edf5f8 100%);
+    padding: 72px 0 50px;
+  }
+
+  .cnf-hero::after {
+    content: "";
+    position: absolute;
+    width: 360px;
+    height: 360px;
+    right: -180px;
+    bottom: -180px;
+    border-radius: 50%;
+    background: rgba(193,88,138,.07);
+  }
+
+  .cnf-hero-kicker {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 12px;
+    border: 1px solid rgba(0,119,182,.1);
+    border-radius: 50px;
+    background: rgba(255,255,255,.75);
+    color: var(--cnf-primary);
+    font-size: .72rem;
+    font-weight: 800;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+  }
+
+  .cnf-hero-title {
+    font-size: clamp(2.05rem, 4.4vw, 4.1rem);
+    line-height: 1.08;
+    font-weight: 800;
+    color: var(--cnf-primary);
+    margin: 20px 0;
+  }
+
+  .cnf-hero-title span { color: var(--cnf-accent); }
+
+  .cnf-hero-text {
+    color: #5c6b73;
+    font-size: 1rem;
+    line-height: 1.85;
+    max-width: 650px;
+  }
+
+  .cnf-hero-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 11px;
+    margin-top: 28px;
+  }
+
+  .cnf-hero-trust {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 22px;
+    margin-top: 28px;
+    color: #63747d;
+    font-size: .76rem;
+    font-weight: 600;
+  }
+  .cnf-hero-trust i { color: var(--cnf-accent); margin-right: 5px; }
+
+  .cnf-hero-visual {
+    position: relative;
+    z-index: 2;
+  }
+
+  .cnf-hero-image {
+    position: relative;
+    overflow: hidden;
+    border-radius: 25px;
+    box-shadow: 0 25px 60px rgba(0,119,182,.20);
+    border: 7px solid rgba(255,255,255,.85);
+  }
+  .cnf-hero-image img {
+    width: 100%;
+    height: 445px;
+    object-fit: cover;
+  }
+
+  .cnf-hero-badge {
+    position: absolute;
+    left: -20px;
+    bottom: 24px;
+    padding: 14px 17px;
+    background: #fff;
+    border-radius: 15px;
+    box-shadow: 0 15px 35px rgba(0,119,182,.16);
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    min-width: 205px;
+  }
+  .cnf-hero-badge-icon {
+    width: 39px;
+    height: 39px;
+    border-radius: 11px;
+    background: #f7e6ef;
+    color: var(--cnf-accent);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+  }
+  .cnf-hero-badge strong { display:block; color:var(--cnf-primary); font-size:.84rem; }
+  .cnf-hero-badge span { display:block; color:var(--cnf-muted); font-size:.68rem; margin-top:2px; }
+
+  /* ================= QUICK ACCESS ================= */
+  .cnf-quick {
+    position: relative;
+    z-index: 4;
+    margin-top: -2px;
+  }
+  .cnf-quick-card {
+    background: #fff;
+    border: 1px solid var(--cnf-border);
+    border-radius: 18px;
+    padding: 24px;
+    box-shadow: var(--cnf-shadow);
+  }
+  .cnf-quick-card label {
+    font-size: .73rem;
+    font-weight: 800;
+    color: var(--cnf-primary);
+    text-transform: uppercase;
+    letter-spacing: .08em;
+    margin-bottom: 9px;
+  }
+  .cnf-search-input, .cnf-search-select {
+    height: 49px;
+    border: 1px solid var(--cnf-border);
+    border-radius: 11px !important;
+    font-size: .84rem;
+    box-shadow: none !important;
+  }
+  .cnf-search-input:focus, .cnf-search-select:focus {
+    border-color: var(--cnf-primary);
+  }
+
+  .cnf-role-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+  }
+  .cnf-role {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    min-height: 49px;
+    padding: 9px 12px;
+    border: 1px solid var(--cnf-border);
+    border-radius: 11px;
+    text-decoration: none;
+    color: #41515a;
+    font-size: .77rem;
+    font-weight: 700;
+  }
+  .cnf-role:hover {
+    color: var(--cnf-primary);
+    border-color: rgba(0,119,182,.3);
+    background: #f5f9fa;
+    transform: translateY(-2px);
+  }
+  .cnf-role i {
+    color: var(--cnf-accent);
+    font-size: 1.1rem;
+  }
+
+  /* ================= SECTION CARDS ================= */
+  .cnf-director {
+    background: var(--cnf-bg);
+  }
+  .cnf-director-photo {
+    position: relative;
+    border-radius: 22px;
+    overflow: hidden;
+    background: #fff;
+    box-shadow: var(--cnf-shadow);
+  }
+  .cnf-director-photo img {
+    width: 100%;
+    height: 520px;
+    object-fit: cover;
+  }
+  .cnf-director-caption {
+    position: absolute;
+    left: 15px;
+    right: 15px;
+    bottom: 15px;
+    padding: 15px 17px;
+    background: rgba(8,44,58,.92);
+    backdrop-filter: blur(8px);
+    border-radius: 14px;
+    color: #fff;
+  }
+  .cnf-director-caption strong { display:block; font-size:.95rem; }
+  .cnf-director-caption span { color:rgba(255,255,255,.68); font-size:.7rem; }
+
+  .cnf-message {
+    font-size: .91rem;
+    color: #52636c;
+    line-height: 1.9;
+  }
+
+  .cnf-mini-card {
+    display: flex;
+    gap: 13px;
+    padding: 16px;
+    border: 1px solid var(--cnf-border);
+    background: #fff;
+    border-radius: 14px;
+    height: 100%;
+    transition: all .25s ease;
+  }
+  .cnf-mini-card:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--cnf-shadow);
+  }
+  .cnf-mini-icon {
+    flex: 0 0 40px;
+    width: 40px;
+    height: 40px;
+    border-radius: 11px;
+    background: #edf5f8;
+    color: var(--cnf-primary);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
+  .cnf-mini-card h6 { margin: 1px 0 5px; color: var(--cnf-primary); font-size: .8rem; font-weight:800; }
+  .cnf-mini-card p { margin:0; color:var(--cnf-muted); font-size:.75rem; line-height:1.65; }
+
+  /* ================= OBJECTIFS ================= */
+  .cnf-objective {
+    position: relative;
+    overflow: hidden;
+    height: 100%;
+    padding: 25px;
+    border: 1px solid var(--cnf-border);
+    border-radius: 18px;
+    background: #fff;
+    box-shadow: 0 8px 25px rgba(0,119,182,.05);
+    transition: all .25s ease;
+  }
+  .cnf-objective:hover {
+    transform: translateY(-6px);
+    box-shadow: var(--cnf-shadow-hover);
+  }
+  .cnf-objective::before {
+    content:"";
+    position:absolute;
+    top:0; left:0; right:0;
+    height:4px;
+    background: var(--cnf-accent);
+  }
+  .cnf-objective-number {
+    color: #dce8ec;
+    font-size: 2.4rem;
+    line-height:1;
+    font-weight:800;
+  }
+  .cnf-objective i {
+    font-size: 1.7rem;
+    color: var(--cnf-primary);
+  }
+  .cnf-objective h5 { font-size: .92rem; margin: 20px 0 9px; color:var(--cnf-primary); }
+  .cnf-objective p { margin:0; color:var(--cnf-muted); font-size:.78rem; line-height:1.7; }
+
+  /* ================= EVENTS ================= */
+  .cnf-event {
+    display:flex;
+    gap:17px;
+    height:100%;
+    padding:15px;
+    border:1px solid var(--cnf-border);
+    border-radius:16px;
+    background:#fff;
+    text-decoration:none;
+    box-shadow: 0 6px 20px rgba(0,119,182,.04);
+    transition:all .25s ease;
+  }
+  .cnf-event:hover { transform:translateY(-4px); box-shadow:var(--cnf-shadow); }
+  .cnf-event-img {
+    width:105px;
+    height:105px;
+    flex:0 0 105px;
+    object-fit:cover;
+    border-radius:12px;
+  }
+  .cnf-event h5 { font-size:.88rem; color:var(--cnf-primary); margin:2px 0 7px; }
+  .cnf-event p { color:var(--cnf-muted); font-size:.73rem; line-height:1.6; margin:0 0 8px; }
+  .cnf-event-meta { color:#6c7b82; font-size:.68rem; display:flex; flex-wrap:wrap; gap:10px; }
+
+  /* ================= FORMATIONS ================= */
+  .cnf-formation {
+    height:100%;
+    overflow:hidden;
+    border-radius:17px;
+    background:#fff;
+    border:1px solid var(--cnf-border);
+    box-shadow:0 7px 22px rgba(0,119,182,.05);
+    text-decoration:none;
+    display:block;
+    transition:all .25s ease;
+  }
+  .cnf-formation:hover { transform:translateY(-6px); box-shadow:var(--cnf-shadow-hover); }
+  .cnf-formation-img {
+    width:100%;
+    height:190px;
+    object-fit:cover;
+  }
+  .cnf-formation-body { padding:17px; }
+  .cnf-formation-meta {
+    color:var(--cnf-accent);
+    font-size:.67rem;
+    font-weight:800;
+    text-transform:uppercase;
+    letter-spacing:.06em;
+  }
+  .cnf-formation-title { color:var(--cnf-primary); font-size:.9rem; font-weight:800; margin:7px 0 0; }
+
+  /* ================= NEWS ================= */
+  .cnf-news {
+    overflow:hidden;
+    height:100%;
+    border:1px solid var(--cnf-border);
+    border-radius:17px;
+    background:#fff;
+    text-decoration:none;
+    display:block;
+    transition:all .25s ease;
+  }
+  .cnf-news:hover { transform:translateY(-5px); box-shadow:var(--cnf-shadow); }
+  .cnf-news-img { width:100%; height:190px; object-fit:cover; }
+  .cnf-news-body { padding:16px; }
+  .cnf-news-title { color:var(--cnf-primary); font-size:.82rem; line-height:1.5; font-weight:800; }
+
+  /* ================= STATS ================= */
+  .cnf-stats {
+    background:var(--cnf-primary);
+    color:#fff;
+    position:relative;
+    overflow:hidden;
+  }
+  .cnf-stats::before {
+    content:"";
+    position:absolute;
+    width:500px; height:500px;
+    border-radius:50%;
+    right:-260px; top:-250px;
+    background:rgba(255,255,255,.04);
+  }
+  .cnf-stat {
+    text-align:center;
+    padding:20px;
+  }
+  .cnf-stat-value {
+    font-family:"Plus Jakarta Sans",sans-serif;
+    font-size:clamp(2rem,4vw,3rem);
+    font-weight:800;
+    color:#fff;
+  }
+  .cnf-stat-label { color:rgba(255,255,255,.68); font-size:.76rem; margin-top:4px; }
+
+  /* ================= STAFF ================= */
+  .cnf-staff {
+    height:100%;
+    overflow:hidden;
+    border:1px solid var(--cnf-border);
+    border-radius:17px;
+    background:#fff;
+    transition:all .25s ease;
+  }
+  .cnf-staff:hover { transform:translateY(-5px); box-shadow:var(--cnf-shadow); }
+  .cnf-staff img { width:100%; height:260px; object-fit:cover; }
+  .cnf-staff-body { padding:15px; }
+  .cnf-staff-name { color:var(--cnf-primary); font-size:.8rem; font-weight:800; text-transform:uppercase; }
+  .cnf-staff-role { color:var(--cnf-muted); font-size:.68rem; margin-top:5px; }
+
+  /* ================= PARTNERS ================= */
+  .cnf-partner {
+    display:flex;
+    align-items:center;
+    gap:15px;
+    height:100%;
+    padding:17px;
+    border:1px solid var(--cnf-border);
+    border-radius:15px;
+    background:#fff;
+    text-decoration:none;
+    transition:all .25s ease;
+  }
+  .cnf-partner:hover { transform:translateY(-3px); box-shadow:var(--cnf-shadow); }
+  .cnf-partner img {
+    width:62px; height:62px; object-fit:contain; flex:0 0 62px;
+  }
+  .cnf-partner h6 { color:var(--cnf-primary); font-size:.77rem; font-weight:800; margin:0 0 4px; }
+  .cnf-partner p { color:var(--cnf-muted); font-size:.67rem; margin:0; line-height:1.5; }
+
+  /* ================= CONTACT ================= */
+  .cnf-contact-wrap {
+    border:1px solid var(--cnf-border);
+    border-radius:22px;
+    overflow:hidden;
+    background:#fff;
+    box-shadow:var(--cnf-shadow);
+  }
+  .cnf-contact-info {
+    height:100%;
+    padding:35px;
+    background:var(--cnf-primary);
+    color:#fff;
+  }
+  .cnf-contact-info h3 { font-size:1.5rem; }
+  .cnf-contact-info > p { color:rgba(255,255,255,.68); font-size:.8rem; line-height:1.8; }
+  .cnf-contact-item {
+    display:flex;
+    gap:12px;
+    margin-top:20px;
+  }
+  .cnf-contact-item i {
+    width:36px; height:36px; flex:0 0 36px;
+    display:flex; align-items:center; justify-content:center;
+    border-radius:10px;
+    background:rgba(255,255,255,.09);
+    color:#fff;
+  }
+  .cnf-contact-item strong { display:block; font-size:.72rem; }
+  .cnf-contact-item span { display:block; color:rgba(255,255,255,.62); font-size:.7rem; margin-top:3px; }
+  .cnf-contact-form { padding:35px; }
+  .cnf-contact-form label { font-size:.72rem; font-weight:800; color:var(--cnf-primary); margin-bottom:6px; }
+  .cnf-contact-form .form-control {
+    border:1px solid var(--cnf-border);
+    border-radius:10px;
+    min-height:46px;
+    font-size:.8rem;
+    box-shadow:none;
+  }
+  .cnf-contact-form textarea.form-control { min-height:125px; }
+
+  @media (max-width: 991.98px) {
+    .cnf-hero { padding-top: 55px; }
+    .cnf-hero-image img { height: 380px; }
+    .cnf-hero-badge { left: 15px; }
+    .cnf-role-grid { grid-template-columns: 1fr; }
+  }
+
+  @media (max-width: 767.98px) {
+    .cnf-hero { padding: 45px 0 35px; }
+    .cnf-hero-image img { height: 285px; }
+    .cnf-hero-badge { position:relative; left:auto; bottom:auto; margin-top:-24px; margin-left:15px; margin-right:15px; }
+    .cnf-quick-card { padding:17px; }
+    .cnf-director-photo img { height:380px; }
+    .cnf-event { flex-direction:column; }
+    .cnf-event-img { width:100%; height:170px; flex-basis:auto; }
+    .cnf-contact-info, .cnf-contact-form { padding:25px; }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<!-- ================= HERO ================= -->
+<section id="hero" class="cnf-hero">
+  <div class="container position-relative">
+    <div class="row align-items-center g-5">
+
+      <div class="col-lg-6" data-aos="fade-right">
+        <span class="cnf-hero-kicker">
+          <i class="bi bi-building-check"></i>
+          Centre national de formation
+        </span>
+
+        <h1 class="cnf-hero-title">
+          Renforcer les compétences pour <span>transformer les territoires.</span>
+        </h1>
+
+        <p class="cnf-hero-text">
+          Le Centre National de Formation et de Perfectionnement des Administrateurs
+          Territoriaux et Élus Locaux accompagne les acteurs territoriaux par des
+          formations adaptées aux réalités de la gouvernance locale.
+        </p>
+
+        <div class="cnf-hero-actions">
+          <a href="{% url 'list_formation' 0 %}" class="cnf-btn cnf-btn-accent">
+            <i class="bi bi-mortarboard-fill"></i> Découvrir les formations
+          </a>
+          <a href="#presentation-cnfpcel" class="cnf-btn cnf-btn-outline">
+            En savoir plus <i class="bi bi-arrow-down"></i>
+          </a>
+        </div>
+
+        <div class="cnf-hero-trust">
+          <span><i class="bi bi-check-circle-fill"></i> Formation professionnelle</span>
+          <span><i class="bi bi-check-circle-fill"></i> Gouvernance locale</span>
+          <span><i class="bi bi-check-circle-fill"></i> Service public</span>
+        </div>
+      </div>
+
+      <div class="col-lg-6" data-aos="fade-left">
+        <div class="cnf-hero-visual">
+          <div id="imageSlider" class="carousel slide" data-bs-ride="carousel">
+            <div class="carousel-inner cnf-hero-image">
+              <div class="carousel-item active">
+                <img src="{% static 'image_accueil/image_coursel_2.png' %}" alt="Gouvernance locale">
+              </div>
+              <div class="carousel-item">
+                <img src="{% static 'image_accueil/image_coursel_1.png' %}" alt="Formation CNFPATEL">
+              </div>
+              <div class="carousel-item">
+                <img src="{% static 'image_accueil/image_coursel_3.png' %}" alt="Collectivités locales">
+              </div>
+            </div>
+
+            <button class="carousel-control-prev" type="button" data-bs-target="#imageSlider" data-bs-slide="prev">
+              <span class="carousel-control-prev-icon"></span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#imageSlider" data-bs-slide="next">
+              <span class="carousel-control-next-icon"></span>
+            </button>
+          </div>
+
+          <div class="cnf-hero-badge">
+            <div class="cnf-hero-badge-icon"><i class="bi bi-people-fill"></i></div>
+            <div>
+              <strong>Au service des territoires</strong>
+              <span>Compétences · proximité · performance</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ================= ACCÈS RAPIDE ================= -->
+<section class="cnf-quick">
+  <div class="container">
+    <div class="cnf-quick-card" data-aos="fade-up">
+      <div class="row g-3 align-items-end">
+        <div class="col-lg-7">
+          <label for="terme_recherche">Rechercher sur la plateforme</label>
+          <form class="row g-2" method="get" action="{% url 'recherche_index' %}">
+            <div class="col-md-4">
+              <select class="form-select cnf-search-select" name="type_recherche" aria-label="Type de recherche">
+                <option selected>UNE FORMATION</option>
+                <option>UNE ACTUALITÉ / ÉVÈNEMENT</option>
+              </select>
+            </div>
+            <div class="col-md-5">
+              <input id="terme_recherche" type="text" class="form-control cnf-search-input"
+                     placeholder="Ex. gestion des collectivités" name="terme_recherche">
+            </div>
+            <div class="col-md-3">
+              <button type="submit" class="cnf-btn cnf-btn-primary w-100 h-100">
+                <i class="bi bi-search"></i> Rechercher
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <div class="col-lg-5">
+          <label>Accès rapide</label>
+          <div class="cnf-role-grid">
+            <a href="{% url 'list_formation' 0 %}" class="cnf-role"><i class="bi bi-person-badge"></i> Élu local</a>
+            <a href="{% url 'list_formation' 0 %}" class="cnf-role"><i class="bi bi-briefcase"></i> Cadre administratif</a>
+            <a href="{% url 'formation_etudiant' %}" class="cnf-role"><i class="bi bi-person-video3"></i> Formateur / apprenant</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= MOT DU DIRECTEUR ================= -->
+<section id="presentation-cnfpcel" class="cnf-section cnf-director">
+  <div class="container">
+    <div class="row g-5 align-items-center">
+
+      <div class="col-lg-4" data-aos="fade-right">
+        <div class="cnf-director-photo">
+          <img src="{% static 'assets/img/PHOTO-DIRECTEUR3.jpeg' %}" alt="M. Mamady Magassouba, Directeur Général">
+          <div class="cnf-director-caption">
+            <strong>M. Mamady Magassouba</strong>
+            <span>Directeur Général</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-lg-8" data-aos="fade-left">
+        <span class="cnf-eyebrow">Notre vision</span>
+        <h2 class="cnf-section-title">Mot du Directeur Général</h2>
+
+        <p class="cnf-message">
+          <strong>Chers visiteurs, partenaires et acteurs du développement local,</strong>
+        </p>
+
+        <p class="cnf-message">
+          C’est avec un profond sens du devoir et une ambition partagée que je vous souhaite
+          la bienvenue sur le site officiel du Centre National de Formation et de Perfectionnement
+          des Administrateurs Territoriaux et Élus Locaux (CNFPATEL), placé sous la tutelle du MATD.
+          Notre Centre se veut un espace d’excellence, d’innovation et d’engagement au service
+          du développement durable des collectivités territoriales.
+        </p>
+
+        <p class="cnf-message">
+          Face aux défis sociaux, économiques, environnementaux et institutionnels, la gestion
+          des collectivités locales exige des compétences solides, une vision stratégique et
+          une capacité d’adaptation permanente. Le CNFPATEL s’inscrit dans cette dynamique en
+          formant et en perfectionnant les cadres et élus locaux afin qu’ils deviennent des
+          acteurs responsables et transformateurs.
+        </p>
+
+        <div class="row g-3 mt-3">
+          <div class="col-md-6">
+            <div class="cnf-mini-card">
+              <div class="cnf-mini-icon"><i class="bi bi-eye-fill"></i></div>
+              <div>
+                <h6>Notre vision</h6>
+                <p>Devenir un centre de référence en formation et perfectionnement des acteurs de la gouvernance locale.</p>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="cnf-mini-card">
+              <div class="cnf-mini-icon"><i class="bi bi-mortarboard-fill"></i></div>
+              <div>
+                <h6>Formation</h6>
+                <p>Développer des programmes innovants et adaptés aux besoins réels des collectivités territoriales.</p>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="cnf-mini-card">
+              <div class="cnf-mini-icon"><i class="bi bi-people-fill"></i></div>
+              <div>
+                <h6>Approche participative</h6>
+                <p>Favoriser l’échange d’expériences et le partage des bonnes pratiques.</p>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="cnf-mini-card">
+              <div class="cnf-mini-icon"><i class="bi bi-diagram-3-fill"></i></div>
+              <div>
+                <h6>Partenariats</h6>
+                <p>Renforcer les collaborations nationales et internationales pour accroître notre impact.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <p class="cnf-message mt-4 mb-0">
+          Je vous invite à découvrir nos formations, nos actions et nos initiatives en faveur
+          d’un avenir local plus fort et plus prospère.
+        </p>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ================= OBJECTIFS ================= -->
+<section id="objectifs" class="cnf-section">
+  <div class="container">
+    <div class="text-center mb-5" data-aos="fade-up">
+      <span class="cnf-eyebrow">Notre ambition</span>
+      <h2 class="cnf-section-title">Objectifs stratégiques</h2>
+      <p class="cnf-section-lead mx-auto">Un levier structurant pour renforcer la gouvernance locale et accompagner la transformation des territoires.</p>
+    </div>
+
+    <div class="row g-4">
+      <div class="col-md-6 col-lg-3" data-aos="fade-up" data-aos-delay="50">
+        <div class="cnf-objective">
+          <div class="d-flex justify-content-between align-items-center">
+            <span class="cnf-objective-number">01</span><i class="bi bi-person-video3"></i>
+          </div>
+          <h5>Renforcement des compétences</h5>
+          <p>Former les élus et agents locaux en gestion administrative, financière et territoriale.</p>
+        </div>
+      </div>
+      <div class="col-md-6 col-lg-3" data-aos="fade-up" data-aos-delay="100">
+        <div class="cnf-objective">
+          <div class="d-flex justify-content-between align-items-center">
+            <span class="cnf-objective-number">02</span><i class="bi bi-bar-chart-line"></i>
+          </div>
+          <h5>Appui aux politiques locales</h5>
+          <p>Accompagner les projets communaux dans les domaines clés : éducation, santé et environnement.</p>
+        </div>
+      </div>
+      <div class="col-md-6 col-lg-3" data-aos="fade-up" data-aos-delay="150">
+        <div class="cnf-objective">
+          <div class="d-flex justify-content-between align-items-center">
+            <span class="cnf-objective-number">03</span><i class="bi bi-shield-check"></i>
+          </div>
+          <h5>Transparence & gouvernance</h5>
+          <p>Encourager la redevabilité et les bonnes pratiques de gouvernance à l’échelle locale.</p>
+        </div>
+      </div>
+      <div class="col-md-6 col-lg-3" data-aos="fade-up" data-aos-delay="200">
+        <div class="cnf-objective">
+          <div class="d-flex justify-content-between align-items-center">
+            <span class="cnf-objective-number">04</span><i class="bi bi-cloud-arrow-up"></i>
+          </div>
+          <h5>Transition numérique</h5>
+          <p>Faciliter l’appropriation des outils numériques pour moderniser les services communaux.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= EVENEMENTS ================= -->
+<section id="evenements" class="cnf-section cnf-section-soft">
+  <div class="container">
+    <div class="d-flex flex-wrap align-items-end justify-content-between gap-3 mb-5" data-aos="fade-up">
+      <div>
+        <span class="cnf-eyebrow">Agenda</span>
+        <h2 class="cnf-section-title mb-1">Événements à venir</h2>
+        <p class="cnf-section-lead mb-0">Retrouvez les prochaines activités et rendez-vous du Centre.</p>
+      </div>
+    </div>
+
+    <div class="row g-4">
+      {% for event in evenement %}
+      <div class="col-lg-6" data-aos="fade-up">
+        <a href="{% url 'evenement_detail' event.id %}" class="cnf-event">
+          {% if event.image %}
+            <img src="{{ event.image.url }}" alt="{{ event.titre }}" class="cnf-event-img">
+          {% else %}
+            <img src="{% static 'assets/img/evenements/default.jpg' %}" alt="Événement" class="cnf-event-img">
+          {% endif %}
+          <div>
+            <h5>{{ event.titre }}</h5>
+            <p>{{ event.description|truncatewords:18|safe }}</p>
+            <div class="cnf-event-meta">
+              <span><i class="bi bi-calendar3 me-1"></i>{{ event.date|date:"d F Y" }}</span>
+              <span><i class="bi bi-geo-alt me-1"></i>{{ event.lieu }}</span>
+            </div>
+          </div>
+        </a>
+      </div>
+      {% empty %}
+      <div class="col-12">
+        <div class="cnf-mini-card">
+          <div class="cnf-mini-icon"><i class="bi bi-calendar2-check"></i></div>
+          <div>
+            <h6>Aucun événement publié pour le moment</h6>
+            <p>Les prochains événements et activités seront publiés dans cette section.</p>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<!-- ================= FORMATIONS ================= -->
+<section id="formations" class="cnf-section">
+  <div class="container">
+    <div class="d-flex flex-wrap align-items-end justify-content-between gap-3 mb-5" data-aos="fade-up">
+      <div>
+        <span class="cnf-eyebrow">Développez vos compétences</span>
+        <h2 class="cnf-section-title mb-1">Nos formations</h2>
+        <p class="cnf-section-lead mb-0">Découvrez nos parcours adaptés aux besoins des acteurs locaux.</p>
+      </div>
+      <a href="{% url 'list_formation' 0 %}" class="cnf-btn cnf-btn-outline">Tout le catalogue <i class="bi bi-arrow-right"></i></a>
+    </div>
+
+    <div class="row g-4">
+      {% for d in formation %}
+      <div class="col-sm-6 col-lg-3" data-aos="fade-up">
+        <a href="{% url 'list_section_formation' d.id %}" class="cnf-formation">
+          {% if d.image %}
+            <img src="{{ d.image.url }}" alt="{{ d.nom }}" class="cnf-formation-img">
+          {% else %}
+            <img src="{% static 'assets/img/Imagepardefaut.png' %}" alt="Formation" class="cnf-formation-img">
+          {% endif %}
+          <div class="cnf-formation-body">
+            <div class="cnf-formation-meta"><i class="bi bi-clock me-1"></i>{{ d.duree }}</div>
+            <div class="cnf-formation-title">{{ d.nom|truncatechars:42 }}</div>
+          </div>
+        </a>
+      </div>
+      {% empty %}
+      <div class="col-12"><p class="text-muted">Aucune formation disponible pour le moment.</p></div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<!-- ================= ACTUALITES ================= -->
+<section id="actualites" class="cnf-section cnf-section-soft">
+  <div class="container">
+    <div class="d-flex flex-wrap align-items-end justify-content-between gap-3 mb-5" data-aos="fade-up">
+      <div>
+        <span class="cnf-eyebrow">Information</span>
+        <h2 class="cnf-section-title mb-1">Actualités</h2>
+        <p class="cnf-section-lead mb-0">Les informations et temps forts du CNFPATEL.</p>
+      </div>
+      <a href="{% url 'article_liste' %}" class="cnf-btn cnf-btn-outline">Toutes les actualités <i
+          class="bi bi-arrow-right"></i></a>
+    </div>
+
+
+    <div class="row g-4">
+
+      {% for article in article %}
+
+      <div class="col-12 col-sm-6 col-lg-3" data-aos="fade-up" data-aos-delay="{{ forloop.counter0 }}00">
+
+
+        <a href="{% url 'detail_article' article.id %}" class="cnf-news">
+
+
+          {% with paragraphe=article.titre_paragraphe.first %}
+
+
+          <!-- =================================================
+                     IMAGE
+                ================================================== -->
+
+          <div class="cnf-news-image-wrapper">
+
+
+            {% if paragraphe and paragraphe.image %}
+
+            <img src="{{ paragraphe.image.url }}" class="cnf-news-img" alt="{{ article.titre }}">
+
+            {% else %}
+
+            <img src="{% static 'assets/img/Imagepardefaut.png' %}" class="cnf-news-img" alt="Actualité CNFPCEL">
+
+            {% endif %}
+
+
+            <!-- DATE -->
+
+            <span class="cnf-news-date">
+
+              <i class="bi bi-calendar3"></i>
+
+              {{ article.date_de_publication }}
+
+            </span>
+
+
+            <!-- OVERLAY -->
+
+            <span class="cnf-news-overlay">
+
+              <span class="cnf-news-read">
+
+                Lire l'article
+
+                <i class="bi bi-arrow-right"></i>
+
+              </span>
+
+            </span>
+
+
+          </div>
+
+
+
+          <!-- =================================================
+                     CONTENU
+                ================================================== -->
+
+          <div class="cnf-news-body">
+
+
+            <!-- TITRE -->
+
+            <h3 class="cnf-news-title" title="{{ article.titre }}">
+
+              {{ article.titre }}
+
+            </h3>
+
+
+            <!-- APERÇU DU CONTENU -->
+
+            {% if paragraphe %}
+
+            <div class="cnf-news-description">
+
+              {{ paragraphe.contenu|safe }}
+
+            </div>
+
+            {% endif %}
+
+
+            <!-- FOOTER -->
+
+            <div class="cnf-news-footer">
+
+              <span>
+
+                Actualité
+
+              </span>
+
+
+              <i class="bi bi-arrow-up-right"></i>
+
+            </div>
+
+
+          </div>
+
+
+          {% endwith %}
+
+
+        </a>
+
+      </div>
+
+
+      {% empty %}
+
+
+      <div class="col-12">
+
+        <div class="cnf-news-empty">
+
+          <i class="bi bi-newspaper"></i>
+
+          <p class="mb-0">
+
+            Aucune actualité disponible pour le moment.
+
+          </p>
+
+        </div>
+
+      </div>
+
+
+      {% endfor %}
+
+    </div>
+
+
+
+    <style>
+      /* =========================================================
+   ACTUALITÉS INDEX
+========================================================= */
+
+      .cnf-news {
+        position: relative;
+
+        display: flex;
+
+        flex-direction: column;
+
+        height: 100%;
+
+        overflow: hidden;
+
+        background: #fff;
+
+        border: 1px solid #e3ebf0;
+
+        border-radius: 16px;
+
+        color: inherit;
+
+        text-decoration: none;
+
+        box-shadow:
+          0 6px 22px rgba(30, 60, 80, .06);
+
+        transition:
+          transform .35s ease,
+          box-shadow .35s ease,
+          border-color .35s ease;
+      }
+
+
+      .cnf-news:hover {
+        transform: translateY(-6px);
+
+        border-color: rgba(0, 119, 182, .18);
+
+        color: inherit;
+
+        box-shadow:
+          0 15px 32px rgba(30, 60, 80, .13);
+      }
+
+
+      /* =========================================================
+   IMAGE
+========================================================= */
+
+      .cnf-news-image-wrapper {
+        position: relative;
+
+        height: 185px;
+
+        overflow: hidden;
+
+        background: #edf3f6;
+      }
+
+
+      .cnf-news-img {
+        width: 100%;
+        height: 100%;
+
+        display: block;
+
+        object-fit: cover;
+
+        transition: transform .6s ease;
+      }
+
+
+      .cnf-news:hover .cnf-news-img {
+        transform: scale(1.06);
+      }
+
+
+      /* =========================================================
+   OVERLAY IMAGE
+========================================================= */
+
+      .cnf-news-overlay {
+        position: absolute;
+
+        inset: 0;
+
+        display: flex;
+
+        align-items: flex-end;
+
+        justify-content: flex-end;
+
+        padding: 13px;
+
+        background:
+          linear-gradient(to bottom,
+            rgba(0, 0, 0, 0) 45%,
+            rgba(0, 0, 0, .35) 100%);
+
+        opacity: .95;
+
+        transition: .3s ease;
+      }
+
+
+      .cnf-news:hover .cnf-news-overlay {
+        background:
+          linear-gradient(to bottom,
+            rgba(0, 119, 182, .05),
+            rgba(0, 60, 90, .55));
+      }
+
+
+      /* =========================================================
+   LIRE ARTICLE
+========================================================= */
+
+      .cnf-news-read {
+        display: inline-flex;
+
+        align-items: center;
+
+        gap: 6px;
+
+        padding: 6px 10px;
+
+        background: rgba(255, 255, 255, .94);
+
+        color: #0077B6;
+
+        border-radius: 50px;
+
+        font-size: .68rem;
+
+        font-weight: 800;
+
+        transform: translateY(5px);
+
+        opacity: 0;
+
+        transition:
+          opacity .3s ease,
+          transform .3s ease;
+      }
+
+
+      .cnf-news:hover .cnf-news-read {
+        opacity: 1;
+
+        transform: translateY(0);
+      }
+
+
+      /* =========================================================
+   DATE
+========================================================= */
+
+      .cnf-news-date {
+        position: absolute;
+
+        top: 12px;
+        left: 12px;
+
+        z-index: 3;
+
+        display: inline-flex;
+
+        align-items: center;
+
+        gap: 5px;
+
+        padding: 6px 9px;
+
+        background: rgba(255, 255, 255, .94);
+
+        color: #243746;
+
+        border-radius: 50px;
+
+        font-size: .65rem;
+
+        font-weight: 700;
+
+        box-shadow:
+          0 4px 12px rgba(0, 0, 0, .10);
+      }
+
+
+      /* =========================================================
+   BODY
+========================================================= */
+
+      .cnf-news-body {
+        display: flex;
+
+        flex-direction: column;
+
+        flex: 1;
+
+        padding: 16px;
+      }
+
+
+      /* =========================================================
+   TITRE
+========================================================= */
+
+      .cnf-news-title {
+        margin: 0 0 8px;
+
+        color: #243746;
+
+        font-size: .94rem;
+
+        font-weight: 800;
+
+        line-height: 1.4;
+
+        display: -webkit-box;
+
+        -webkit-line-clamp: 2;
+
+        -webkit-box-orient: vertical;
+
+        overflow: hidden;
+
+        transition: color .25s ease;
+      }
+
+
+      .cnf-news:hover .cnf-news-title {
+        color: #0077B6;
+      }
+
+
+      /* =========================================================
+   DESCRIPTION
+========================================================= */
+
+      .cnf-news-description {
+        max-height: 60px;
+
+        overflow: hidden;
+
+        margin-bottom: 12px;
+
+        color: #718096;
+
+        font-size: .76rem;
+
+        line-height: 1.55;
+      }
+
+
+      /* HTML RICHE */
+
+      .cnf-news-description strong {
+        color: #243746;
+
+        font-weight: 800;
+      }
+
+
+      .cnf-news-description em {
+        font-style: italic;
+      }
+
+
+      .cnf-news-description a {
+        color: #0077B6;
+
+        font-weight: 700;
+
+        text-decoration: none;
+      }
+
+
+      .cnf-news-description a:hover {
+        text-decoration: underline;
+      }
+
+
+      .cnf-news-description p {
+        margin-bottom: 4px;
+      }
+
+
+      .cnf-news-description p:last-child {
+        margin-bottom: 0;
+      }
+
+
+      .cnf-news-description ul {
+        margin-top: 4px;
+
+        padding-left: 17px;
+      }
+
+
+      .cnf-news-description li {
+        margin-bottom: 2px;
+      }
+
+
+      /* =========================================================
+   FOOTER
+========================================================= */
+
+      .cnf-news-footer {
+        display: flex;
+
+        align-items: center;
+
+        justify-content: space-between;
+
+        margin-top: auto;
+
+        padding-top: 10px;
+
+        border-top: 1px solid #edf1f4;
+
+        color: #718096;
+
+        font-size: .68rem;
+
+        font-weight: 700;
+      }
+
+
+      .cnf-news-footer i {
+        width: 27px;
+        height: 27px;
+
+        display: inline-flex;
+
+        align-items: center;
+        justify-content: center;
+
+        background: #eaf7fc;
+
+        color: #0077B6;
+
+        border-radius: 8px;
+
+        transition: .25s ease;
+      }
+
+
+      .cnf-news:hover .cnf-news-footer i {
+        background: #0077B6;
+
+        color: #fff;
+      }
+
+
+      /* =========================================================
+   ETAT VIDE
+========================================================= */
+
+      .cnf-news-empty {
+        padding: 35px 20px;
+
+        background: #fff;
+
+        border: 1px dashed #ccd8df;
+
+        border-radius: 15px;
+
+        color: #718096;
+
+        text-align: center;
+      }
+
+
+      .cnf-news-empty i {
+        display: block;
+
+        margin-bottom: 8px;
+
+        color: #0077B6;
+
+        font-size: 1.8rem;
+      }
+
+
+      /* =========================================================
+   MOBILE
+========================================================= */
+
+      @media (max-width: 575px) {
+
+        .cnf-news-image-wrapper {
+          height: 200px;
+        }
+
+        .cnf-news-body {
+          padding: 15px;
+        }
+
+        .cnf-news-title {
+          font-size: .92rem;
+        }
+
+      }
+    </style>`
+
+  </div>
+</section>
+
+<!-- ================= CHIFFRES CLES ================= -->
+<section id="statistiques" class="cnf-section cnf-stats">
+  <div class="container position-relative">
+    <div class="text-center mb-5" data-aos="fade-up">
+      <span class="cnf-eyebrow text-white-50">Notre impact</span>
+      <h2 class="cnf-section-title text-white">Le CNFPATEL en chiffres</h2>
+      <p class="text-white-50 mx-auto mb-0" style="max-width:650px;font-size:.82rem;">
+        Des indicateurs qui illustrent la dynamique de formation et d’accompagnement des acteurs territoriaux.
+      </p>
+    </div>
+
+    <div class="row g-3">
+      <div class="col-6 col-lg-3"><div class="cnf-stat"><div class="cnf-stat-value">+1500</div><div class="cnf-stat-label">Élus et cadres formés</div></div></div>
+      <div class="col-6 col-lg-3"><div class="cnf-stat"><div class="cnf-stat-value">+{{ total_formation }}</div><div class="cnf-stat-label">Modules de formation actifs</div></div></div>
+      <div class="col-6 col-lg-3"><div class="cnf-stat"><div class="cnf-stat-value">+32</div><div class="cnf-stat-label">Formateurs actifs</div></div></div>
+      <div class="col-6 col-lg-3"><div class="cnf-stat"><div class="cnf-stat-value">+4</div><div class="cnf-stat-label">Partenariats institutionnels</div></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= PERSONNEL ================= -->
+<section id="personnel" class="cnf-section">
+  <div class="container">
+    <div class="d-flex flex-wrap align-items-end justify-content-between gap-3 mb-5" data-aos="fade-up">
+      <div>
+        <span class="cnf-eyebrow">Les femmes et les hommes du Centre</span>
+        <h2 class="cnf-section-title mb-1">Notre équipe</h2>
+        <p class="cnf-section-lead mb-0">Une équipe engagée au service des collectivités locales.</p>
+      </div>
+      <a href="{% url 'personnel_liste' %}" class="cnf-btn cnf-btn-outline">Toute l’équipe <i class="bi bi-arrow-right"></i></a>
+    </div>
+
+    <div class="row g-4">
+      {% for p in personnel %}
+      <div class="col-6 col-lg-3" data-aos="fade-up">
+        <div class="cnf-staff">
+          {% if p.photo %}
+            <img src="{{ p.photo.url }}" alt="{{ p.prenom }} {{ p.nom }}">
+          {% else %}
+            <img src="{% static 'assets/img/user-default.jpg' %}" alt="Personnel">
+          {% endif %}
+          <div class="cnf-staff-body">
+            <div class="cnf-staff-name">{{ p.prenom }} {{ p.nom|upper }}</div>
+            <div class="cnf-staff-role">{{ p.fonc }}</div>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<!-- ================= PARTENAIRES ================= -->
+<section id="partenaires" class="cnf-section cnf-section-soft">
+  <div class="container">
+    <div class="mb-5" data-aos="fade-up">
+      <span class="cnf-eyebrow">Écosystème</span>
+      <h2 class="cnf-section-title mb-1">Partenaires institutionnels</h2>
+      <p class="cnf-section-lead mb-0">Des collaborations stratégiques au service du développement territorial.</p>
+    </div>
+
+    <div class="row g-3">
+      <div class="col-md-6 col-lg-4" data-aos="fade-up">
+        <a href="https://www.banquemondiale.org/fr/country/guinea" target="_blank" rel="noopener noreferrer" class="cnf-partner">
+          <img src="{% static 'assets/img/partenaire/banque_mondiale.png' %}" alt="Banque mondiale">
+          <div><h6>BANQUE MONDIALE</h6><p>Partenaire financier</p></div>
+        </a>
+      </div>
+      <div class="col-md-6 col-lg-4" data-aos="fade-up">
+        <a href="https://www.anafic-gn.org/" target="_blank" rel="noopener noreferrer" class="cnf-partner">
+          <img src="{% static 'assets/img/partenaire/anafig.png' %}" alt="ANAFIC">
+          <div><h6>ANAFIC</h6><p>Agence Nationale de Financement des Collectivités</p></div>
+        </a>
+      </div>
+      <div class="col-md-6 col-lg-4" data-aos="fade-up">
+        <a href="#" class="cnf-partner">
+          <img src="{% static 'assets/img/partenaire/pnud.jpeg' %}" alt="PNUD">
+          <div><h6>PNUD</h6><p>Partenaire stratégique</p></div>
+        </a>
+      </div>
+      <div class="col-md-6 col-lg-4" data-aos="fade-up">
+        <a href="#" class="cnf-partner">
+          <img src="{% static 'assets/img/partenaire/dnat.png' %}" alt="DNAT">
+          <div><h6>DNAT</h6><p>Direction Nationale de l’Administration du Territoire</p></div>
+        </a>
+      </div>
+      <div class="col-md-6 col-lg-4" data-aos="fade-up">
+        <a href="#" class="cnf-partner">
+          <img src="{% static 'assets/img/partenaire/dncl.png' %}" alt="DNCL">
+          <div><h6>DNCL</h6><p>Direction Nationale de la Collectivité Locale</p></div>
+        </a>
+      </div>
+      <div class="col-md-6 col-lg-4" data-aos="fade-up">
+        <a href="#" class="cnf-partner">
+          <img src="{% static 'assets/img/partenaire/ancg.png' %}" alt="ANCG">
+          <div><h6>ANCG</h6><p>Agence Nationale des Communes de Guinée</p></div>
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= CONTACT ================= -->
+<section id="contact" class="cnf-section">
+  <div class="container">
+    <div class="mb-5" data-aos="fade-up">
+      <span class="cnf-eyebrow">Restons en contact</span>
+      <h2 class="cnf-section-title mb-1">Nous contacter</h2>
+      <p class="cnf-section-lead mb-0">Pour toute information, demande de partenariat ou inscription.</p>
+    </div>
+
+    <div class="cnf-contact-wrap" data-aos="fade-up">
+      <div class="row g-0">
+        <div class="col-lg-5">
+          <div class="cnf-contact-info">
+            <h3>Parlons de votre besoin.</h3>
+            <p>
+              Notre équipe est disponible pour vous orienter vers les formations,
+              informations ou services adaptés à votre demande.
+            </p>
+
+            <div class="cnf-contact-item">
+              <i class="bi bi-geo-alt-fill"></i>
+              <div><strong>Adresse</strong><span>CNFPATEL — Quartier administratif, Conakry, Guinée</span></div>
+            </div>
+            <div class="cnf-contact-item">
+              <i class="bi bi-envelope-fill"></i>
+              <div><strong>Email</strong><span>contact@cnfpcel.gov.gn</span></div>
+            </div>
+            <div class="cnf-contact-item">
+              <i class="bi bi-telephone-fill"></i>
+              <div><strong>Téléphone</strong><span>+224 627 13 56 13</span></div>
+            </div>
+            <div class="cnf-contact-item">
+              <i class="bi bi-clock-fill"></i>
+              <div><strong>Horaires</strong><span>Lundi au vendredi — 08h00 à 17h00</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-lg-7">
+          <form class="cnf-contact-form" method="post" action="{% url 'index' %}#contact">
+            {% csrf_token %}
+
+            {% if messages %}
+              {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} mb-3">{{ message }}</div>
+              {% endfor %}
+            {% endif %}
+
+            <div class="row g-3">
+              <div class="col-md-6">
+                <label for="nom">Nom complet *</label>
+                <input type="text" class="form-control" id="nom" name="nom"
+                       value="{{ form.nom.value|default_if_none:'' }}" required>
+              </div>
+              <div class="col-md-6">
+                <label for="email">Adresse email *</label>
+                <input type="email" class="form-control" id="email" name="email"
+                       value="{{ form.email.value|default_if_none:'' }}" required>
+              </div>
+              <div class="col-12">
+                <label for="telephone">Téléphone</label>
+                <input type="text" class="form-control" id="telephone" name="telephone"
+                       value="{{ form.telephone.value|default_if_none:'' }}">
+              </div>
+              <div class="col-12">
+                <label for="message">Message *</label>
+                <textarea class="form-control" id="message" name="message" required>{{ form.message.value|default_if_none:'' }}</textarea>
+              </div>
+              <div class="col-12">
+                <button type="submit" class="cnf-btn cnf-btn-primary">
+                  <i class="bi bi-send-fill"></i> Envoyer le message
+                </button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+{% endblock %}

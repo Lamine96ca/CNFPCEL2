@@ -1,0 +1,90 @@
+{% load static %}<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0077B6">
+  <title>{% block titre_onglet %}Espace de gestion{% endblock %} · CNFPATEL</title>
+  <link rel="icon" href="{% static 'gestion/assets/img/favi.png' %}">
+
+  <link href="{% static 'gestion/assets/vendor/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
+  <link href="{% static 'gestion/assets/vendor/bootstrap-icons/bootstrap-icons.css' %}" rel="stylesheet">
+  <link href="{% static 'gestion/css/cnf-gestion.css' %}" rel="stylesheet">
+  {% block entete %}{% endblock %}
+</head>
+<body>
+
+<header class="cnf-entete">
+  <button class="btn btn-entete d-lg-none px-2" data-bs-toggle="offcanvas" data-bs-target="#menu" aria-label="Ouvrir le menu">
+    <i class="bi bi-list fs-4"></i>
+  </button>
+  <a href="{% block lien_marque %}{% url 'gestion' %}{% endblock %}" class="marque">
+    <img src="{% static 'gestion/assets/img/logo.png' %}" alt="Logo CNFPATEL">
+    <span>
+      <span class="nom">CNFPATEL</span>
+      <small>{% block sous_marque %}Espace de gestion{% endblock %}</small>
+    </span>
+  </a>
+
+  <div class="ms-auto d-flex align-items-center gap-1">
+    <a href="{% url 'index' %}" class="btn btn-entete d-none d-sm-inline-flex" target="_blank" title="Voir le site public">
+      <i class="bi bi-globe2 fs-5"></i>
+    </a>
+    {% block notifications %}{% endblock %}
+
+    <div class="dropdown">
+      <button class="btn btn-entete d-flex align-items-center gap-2" data-bs-toggle="dropdown" aria-expanded="false">
+        <span class="avatar">{{ user.first_name|first|default:user.username|first }}{{ user.last_name|first }}</span>
+        <span class="d-none d-md-inline text-start lh-sm">
+          <span class="d-block fw-semibold">{{ user.get_full_name|default:user.username }}</span>
+          <small class="text-secondary">{{ cnf_role_libelle }}</small>
+        </span>
+        <i class="bi bi-chevron-down small"></i>
+      </button>
+      <ul class="dropdown-menu dropdown-menu-end">
+        <li class="px-2 py-1 small text-secondary">{{ user.email|default:user.username }}</li>
+        <li><hr class="dropdown-divider"></li>
+        {% block menu_compte %}{% endblock %}
+        <li><a class="dropdown-item text-danger" href="{% url 'logout' %}"><i class="bi bi-box-arrow-right"></i> Déconnexion</a></li>
+      </ul>
+    </div>
+  </div>
+</header>
+
+<div class="cnf-corps">
+  <aside class="cnf-sidebar offcanvas-lg offcanvas-start" tabindex="-1" id="menu">
+    <div class="d-flex d-lg-none justify-content-end p-2">
+      <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" data-bs-target="#menu" aria-label="Fermer"></button>
+    </div>
+    <div class="menu-profil">
+      <span class="avatar-menu">{{ user.first_name|first|default:user.username|first }}{{ user.last_name|first }}</span>
+      <div class="nom">{{ user.get_full_name|default:user.username }}</div>
+      <div class="role">{% block role_menu %}{{ cnf_role_libelle }}{% endblock %}</div>
+    </div>
+    <nav class="nav flex-column cnf-nav">
+      {% block menu %}{% endblock %}
+    </nav>
+    <div class="menu-pied">CNFPATEL · {% now "Y" %}</div>
+  </aside>
+
+  <main class="cnf-main">
+    <div class="cnf-contenu">
+      {% block page %}{% endblock %}
+    </div>
+    <footer class="cnf-pied d-flex flex-wrap justify-content-between gap-2">
+      <span>© {% now "Y" %} CNFPATEL — Centre National de Formation et de Perfectionnement</span>
+      <a href="{% url 'index' %}" class="text-decoration-none">Retour au site</a>
+    </footer>
+  </main>
+</div>
+
+<script src="{% static 'gestion/assets/vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+<script>
+  (function () {
+    var h = document.getElementById('titre-page');
+    if (h && h.textContent.trim()) document.title = h.textContent.trim() + ' · CNFPATEL';
+  })();
+</script>
+{% block scripts %}{% endblock %}
+</body>
+</html>

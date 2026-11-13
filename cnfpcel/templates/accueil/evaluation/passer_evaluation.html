@@ -1,0 +1,1471 @@
+```html
+{% extends 'accueil/base/base.html' %}
+{% load cnf_filtres %}
+{% load static %}
+
+{% block content %}
+
+<style>
+
+/* =========================================================
+   EVALUATION — DESIGN MODERNE CNFPCEL
+========================================================= */
+
+:root {
+    --primary: #0077B6;
+    --primary-dark: #005b8a;
+    --primary-light: #eaf7fc;
+
+    --text: #243746;
+    --muted: #718096;
+
+    --bg: #f5f8fa;
+    --white: #ffffff;
+
+    --border: #e3ebf0;
+
+    --success: #198754;
+    --warning: #f5a800;
+    --danger: #dc3545;
+
+    --shadow:
+        0 7px 25px rgba(30, 60, 80, .07);
+
+    --shadow-hover:
+        0 12px 30px rgba(30, 60, 80, .11);
+}
+
+
+/* =========================================================
+   PAGE
+========================================================= */
+
+#passer_evaluation {
+    min-height: 100vh;
+    padding-top: 90px;
+    padding-bottom: 50px;
+    background: var(--bg);
+}
+
+.eval-container {
+    width: 100%;
+    max-width: 900px;
+    margin: auto;
+}
+
+
+/* =========================================================
+   BARRE FIXE DE PROGRESSION
+========================================================= */
+
+.progress-wrapper {
+    position: sticky;
+
+    top: 80px;
+
+    z-index: 1000;
+
+    padding: 10px;
+
+    margin-bottom: 25px;
+
+    background: rgba(255,255,255,.96);
+
+    border: 1px solid var(--border);
+
+    border-radius: 18px;
+
+    box-shadow:
+        0 8px 25px rgba(20,50,70,.08);
+
+    backdrop-filter: blur(10px);
+}
+
+
+/* =========================================================
+   HEADER EVALUATION
+========================================================= */
+
+.eval-header {
+    position: relative;
+
+    overflow: hidden;
+
+    padding: 25px 22px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #0077B6 0%,
+            #005f91 100%
+        );
+
+    color: #fff;
+
+    border-radius: 15px;
+
+    box-shadow:
+        0 8px 22px rgba(0,119,182,.18);
+}
+
+
+/* motif décoratif */
+
+.eval-header::after {
+    content: "";
+
+    position: absolute;
+
+    width: 180px;
+    height: 180px;
+
+    right: -80px;
+    top: -90px;
+
+    border-radius: 50%;
+
+    background: rgba(255,255,255,.08);
+}
+
+.eval-header::before {
+    content: "";
+
+    position: absolute;
+
+    width: 110px;
+    height: 110px;
+
+    left: -55px;
+    bottom: -55px;
+
+    border-radius: 50%;
+
+    background: rgba(255,255,255,.06);
+}
+
+
+.eval-header-content {
+    position: relative;
+    z-index: 2;
+}
+
+
+.eval-title {
+    margin: 0 0 8px;
+
+    font-size: clamp(1.35rem, 3vw, 1.85rem);
+
+    font-weight: 800;
+
+    line-height: 1.25;
+}
+
+.eval-description {
+    max-width: 700px;
+
+    margin: 0 auto 18px;
+
+    color: rgba(255,255,255,.88);
+
+    font-size: .9rem;
+
+    line-height: 1.7;
+}
+
+
+/* HTML riche description */
+
+.eval-description strong {
+    color: #fff;
+    font-weight: 800;
+}
+
+.eval-description em {
+    font-style: italic;
+}
+
+.eval-description a {
+    color: #fff;
+    font-weight: 700;
+    text-decoration: underline;
+}
+
+.eval-description p {
+    margin-bottom: 5px;
+}
+
+.eval-description ul {
+    padding-left: 20px;
+    text-align: left;
+}
+
+
+/* =========================================================
+   INFOS EVALUATION
+========================================================= */
+
+.eval-info {
+    display: flex;
+
+    justify-content: center;
+
+    align-items: center;
+
+    gap: 8px;
+
+    flex-wrap: wrap;
+
+    margin-bottom: 17px;
+}
+
+.eval-info-badge {
+    display: inline-flex;
+
+    align-items: center;
+
+    gap: 6px;
+
+    padding: 7px 12px;
+
+    background: rgba(255,255,255,.93);
+
+    color: var(--text);
+
+    border-radius: 50px;
+
+    font-size: .76rem;
+
+    font-weight: 700;
+}
+
+
+/* =========================================================
+   TIMER
+========================================================= */
+
+.timer-box {
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 8px;
+
+    padding: 9px 16px;
+
+    background: #fff3cd;
+
+    color: #805d00;
+
+    border: 1px solid rgba(255,193,7,.25);
+
+    border-radius: 50px;
+
+    font-size: .82rem;
+
+    font-weight: 800;
+
+    box-shadow:
+        0 4px 12px rgba(0,0,0,.08);
+
+    transition: .3s ease;
+}
+
+.timer-box.warning {
+    background: #fff0f0;
+    color: var(--danger);
+    border-color: rgba(220,53,69,.25);
+}
+
+.timer-box.critical {
+    background: var(--danger);
+    color: #fff;
+
+    animation: timerPulse 1s infinite;
+}
+
+#timer {
+    min-width: 52px;
+
+    font-variant-numeric: tabular-nums;
+
+    font-weight: 900;
+}
+
+@keyframes timerPulse {
+
+    0%, 100% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.04);
+    }
+
+}
+
+
+/* =========================================================
+   PROGRESSION
+========================================================= */
+
+.progress-info {
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    gap: 10px;
+
+    margin: 12px 3px 7px;
+}
+
+.progress-info small {
+    color: var(--muted);
+
+    font-size: .76rem;
+
+    font-weight: 600;
+}
+
+.progress {
+    height: 9px;
+
+    overflow: hidden;
+
+    background: #e8eef2;
+
+    border-radius: 50px;
+}
+
+.progress-bar {
+    background:
+        linear-gradient(
+            90deg,
+            var(--primary),
+            #19a7e0
+        );
+
+    border-radius: 50px;
+
+    transition:
+        width .35s ease;
+}
+
+
+/* =========================================================
+   INDICATEUR QUESTION
+========================================================= */
+
+.question-number {
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    width: 34px;
+    height: 34px;
+
+    margin-right: 9px;
+
+    background: var(--primary-light);
+
+    color: var(--primary);
+
+    border-radius: 10px;
+
+    font-size: .82rem;
+
+    font-weight: 800;
+
+    flex-shrink: 0;
+}
+
+
+/* =========================================================
+   CARTE QUESTION
+========================================================= */
+
+.question-card {
+    overflow: hidden;
+
+    margin-bottom: 20px;
+
+    background: var(--white);
+
+    border: 1px solid var(--border);
+
+    border-radius: 17px;
+
+    box-shadow: var(--shadow);
+
+    transition:
+        box-shadow .3s ease,
+        border-color .3s ease,
+        transform .3s ease;
+}
+
+.question-card:hover {
+    border-color: rgba(0,119,182,.18);
+
+    box-shadow: var(--shadow-hover);
+}
+
+.question-card.answered {
+    border-color: rgba(25,135,84,.25);
+}
+
+
+/* =========================================================
+   QUESTION
+========================================================= */
+
+.question-body {
+    padding: 22px;
+}
+
+.question-heading {
+    display: flex;
+
+    align-items: flex-start;
+
+    gap: 2px;
+
+    margin-bottom: 20px;
+
+    color: var(--text);
+
+    font-size: 1rem;
+
+    font-weight: 800;
+
+    line-height: 1.6;
+}
+
+
+/* HTML riche question */
+
+.question-heading strong {
+    font-weight: 900;
+}
+
+.question-heading em {
+    font-style: italic;
+}
+
+.question-heading a {
+    color: var(--primary);
+
+    font-weight: 700;
+
+    text-decoration: underline;
+}
+
+.question-heading p {
+    display: inline;
+    margin: 0;
+}
+
+.question-heading ul {
+    margin-top: 5px;
+    padding-left: 20px;
+}
+
+
+/* =========================================================
+   REPONSES
+========================================================= */
+
+.answers {
+    display: grid;
+
+    gap: 10px;
+}
+
+.answer-option {
+    position: relative;
+
+    display: flex;
+
+    align-items: flex-start;
+
+    gap: 12px;
+
+    width: 100%;
+
+    padding: 14px 15px;
+
+    background: #fff;
+
+    border: 1px solid #dce5eb;
+
+    border-radius: 12px;
+
+    cursor: pointer;
+
+    color: var(--text);
+
+    font-size: .9rem;
+
+    line-height: 1.55;
+
+    transition:
+        background .25s ease,
+        border-color .25s ease,
+        transform .2s ease,
+        box-shadow .25s ease;
+}
+
+.answer-option:hover {
+    background: #f8fbfd;
+
+    border-color: rgba(0,119,182,.35);
+
+    transform: translateX(2px);
+}
+
+.answer-option input {
+    position: absolute;
+
+    opacity: 0;
+
+    pointer-events: none;
+}
+
+
+/* cercle radio personnalisé */
+
+.radio-custom {
+    width: 20px;
+    height: 20px;
+
+    flex: 0 0 20px;
+
+    margin-top: 1px;
+
+    border: 2px solid #b8c6ce;
+
+    border-radius: 50%;
+
+    background: #fff;
+
+    transition: .2s ease;
+}
+
+.answer-option.active {
+    background: var(--primary-light);
+
+    border-color: var(--primary);
+
+    box-shadow:
+        0 4px 12px rgba(0,119,182,.08);
+}
+
+.answer-option.active .radio-custom {
+    border-color: var(--primary);
+
+    background:
+        radial-gradient(
+            circle,
+            var(--primary) 0 5px,
+            #fff 6px
+        );
+}
+
+
+/* =========================================================
+   HTML RICHE DES REPONSES
+========================================================= */
+
+.answer-text {
+    flex: 1;
+
+    min-width: 0;
+}
+
+.answer-text strong {
+    color: var(--text);
+
+    font-weight: 800;
+}
+
+.answer-text em {
+    font-style: italic;
+}
+
+.answer-text a {
+    color: var(--primary);
+
+    font-weight: 700;
+
+    text-decoration: underline;
+}
+
+.answer-text p {
+    margin-bottom: 4px;
+}
+
+.answer-text p:last-child {
+    margin-bottom: 0;
+}
+
+.answer-text ul {
+    margin-top: 5px;
+    margin-bottom: 4px;
+
+    padding-left: 20px;
+}
+
+.answer-text li {
+    margin-bottom: 2px;
+}
+
+
+/* =========================================================
+   MESSAGE REPONSE
+========================================================= */
+
+.answer-status {
+    display: none;
+
+    margin-top: 6px;
+
+    color: var(--success);
+
+    font-size: .72rem;
+
+    font-weight: 700;
+}
+
+.question-card.answered .answer-status {
+    display: block;
+}
+
+
+/* =========================================================
+   SOUMISSION
+========================================================= */
+
+.submit-box {
+    position: sticky;
+
+    bottom: 0;
+
+    z-index: 900;
+
+    padding: 15px;
+
+    margin-top: 25px;
+
+    background: rgba(255,255,255,.96);
+
+    border: 1px solid var(--border);
+
+    border-radius: 17px;
+
+    box-shadow:
+        0 -5px 25px rgba(20,50,70,.08);
+
+    backdrop-filter: blur(10px);
+}
+
+.submit-button {
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 8px;
+
+    min-width: 240px;
+
+    padding: 12px 25px;
+
+    background: var(--primary);
+
+    color: #fff;
+
+    border: 0;
+
+    border-radius: 11px;
+
+    font-weight: 800;
+
+    box-shadow:
+        0 7px 17px rgba(0,119,182,.20);
+
+    transition: .3s ease;
+}
+
+.submit-button:hover {
+    background: var(--primary-dark);
+
+    transform: translateY(-2px);
+
+    box-shadow:
+        0 10px 22px rgba(0,119,182,.27);
+}
+
+.submit-button:active {
+    transform: translateY(0);
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 767px) {
+
+    #passer_evaluation {
+        padding-top: 65px;
+    }
+
+    .eval-container {
+        padding-left: 10px;
+        padding-right: 10px;
+    }
+
+    .progress-wrapper {
+        top: 65px;
+
+        padding: 7px;
+
+        border-radius: 14px;
+    }
+
+    .eval-header {
+        padding: 20px 15px;
+
+        border-radius: 12px;
+    }
+
+    .eval-title {
+        font-size: 1.25rem;
+    }
+
+    .eval-description {
+        font-size: .83rem;
+    }
+
+    .question-body {
+        padding: 17px;
+    }
+
+    .question-heading {
+        font-size: .9rem;
+    }
+
+    .answer-option {
+        padding: 12px;
+
+        font-size: .84rem;
+    }
+
+    .submit-box {
+        padding: 11px;
+
+        border-radius: 13px;
+    }
+
+    .submit-button {
+        width: 100%;
+        min-width: 0;
+    }
+
+}
+
+
+/* =========================================================
+   PETIT INDICATEUR ANIMATION
+========================================================= */
+
+.question-item {
+    animation: questionFade .45s ease both;
+}
+
+@keyframes questionFade {
+
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+}
+
+</style>
+
+
+
+<!-- =========================================================
+     EVALUATION
+========================================================= -->
+
+<section id="passer_evaluation">
+
+    <div class="container eval-container">
+
+
+        <!-- =================================================
+             PROGRESSION + HEADER
+        ================================================== -->
+
+        <div class="progress-wrapper">
+
+
+            <!-- HEADER -->
+
+            <div class="eval-header">
+
+                <div class="eval-header-content text-center">
+
+
+                    <h1 class="eval-title">
+
+                        {{ evaluation.titre }}
+
+                    </h1>
+
+
+                    <!--
+                        DESCRIPTION HTML RICHE
+                    -->
+
+                    <div class="eval-description">
+
+                        {{ evaluation.description|nettoyer }}
+
+                    </div>
+
+
+                    <!-- INFORMATIONS -->
+
+                    <div class="eval-info">
+
+
+                        <span class="eval-info-badge">
+
+                            <i class="bi bi-mortarboard-fill"></i>
+
+                            {{ evaluation.formation.nom }}
+
+                        </span>
+
+
+                        <span class="eval-info-badge d-none d-md-inline-flex">
+
+                            <i class="bi bi-question-circle-fill"></i>
+
+                            {{ questions.count }} questions
+
+                        </span>
+
+
+                        <span class="eval-info-badge">
+
+                            <i class="bi bi-clock-fill"></i>
+
+                            {{ evaluation.duree }} min
+
+                        </span>
+
+
+                    </div>
+
+
+                    <!-- TIMER -->
+
+                    <div class="d-flex justify-content-center">
+
+                        <div id="timerBox"
+                             class="timer-box">
+
+                            <i class="bi bi-stopwatch-fill"></i>
+
+                            <span>
+                                Temps restant :
+                            </span>
+
+                            <span id="timer">
+                                --:--
+                            </span>
+
+                        </div>
+
+                    </div>
+
+
+                </div>
+
+            </div>
+
+
+
+            <!-- PROGRESSION -->
+
+            <div class="progress-info">
+
+                <small>
+
+                    <i class="bi bi-bar-chart-fill me-1"></i>
+
+                    Progression
+
+                </small>
+
+
+                <small>
+
+                    Question
+
+                    <strong id="currentQuestion">
+                        0
+                    </strong>
+
+                    /
+
+                    {{ questions.count }}
+
+                </small>
+
+            </div>
+
+
+            <div class="progress">
+
+                <div id="progressBar"
+                     class="progress-bar"
+                     role="progressbar"
+                     style="width:0%;"
+                     aria-valuemin="0"
+                     aria-valuemax="100"
+                     aria-valuenow="0">
+
+                </div>
+
+            </div>
+
+
+        </div>
+
+
+
+        <!-- =================================================
+             FORMULAIRE
+        ================================================== -->
+
+        <form method="post"
+              id="evaluationForm">
+
+            {% csrf_token %}
+
+
+            {% for question in questions %}
+
+
+            <!-- QUESTION -->
+
+            <article class="question-card question-item"
+                     data-index="{{ forloop.counter }}">
+
+
+                <div class="question-body">
+
+
+                    <!-- QUESTION -->
+
+                    <div class="question-heading">
+
+
+                        <span class="question-number">
+
+                            {{ forloop.counter }}
+
+                        </span>
+
+
+                        <!--
+                            HTML RICHE DE LA QUESTION
+                        -->
+
+                        <div>
+
+                            {{ question.texte|nettoyer }}
+
+                        </div>
+
+
+                    </div>
+
+
+
+                    <!-- REPONSES -->
+
+                    <div class="answers">
+
+
+                        {% for reponse in question.reponse_set.all|dictsort:"id" %}
+
+
+                        <label class="answer-option"
+                               data-question="{{ question.id }}">
+
+
+                            <input type="radio"
+                                   name="question_{{ question.id }}"
+                                   value="{{ reponse.id }}">
+
+
+                            <span class="radio-custom"></span>
+
+
+                            <!--
+                                HTML RICHE DE LA REPONSE
+                            -->
+
+                            <span class="answer-text">
+
+                                {{ reponse.texte|nettoyer }}
+
+                            </span>
+
+
+                        </label>
+
+
+                        {% endfor %}
+
+
+                    </div>
+
+
+                    <div class="answer-status">
+
+                        <i class="bi bi-check-circle-fill me-1"></i>
+
+                        Réponse sélectionnée
+
+                    </div>
+
+
+                </div>
+
+
+            </article>
+
+
+            {% endfor %}
+
+
+
+            <!-- =================================================
+                 SOUMISSION
+            ================================================== -->
+
+            <div class="submit-box text-center">
+
+
+                <button type="submit"
+                        id="submitButton"
+                        class="submit-button">
+
+
+                    <i class="bi bi-send-check-fill"></i>
+
+                    Soumettre les réponses
+
+
+                </button>
+
+
+                <p class="text-muted mt-2 mb-0 small d-none d-md-block">
+
+                    <i class="bi bi-shield-check me-1"></i>
+
+                    Vos réponses sont enregistrées de manière sécurisée.
+
+                </p>
+
+
+            </div>
+
+
+        </form>
+
+
+    </div>
+
+
+    <!-- =====================================================
+         JAVASCRIPT
+    ====================================================== -->
+
+    <script>
+
+    document.addEventListener(
+        "DOMContentLoaded",
+        function () {
+
+
+            /* =================================================
+               ELEMENTS
+            ================================================== */
+
+            const questions =
+                document.querySelectorAll(".question-item");
+
+            const progressBar =
+                document.getElementById("progressBar");
+
+            const currentQuestion =
+                document.getElementById("currentQuestion");
+
+            const form =
+                document.getElementById("evaluationForm");
+
+            const timerElement =
+                document.getElementById("timer");
+
+            const timerBox =
+                document.getElementById("timerBox");
+
+            const submitButton =
+                document.getElementById("submitButton");
+
+
+            /* =================================================
+               PROGRESSION
+            ================================================== */
+
+            function updateProgress() {
+
+                let answered = 0;
+
+                let lastAnswered = 0;
+
+
+                questions.forEach(
+                    function (question, index) {
+
+                        const checked =
+                            question.querySelector(
+                                'input[type="radio"]:checked'
+                            );
+
+                        if (checked) {
+
+                            answered++;
+
+                            lastAnswered =
+                                index + 1;
+
+                            question.classList.add(
+                                "answered"
+                            );
+
+                        }
+
+                    }
+                );
+
+
+                const total =
+                    questions.length;
+
+
+                const percent =
+                    total > 0
+                        ? (answered / total) * 100
+                        : 0;
+
+
+                progressBar.style.width =
+                    percent + "%";
+
+
+                progressBar.setAttribute(
+                    "aria-valuenow",
+                    Math.round(percent)
+                );
+
+
+                /*
+                    Affiche la dernière question
+                    à laquelle l'utilisateur a répondu.
+                */
+
+                currentQuestion.textContent =
+                    lastAnswered;
+
+
+                /*
+                    Si aucune réponse :
+                    on affiche 0.
+                */
+
+                if (answered === 0) {
+
+                    currentQuestion.textContent = "0";
+
+                }
+
+            }
+
+
+            /* =================================================
+               SELECTION REPONSE
+            ================================================== */
+
+            questions.forEach(
+                function (question) {
+
+
+                    const options =
+                        question.querySelectorAll(
+                            ".answer-option"
+                        );
+
+
+                    options.forEach(
+                        function (option) {
+
+
+                            option.addEventListener(
+                                "click",
+                                function () {
+
+
+                                    /*
+                                        Retirer l'état actif
+                                        des autres réponses.
+                                    */
+
+                                    options.forEach(
+                                        function (item) {
+
+                                            item.classList.remove(
+                                                "active"
+                                            );
+
+                                        }
+                                    );
+
+
+                                    /*
+                                        Activer la réponse
+                                        sélectionnée.
+                                    */
+
+                                    option.classList.add(
+                                        "active"
+                                    );
+
+
+                                    /*
+                                        Mettre à jour
+                                        la progression.
+                                    */
+
+                                    updateProgress();
+
+                                }
+                            );
+
+                        }
+                    );
+
+
+                }
+            );
+
+
+            /*
+                Initialisation.
+            */
+
+            updateProgress();
+
+
+
+            /* =================================================
+               TIMER
+            ================================================== */
+
+            const dureeMinutes =
+                Number("{{ evaluation.duree }}");
+
+
+            let tempsRestant =
+                dureeMinutes * 60;
+
+
+            let timerInterval;
+
+
+            function updateTimer() {
+
+
+                const minutes =
+                    Math.floor(
+                        tempsRestant / 60
+                    );
+
+
+                const secondes =
+                    tempsRestant % 60;
+
+
+                timerElement.textContent =
+
+                    String(minutes)
+                    + ":"
+                    + String(secondes).padStart(2, "0");
+
+
+                /*
+                    Moins de 5 minutes
+                */
+
+                if (
+                    tempsRestant <= 300 &&
+                    tempsRestant > 60
+                ) {
+
+                    timerBox.classList.add(
+                        "warning"
+                    );
+
+                }
+
+
+                /*
+                    Dernière minute
+                */
+
+                if (
+                    tempsRestant <= 60
+                ) {
+
+                    timerBox.classList.remove(
+                        "warning"
+                    );
+
+                    timerBox.classList.add(
+                        "critical"
+                    );
+
+                }
+
+
+                /*
+                    Temps écoulé
+                */
+
+                if (tempsRestant <= 0) {
+
+
+                    clearInterval(
+                        timerInterval
+                    );
+
+
+                    timerElement.textContent =
+                        "00:00";
+
+
+                    submitButton.disabled =
+                        true;
+
+
+                    /*
+                        Soumission automatique.
+                    */
+
+                    form.submit();
+
+
+                    return;
+
+                }
+
+
+                tempsRestant--;
+
+            }
+
+
+            updateTimer();
+
+
+            timerInterval =
+                setInterval(
+                    updateTimer,
+                    1000
+                );
+
+
+
+            /* =================================================
+               PREVENTION DOUBLE SOUMISSION
+            ================================================== */
+
+            form.addEventListener(
+                "submit",
+                function () {
+
+                    submitButton.disabled =
+                        true;
+
+                    submitButton.innerHTML =
+
+                        '<span class="spinner-border spinner-border-sm me-2"></span>'
+                        + 'Enregistrement...';
+
+                }
+            );
+
+
+        }
+    );
+
+    </script>
+
+
+
+    <!-- =====================================================
+         BLOQUER LE RETOUR EN ARRIERE
+    ====================================================== -->
+
+    <script>
+
+    history.pushState(
+        null,
+        null,
+        location.href
+    );
+
+
+    window.onpopstate =
+        function () {
+
+            history.go(1);
+
+        };
+
+    </script>
+
+
+</section>
+
+
+{% endblock %}
+

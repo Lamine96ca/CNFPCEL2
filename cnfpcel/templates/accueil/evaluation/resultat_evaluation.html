@@ -1,0 +1,977 @@
+```html
+{% extends 'accueil/base/base.html' %}
+{% load static %}
+
+{% block content %}
+
+<style>
+
+/* =========================================================
+   RESULTAT EVALUATION — DESIGN CNFPCEL
+========================================================= */
+
+:root {
+    --primary: #0077B6;
+    --primary-dark: #005b8a;
+    --primary-light: #eaf7fc;
+
+    --success: #198754;
+    --success-light: #eaf8f0;
+
+    --danger: #dc3545;
+    --danger-light: #fff0f1;
+
+    --warning: #f5a800;
+    --warning-light: #fff8e5;
+
+    --text: #243746;
+    --muted: #718096;
+
+    --bg: #f5f8fa;
+    --white: #ffffff;
+
+    --border: #e3ebf0;
+
+    --shadow:
+        0 10px 35px rgba(30, 60, 80, .08);
+}
+
+
+/* =========================================================
+   PAGE
+========================================================= */
+
+#resultat-evaluation {
+    min-height: 100vh;
+
+    padding-top: 95px;
+    padding-bottom: 60px;
+
+    background: var(--bg);
+}
+
+.result-container {
+    width: 100%;
+    max-width: 900px;
+
+    margin: auto;
+}
+
+
+/* =========================================================
+   CARTE PRINCIPALE
+========================================================= */
+
+.result-card {
+    overflow: hidden;
+
+    background: var(--white);
+
+    border: 1px solid var(--border);
+    border-radius: 22px;
+
+    box-shadow: var(--shadow);
+}
+
+
+/* =========================================================
+   HEADER
+========================================================= */
+
+.result-header {
+    position: relative;
+
+    overflow: hidden;
+
+    padding: 32px 25px;
+
+    color: #fff;
+
+    text-align: center;
+}
+
+
+/* Réussi */
+
+.result-header.success {
+    background:
+        linear-gradient(
+            135deg,
+            #198754,
+            #157347
+        );
+}
+
+
+/* Non réussi */
+
+.result-header.failed {
+    background:
+        linear-gradient(
+            135deg,
+            #dc3545,
+            #b02a37
+        );
+}
+
+
+/* Cercles décoratifs */
+
+.result-header::before {
+    content: "";
+
+    position: absolute;
+
+    width: 190px;
+    height: 190px;
+
+    top: -100px;
+    right: -70px;
+
+    border-radius: 50%;
+
+    background: rgba(255,255,255,.08);
+}
+
+.result-header::after {
+    content: "";
+
+    position: absolute;
+
+    width: 130px;
+    height: 130px;
+
+    bottom: -75px;
+    left: -45px;
+
+    border-radius: 50%;
+
+    background: rgba(255,255,255,.06);
+}
+
+.result-header-content {
+    position: relative;
+
+    z-index: 2;
+}
+
+
+/* =========================================================
+   ICONE RESULTAT
+========================================================= */
+
+.result-icon {
+    width: 58px;
+    height: 58px;
+
+    display: inline-flex;
+
+    align-items: center;
+    justify-content: center;
+
+    margin-bottom: 14px;
+
+    background: rgba(255,255,255,.16);
+
+    border: 1px solid rgba(255,255,255,.20);
+
+    border-radius: 50%;
+
+    font-size: 1.55rem;
+
+    backdrop-filter: blur(5px);
+}
+
+
+/* =========================================================
+   TITRE
+========================================================= */
+
+.result-header h1 {
+    margin: 0 0 7px;
+
+    font-size: clamp(1.4rem, 3vw, 1.9rem);
+
+    font-weight: 800;
+
+    line-height: 1.25;
+}
+
+.result-header p {
+    margin: 0;
+
+    color: rgba(255,255,255,.86);
+
+    font-size: .92rem;
+}
+
+
+/* =========================================================
+   CORPS
+========================================================= */
+
+.result-body {
+    padding: 30px;
+}
+
+
+/* =========================================================
+   STATISTIQUES
+========================================================= */
+
+.stats-grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(3, 1fr);
+
+    gap: 15px;
+}
+
+
+/* =========================================================
+   STAT CARD
+========================================================= */
+
+.stat-card {
+    position: relative;
+
+    min-height: 145px;
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: center;
+    justify-content: center;
+
+    padding: 20px;
+
+    background: #fff;
+
+    border: 1px solid var(--border);
+
+    border-radius: 15px;
+
+    text-align: center;
+
+    transition:
+        transform .3s ease,
+        box-shadow .3s ease,
+        border-color .3s ease;
+}
+
+.stat-card:hover {
+    transform: translateY(-3px);
+
+    box-shadow:
+        0 8px 22px rgba(30,60,80,.08);
+}
+
+
+/* =========================================================
+   ICONE STAT
+========================================================= */
+
+.stat-icon {
+    width: 38px;
+    height: 38px;
+
+    display: inline-flex;
+
+    align-items: center;
+    justify-content: center;
+
+    margin-bottom: 9px;
+
+    border-radius: 10px;
+
+    font-size: 1rem;
+}
+
+.stat-icon.blue {
+    background: var(--primary-light);
+    color: var(--primary);
+}
+
+.stat-icon.green {
+    background: var(--success-light);
+    color: var(--success);
+}
+
+.stat-icon.red {
+    background: var(--danger-light);
+    color: var(--danger);
+}
+
+
+/* =========================================================
+   LABEL STAT
+========================================================= */
+
+.stat-label {
+    margin-bottom: 6px;
+
+    color: var(--muted);
+
+    font-size: .70rem;
+
+    font-weight: 800;
+
+    text-transform: uppercase;
+
+    letter-spacing: .5px;
+}
+
+
+/* =========================================================
+   VALEUR
+========================================================= */
+
+.stat-value {
+    color: var(--text);
+
+    font-size: 1.55rem;
+
+    font-weight: 900;
+
+    line-height: 1.1;
+}
+
+.stat-value.primary {
+    color: var(--primary);
+}
+
+.stat-value.success {
+    color: var(--success);
+}
+
+.stat-value.danger {
+    color: var(--danger);
+}
+
+.stat-value small {
+    color: var(--muted);
+
+    font-size: .82rem;
+
+    font-weight: 700;
+}
+
+
+/* =========================================================
+   SCORE PRINCIPAL
+========================================================= */
+
+.score-highlight {
+    margin-top: 25px;
+
+    padding: 20px;
+
+    background: var(--primary-light);
+
+    border: 1px solid rgba(0,119,182,.12);
+
+    border-radius: 15px;
+
+    text-align: center;
+}
+
+.score-highlight-label {
+    margin-bottom: 3px;
+
+    color: var(--muted);
+
+    font-size: .74rem;
+
+    font-weight: 800;
+
+    text-transform: uppercase;
+
+    letter-spacing: .6px;
+}
+
+.score-highlight-value {
+    color: var(--primary);
+
+    font-size: 2.1rem;
+
+    font-weight: 900;
+}
+
+
+/* =========================================================
+   MESSAGE RESULTAT
+========================================================= */
+
+.result-message {
+    margin-top: 20px;
+
+    padding: 18px 20px;
+
+    border-radius: 14px;
+
+    text-align: center;
+
+    font-size: .9rem;
+
+    line-height: 1.6;
+}
+
+.result-message.success {
+    background: var(--success-light);
+
+    border: 1px solid rgba(25,135,84,.15);
+
+    color: #176c45;
+}
+
+.result-message.failed {
+    background: var(--warning-light);
+
+    border: 1px solid rgba(245,168,0,.18);
+
+    color: #765700;
+}
+
+.result-message strong {
+    font-weight: 900;
+}
+
+
+/* =========================================================
+   TEMPS ECOULE
+========================================================= */
+
+.time-alert {
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 8px;
+
+    margin-top: 12px;
+
+    padding: 13px 15px;
+
+    background: var(--warning-light);
+
+    border: 1px solid rgba(245,168,0,.18);
+
+    border-radius: 12px;
+
+    color: #765700;
+
+    text-align: center;
+
+    font-size: .82rem;
+}
+
+
+/* =========================================================
+   FOOTER
+========================================================= */
+
+.result-footer {
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 10px;
+
+    padding: 20px 25px;
+
+    background: #fbfdfe;
+
+    border-top: 1px solid var(--border);
+}
+
+
+/* =========================================================
+   BOUTON
+========================================================= */
+
+.retry-button {
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 8px;
+
+    min-width: 230px;
+
+    padding: 11px 22px;
+
+    background: var(--primary);
+
+    border: 0;
+
+    border-radius: 10px;
+
+    color: #fff !important;
+
+    font-size: .88rem;
+
+    font-weight: 800;
+
+    text-decoration: none;
+
+    box-shadow:
+        0 6px 15px rgba(0,119,182,.18);
+
+    transition: .3s ease;
+}
+
+.retry-button:hover {
+    background: var(--primary-dark);
+
+    color: #fff !important;
+
+    transform: translateY(-2px);
+
+    box-shadow:
+        0 9px 20px rgba(0,119,182,.25);
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 767px) {
+
+    #resultat-evaluation {
+        padding-top: 65px;
+        padding-bottom: 35px;
+    }
+
+    .result-container {
+        padding-left: 10px;
+        padding-right: 10px;
+    }
+
+    .result-card {
+        border-radius: 17px;
+    }
+
+    .result-header {
+        padding: 26px 18px;
+    }
+
+    .result-body {
+        padding: 20px 15px;
+    }
+
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .stat-card {
+        min-height: 120px;
+    }
+
+    .score-highlight-value {
+        font-size: 1.8rem;
+    }
+
+    .result-footer {
+        padding: 17px 15px;
+    }
+
+    .retry-button {
+        width: 100%;
+    }
+
+}
+
+
+/* =========================================================
+   ANIMATION
+========================================================= */
+
+.result-card {
+    animation: resultAppear .55s ease both;
+}
+
+@keyframes resultAppear {
+
+    from {
+        opacity: 0;
+
+        transform:
+            translateY(15px);
+    }
+
+    to {
+        opacity: 1;
+
+        transform:
+            translateY(0);
+    }
+
+}
+
+</style>
+
+
+
+<!-- =========================================================
+     RESULTAT
+========================================================= -->
+
+<section id="resultat-evaluation">
+
+    <div class="container result-container">
+
+
+        <div class="result-card">
+
+
+            <!-- =================================================
+                 HEADER
+            ================================================== -->
+
+            <div class="result-header
+                {% if resultat.reussi %}
+                    success
+                {% else %}
+                    failed
+                {% endif %}">
+
+
+                <div class="result-header-content">
+
+
+                    <!-- ICON -->
+
+                    <div class="result-icon">
+
+                        {% if resultat.reussi %}
+
+                            <i class="bi bi-check-lg"></i>
+
+                        {% else %}
+
+                            <i class="bi bi-x-lg"></i>
+
+                        {% endif %}
+
+                    </div>
+
+
+                    <!-- TITLE -->
+
+                    <h1>
+
+                        Résultat de l’évaluation
+
+                    </h1>
+
+
+                    <p>
+
+                        {{ resultat.evaluation.titre }}
+
+                    </p>
+
+
+                </div>
+
+            </div>
+
+
+
+            <!-- =================================================
+                 BODY
+            ================================================== -->
+
+            <div class="result-body">
+
+
+                <!-- =================================================
+                     STATISTIQUES
+                ================================================== -->
+
+                <div class="stats-grid">
+
+
+                    <!-- SCORE -->
+
+                    <div class="stat-card">
+
+
+                        <div class="stat-icon blue">
+
+                            <i class="bi bi-bar-chart-fill"></i>
+
+                        </div>
+
+
+                        <div class="stat-label">
+
+                            Score obtenu
+
+                        </div>
+
+
+                        <div class="stat-value primary">
+
+                            {{ resultat.score }} %
+
+                        </div>
+
+
+                    </div>
+
+
+
+                    <!-- BONNES REPONSES -->
+
+                    <div class="stat-card">
+
+
+                        <div class="stat-icon green">
+
+                            <i class="bi bi-check2-circle"></i>
+
+                        </div>
+
+
+                        <div class="stat-label">
+
+                            Bonnes réponses
+
+                        </div>
+
+
+                        <div class="stat-value success">
+
+                            {{ resultat.bonnes_reponses }}
+
+                            <small>
+                                / {{ resultat.total_questions }}
+                            </small>
+
+                        </div>
+
+
+                    </div>
+
+
+
+                    <!-- STATUT -->
+
+                    <div class="stat-card">
+
+
+                        {% if resultat.reussi %}
+
+
+                            <div class="stat-icon green">
+
+                                <i class="bi bi-award-fill"></i>
+
+                            </div>
+
+
+                            <div class="stat-label">
+
+                                Statut
+
+                            </div>
+
+
+                            <div class="stat-value success"
+                                 style="font-size:1.2rem;">
+
+                                Réussi
+
+                            </div>
+
+
+                        {% else %}
+
+
+                            <div class="stat-icon red">
+
+                                <i class="bi bi-x-circle-fill"></i>
+
+                            </div>
+
+
+                            <div class="stat-label">
+
+                                Statut
+
+                            </div>
+
+
+                            <div class="stat-value danger"
+                                 style="font-size:1.2rem;">
+
+                                Non validé
+
+                            </div>
+
+
+                        {% endif %}
+
+                    </div>
+
+
+                </div>
+
+
+
+                <!-- =================================================
+                     SCORE PRINCIPAL
+                ================================================== -->
+
+                <div class="score-highlight">
+
+
+                    <div class="score-highlight-label">
+
+                        Votre résultat final
+
+                    </div>
+
+
+                    <div class="score-highlight-value">
+
+                        {{ resultat.score }} %
+
+                    </div>
+
+
+                </div>
+
+
+
+                <!-- =================================================
+                     MESSAGE
+                ================================================== -->
+
+                {% if resultat.reussi %}
+
+
+                    <div class="result-message success">
+
+
+                        <strong>
+
+                            <i class="bi bi-emoji-smile-fill me-1"></i>
+
+                            Félicitations !
+
+                        </strong>
+
+
+                        <br>
+
+
+                        Vous avez satisfait aux critères
+                        de validation de cette évaluation.
+
+                    </div>
+
+
+                {% else %}
+
+
+                    <div class="result-message failed">
+
+
+                        <strong>
+
+                            <i class="bi bi-info-circle-fill me-1"></i>
+
+                            Évaluation non validée.
+
+                        </strong>
+
+
+                        <br>
+
+
+                        Nous vous invitons à revoir le contenu
+                        de la formation et à réessayer.
+
+                    </div>
+
+
+                {% endif %}
+
+
+
+                <!-- =================================================
+                     TEMPS ECOULE
+                ================================================== -->
+
+                {% if resultat.temps_ecoule %}
+
+
+                    <div class="time-alert">
+
+
+                        <i class="bi bi-clock-history"></i>
+
+
+                        <span>
+
+                            <strong>Temps écoulé.</strong>
+
+                            L’évaluation a été soumise
+                            automatiquement à la fin du
+                            temps imparti.
+
+                        </span>
+
+
+                    </div>
+
+
+                {% endif %}
+
+
+            </div>
+
+
+
+            <!-- =================================================
+                 FOOTER
+            ================================================== -->
+
+            <div class="result-footer">
+
+
+                <a href="{% url 'passer_evaluation' resultat.evaluation.id %}"
+                   class="retry-button">
+
+
+                    <i class="bi bi-arrow-repeat"></i>
+
+                    Repasser l’évaluation
+
+
+                </a>
+
+
+            </div>
+
+
+        </div>
+
+
+    </div>
+
+</section>
+
+
+{% endblock %}

@@ -1,0 +1,83 @@
+{% load static %}<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0077B6">
+  <title>Connexion · CNFPATEL</title>
+  <link rel="icon" href="{% static 'gestion/assets/img/favicon1.png' %}">
+  <link href="{% static 'gestion/assets/vendor/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
+  <link href="{% static 'gestion/assets/vendor/bootstrap-icons/bootstrap-icons.css' %}" rel="stylesheet">
+  <link href="{% static 'gestion/css/cnf-gestion.css' %}" rel="stylesheet">
+</head>
+<body>
+<div class="page-connexion">
+  <section class="visuel">
+    <a href="{% url 'index' %}" class="d-flex align-items-center gap-3 text-white text-decoration-none">
+      <img src="{% static 'assets/img/logo1.png' %}" alt="Logo CNFPATEL" style="width:58px;height:58px;object-fit:contain;background:#fff;border-radius:50%;padding:4px">
+      <span>
+        <strong class="d-block fs-5">CNFPATEL</strong>
+        <small class="text-white-50">République de Guinée</small>
+      </span>
+    </a>
+
+    <div class="my-4">
+      <h1>Une plateforme,<br>trois espaces.</h1>
+      <p class="masquer-mobile mt-3">Centre National de Formation et de Perfectionnement des Cadres et des Élus Locaux.
+        Connectez-vous avec votre adresse e-mail : vous serez dirigé automatiquement vers votre espace.</p>
+      <div class="espaces masquer-mobile mt-4">
+        <span><i class="bi bi-speedometer2 me-1"></i> Gestion</span>
+        <span><i class="bi bi-person-video3 me-1"></i> Formateur</span>
+        <span><i class="bi bi-mortarboard me-1"></i> Participant</span>
+      </div>
+    </div>
+
+    <small class="masquer-mobile text-white-50">© {% now "Y" %} CNFPATEL · Plateforme numérique institutionnelle</small>
+  </section>
+
+  <section class="formulaire">
+    <div class="boite">
+      <h2 class="mb-1" style="font-size:1.6rem">Connexion</h2>
+      <p class="text-secondary mb-4">Heureux de vous revoir.</p>
+
+      {% if erreur %}
+        <div class="alert alert-danger d-flex gap-2 align-items-start py-2">
+          <i class="bi bi-exclamation-triangle-fill mt-1"></i><div>{{ erreur }}</div>
+        </div>
+      {% endif %}
+      {% for m in messages %}
+        <div class="alert alert-{% if m.tags == 'error' %}danger{% else %}{{ m.tags|default:'info' }}{% endif %} py-2">{{ m }}</div>
+      {% endfor %}
+
+      <form method="post" action="">{% csrf_token %}
+        <div class="mb-3">
+          <label for="username" class="form-label">Adresse e-mail</label>
+          <div class="champ-icone">
+            <i class="bi bi-envelope"></i>
+            <input type="text" class="form-control" id="username" name="username" value="{{ username }}"
+                   placeholder="exemple@institution.gov.gn" autocomplete="username" required autofocus>
+          </div>
+        </div>
+        <div class="mb-2">
+          <label for="password" class="form-label">Mot de passe</label>
+          <div class="champ-icone">
+            <i class="bi bi-lock"></i>
+            <input type="password" class="form-control" id="password" name="password" placeholder="••••••••" autocomplete="current-password" required>
+            <button type="button" class="voir-mdp" aria-label="Afficher le mot de passe"
+                    onclick="const c=document.getElementById('password');c.type=c.type==='password'?'text':'password';this.firstElementChild.className=c.type==='password'?'bi bi-eye':'bi bi-eye-slash'"><i class="bi bi-eye"></i></button>
+          </div>
+        </div>
+        <div class="text-end mb-4">
+          <a href="{% url 'mot_de_passe_oublie' %}" class="small">Mot de passe oublié ?</a>
+        </div>
+        <button type="submit" class="btn btn-primary w-100 py-2"><i class="bi bi-box-arrow-in-right"></i> Se connecter</button>
+      </form>
+
+      <div class="text-center mt-4">
+        <a href="{% url 'index' %}" class="small text-secondary text-decoration-none"><i class="bi bi-arrow-left"></i> Retour au site</a>
+      </div>
+    </div>
+  </section>
+</div>
+</body>
+</html>

@@ -1,0 +1,104 @@
+{% extends 'gestion/base/base_gestion.html' %}
+{% load static %}
+
+{% block titre %} Gestion des articles {% endblock %}
+{% block lientitre%} {% url 'gestion' %} {% endblock %}
+{% block retour %} Accueil {% endblock %}
+{% block titre_encours%} Gestion des articles {%endblock%}
+
+{% block corps %}
+<!--TOAST-->
+{% if messages %}
+    {% for message in messages %}
+    <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 1055">
+    <div id="modificationToast" class="toast align-items-center text-bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="d-flex">
+        <div class="toast-body">
+            ✅ {{ message }}.
+        </div>
+        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Fermer"></button>
+        </div>
+    </div>
+    </div>
+
+    <script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const toastElement = document.getElementById('modificationToast');
+        const toast = new bootstrap.Toast(toastElement);
+        toast.show();
+    });
+    </script>
+    {% endfor %}
+{% endif %}
+
+<!--CONTENU PRINCIPALE-->
+
+<div class=" container card" >
+    <div class="container py-4">
+        <h2 class=" mb-4 text-center text-primary" >
+            <i class="bi bi-envelope-paper-fill me-2 text-accent"></i> Messages reçus
+        </h2>
+        <p class="text-muted text-center">Les message dans cette page viennent des visiteurs de site, de la section contact.</p>
+        <div class="text-center mb-4">
+            <button class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteModal" ><i class="bi bi-plus-circle"></i> Supprimer tous les messages</button> 
+        </div>
+        
+            <!-- Default Accordion -->
+            <div class="accordion" id="accordionExample" >
+                {% for msg in message_contact %}
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="">
+                    <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{ forloop.counter }}" aria-expanded="true" aria-controls="collapseTwo">
+                        <div class="">
+                            <strong class=" text-muted "> {{msg.nom}} </strong> • <span class="text-primary">{{msg.email}}</span>
+                            <br>
+                            <p class="badge bg-info p-2">
+                                {{msg.sujet}}.
+                            </p>
+                            <span><a href="{% url 'message_contact_delete' msg.id %}" class="btn "><i class="bi bi-trash text-danger fs-5 "></i></a></span>
+                               
+                        </div>
+                    </button>
+                    </h2>
+                    <div id="collapse{{ forloop.counter }}" class="accordion-collapse collapse" aria-labelledby="heading{{ forloop.counter }}" data-bs-parent="#accordionExample">
+                    <div class="accordion-body" style=" background-color: rgb(244, 241, 241);">
+                        {{msg.message|linebreaksbr}}
+                        <br><br>
+                        <span class="text-muted fs-6">Envoyé le {{msg.date_envoi|date:"d/m/Y H:i"}}.</span>
+                    </div>
+                    </div>
+                </div>
+                <br>
+                 {% empty %}
+                    <div class="alert alert-info text-center" role="alert">
+                        <i class="bi bi-info-circle me-2"></i> Aucun message reçu pour le moment.
+                {% endfor %}
+
+            </div><!-- End Default Accordion Example -->
+
+    </div>
+</div>
+
+<!-- Modal de confirmation de suppression -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title"><i class="bi bi-exclamation-triangle"></i> Confirmation</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+                <div class="modal-body">
+                    Voulez-vous vraiment supprimer tous les messages</strong> ?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>                                        
+                    
+                    <a href="{% url 'supprimer_tous_les_messages_contact' %}" class="btn btn-danger">Oui, supprimer</a>
+                    
+                    
+                </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

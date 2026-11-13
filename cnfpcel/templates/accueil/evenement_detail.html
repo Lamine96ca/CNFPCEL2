@@ -1,0 +1,1128 @@
+{% extends 'accueil/base/base.html' %}
+
+{% block content %}
+{% load static %}
+
+<style>
+
+/* =========================================================
+   DETAIL EVENEMENT — CNFPCEL
+========================================================= */
+
+:root {
+    --primary: #0077B6;
+    --primary-dark: #005b8a;
+    --primary-light: #eaf7fc;
+
+    --accent: #dc3545;
+
+    --text: #243746;
+    --muted: #718096;
+
+    --bg: #f5f8fa;
+    --white: #ffffff;
+
+    --border: #e3ebf0;
+
+    --shadow:
+        0 8px 28px rgba(30, 60, 80, .07);
+
+    --shadow-hover:
+        0 12px 30px rgba(30, 60, 80, .12);
+}
+
+
+/* =========================================================
+   PAGE
+========================================================= */
+
+#detail-evenement {
+    padding-top: 95px;
+    padding-bottom: 65px;
+}
+
+@media (max-width: 1199px) {
+
+    #detail-evenement {
+        padding-top: 75px;
+    }
+
+}
+
+@media (max-width: 767px) {
+
+    #detail-evenement {
+        padding-top: 60px;
+        padding-bottom: 45px;
+    }
+
+}
+
+
+/* =========================================================
+   CARTE PRINCIPALE
+========================================================= */
+
+.event-main {
+    overflow: hidden;
+
+    background: var(--white);
+
+    border: 1px solid var(--border);
+
+    border-radius: 20px;
+
+    box-shadow: var(--shadow);
+}
+
+
+/* =========================================================
+   IMAGE PRINCIPALE
+========================================================= */
+
+.event-main-image-wrapper {
+    position: relative;
+
+    height: 390px;
+
+    overflow: hidden;
+
+    background: #edf3f6;
+}
+
+.event-main-image {
+    width: 100%;
+    height: 100%;
+
+    display: block;
+
+    object-fit: cover;
+}
+
+
+/* Overlay */
+
+.event-main-image-wrapper::after {
+    content: "";
+
+    position: absolute;
+
+    inset: 0;
+
+    background:
+        linear-gradient(
+            to bottom,
+            rgba(0,0,0,.02) 30%,
+            rgba(0,0,0,.52) 100%
+        );
+
+    pointer-events: none;
+}
+
+
+/* =========================================================
+   INFOS SUR IMAGE
+========================================================= */
+
+.event-image-info {
+    position: absolute;
+
+    z-index: 3;
+
+    left: 25px;
+    right: 25px;
+    bottom: 22px;
+
+    color: #fff;
+}
+
+.event-category {
+    display: inline-flex;
+
+    align-items: center;
+
+    gap: 6px;
+
+    margin-bottom: 10px;
+
+    padding: 7px 12px;
+
+    background: rgba(0,119,182,.94);
+
+    border-radius: 50px;
+
+    font-size: .70rem;
+
+    font-weight: 800;
+
+    text-transform: uppercase;
+
+    letter-spacing: .4px;
+}
+
+.event-main-title {
+    margin: 0;
+
+    color: #fff;
+
+    font-size: clamp(1.45rem, 3vw, 2.15rem);
+
+    font-weight: 800;
+
+    line-height: 1.25;
+
+    text-shadow:
+        0 2px 8px rgba(0,0,0,.25);
+}
+
+
+/* =========================================================
+   INFOS EVENEMENT
+========================================================= */
+
+.event-meta {
+    display: flex;
+
+    flex-wrap: wrap;
+
+    gap: 9px;
+
+    padding: 18px 25px;
+
+    background: #fbfdfe;
+
+    border-bottom: 1px solid var(--border);
+}
+
+.event-meta-item {
+    display: inline-flex;
+
+    align-items: center;
+
+    gap: 7px;
+
+    padding: 8px 12px;
+
+    background: var(--primary-light);
+
+    color: var(--primary);
+
+    border-radius: 9px;
+
+    font-size: .76rem;
+
+    font-weight: 700;
+}
+
+.event-meta-item i {
+    font-size: .85rem;
+}
+
+
+/* =========================================================
+   CONTENU
+========================================================= */
+
+.event-content {
+    padding: 28px;
+}
+
+
+/* =========================================================
+   TITRE SECTION
+========================================================= */
+
+.event-content-title {
+    display: flex;
+
+    align-items: center;
+
+    gap: 8px;
+
+    margin-bottom: 18px;
+
+    color: var(--text);
+
+    font-size: 1rem;
+
+    font-weight: 800;
+}
+
+.event-content-title-icon {
+    width: 34px;
+    height: 34px;
+
+    display: inline-flex;
+
+    align-items: center;
+    justify-content: center;
+
+    background: var(--primary-light);
+
+    color: var(--primary);
+
+    border-radius: 9px;
+
+    font-size: .9rem;
+}
+
+
+/* =========================================================
+   DESCRIPTION HTML RICHE
+========================================================= */
+
+.event-description {
+    color: var(--text);
+
+    font-size: .94rem;
+
+    line-height: 1.85;
+
+    text-align: justify;
+}
+
+
+/* Strong */
+
+.event-description strong {
+    color: var(--text);
+
+    font-weight: 800;
+}
+
+
+/* Italique */
+
+.event-description em {
+    font-style: italic;
+}
+
+
+/* Liens */
+
+.event-description a {
+    color: var(--primary);
+
+    font-weight: 700;
+
+    text-decoration: underline;
+
+    text-decoration-thickness: 1px;
+
+    text-underline-offset: 2px;
+}
+
+.event-description a:hover {
+    color: var(--primary-dark);
+}
+
+
+/* Paragraphes */
+
+.event-description p {
+    margin-bottom: 13px;
+}
+
+.event-description p:last-child {
+    margin-bottom: 0;
+}
+
+
+/* Listes */
+
+.event-description ul {
+    margin-top: 10px;
+    margin-bottom: 15px;
+
+    padding-left: 25px;
+}
+
+.event-description li {
+    margin-bottom: 6px;
+}
+
+
+/* Sauts */
+
+.event-description br {
+    line-height: 1.8;
+}
+
+
+/* =========================================================
+   PARTAGE
+========================================================= */
+
+.event-share {
+    margin-top: 25px;
+
+    padding: 17px;
+
+    background: #fbfdfe;
+
+    border: 1px solid var(--border);
+
+    border-radius: 14px;
+}
+
+.event-share-title {
+    display: flex;
+
+    align-items: center;
+
+    gap: 7px;
+
+    margin-bottom: 12px;
+
+    color: var(--text);
+
+    font-size: .82rem;
+
+    font-weight: 800;
+}
+
+.event-share-buttons {
+    display: flex;
+
+    flex-wrap: wrap;
+
+    gap: 8px;
+}
+
+.event-share-button {
+    display: inline-flex;
+
+    align-items: center;
+
+    gap: 7px;
+
+    padding: 8px 13px;
+
+    border-radius: 9px;
+
+    font-size: .75rem;
+
+    font-weight: 700;
+
+    text-decoration: none;
+
+    transition: .25s ease;
+}
+
+.event-facebook {
+    color: #1877f2;
+
+    border: 1px solid rgba(24,119,242,.25);
+
+    background: #fff;
+}
+
+.event-facebook:hover {
+    background: #1877f2;
+
+    color: #fff;
+}
+
+.event-whatsapp {
+    color: #198754;
+
+    border: 1px solid rgba(25,135,84,.25);
+
+    background: #fff;
+}
+
+.event-whatsapp:hover {
+    background: #198754;
+
+    color: #fff;
+}
+
+
+/* =========================================================
+   SIDEBAR
+========================================================= */
+
+.other-events {
+    position: sticky;
+
+    top: 95px;
+}
+
+
+/* =========================================================
+   TITRE SIDEBAR
+========================================================= */
+
+.other-events-header {
+    display: flex;
+
+    align-items: center;
+
+    gap: 8px;
+
+    margin-bottom: 17px;
+
+    color: var(--text);
+
+    font-size: 1rem;
+
+    font-weight: 800;
+}
+
+.other-events-header-icon {
+    width: 34px;
+    height: 34px;
+
+    display: inline-flex;
+
+    align-items: center;
+    justify-content: center;
+
+    background: var(--primary-light);
+
+    color: var(--primary);
+
+    border-radius: 9px;
+
+    font-size: .9rem;
+}
+
+
+/* =========================================================
+   CARTE AUTRE EVENEMENT
+========================================================= */
+
+.other-event-card {
+    display: flex;
+
+    gap: 12px;
+
+    overflow: hidden;
+
+    margin-bottom: 12px;
+
+    padding: 9px;
+
+    background: var(--white);
+
+    border: 1px solid var(--border);
+
+    border-radius: 13px;
+
+    color: inherit;
+
+    text-decoration: none;
+
+    box-shadow:
+        0 4px 15px rgba(30,60,80,.045);
+
+    transition:
+        transform .3s ease,
+        box-shadow .3s ease,
+        border-color .3s ease;
+}
+
+.other-event-card:hover {
+    transform: translateY(-3px);
+
+    border-color: rgba(0,119,182,.20);
+
+    box-shadow: var(--shadow-hover);
+
+    color: inherit;
+}
+
+
+/* =========================================================
+   MINIATURE
+========================================================= */
+
+.other-event-image-wrapper {
+    width: 105px;
+    height: 82px;
+
+    flex: 0 0 105px;
+
+    overflow: hidden;
+
+    border-radius: 9px;
+
+    background: #edf3f6;
+}
+
+.other-event-image {
+    width: 100%;
+    height: 100%;
+
+    display: block;
+
+    object-fit: cover;
+
+    transition: transform .45s ease;
+}
+
+.other-event-card:hover .other-event-image {
+    transform: scale(1.07);
+}
+
+
+/* =========================================================
+   CORPS SIDEBAR
+========================================================= */
+
+.other-event-body {
+    min-width: 0;
+
+    display: flex;
+
+    flex-direction: column;
+
+    justify-content: center;
+}
+
+.other-event-title {
+    margin: 0 0 6px;
+
+    color: var(--text);
+
+    font-size: .78rem;
+
+    font-weight: 800;
+
+    line-height: 1.4;
+
+    display: -webkit-box;
+
+    -webkit-line-clamp: 2;
+
+    -webkit-box-orient: vertical;
+
+    overflow: hidden;
+}
+
+.other-event-card:hover .other-event-title {
+    color: var(--primary);
+}
+
+
+/* =========================================================
+   META SIDEBAR
+========================================================= */
+
+.other-event-meta {
+    display: flex;
+
+    align-items: center;
+
+    gap: 5px;
+
+    margin-bottom: 5px;
+
+    color: var(--muted);
+
+    font-size: .64rem;
+}
+
+
+/* =========================================================
+   LIEN
+========================================================= */
+
+.other-event-link {
+    display: inline-flex;
+
+    align-items: center;
+
+    gap: 5px;
+
+    color: var(--primary);
+
+    font-size: .68rem;
+
+    font-weight: 800;
+}
+
+.other-event-link i {
+    transition: transform .2s ease;
+}
+
+.other-event-card:hover .other-event-link i {
+    transform: translateX(3px);
+}
+
+
+/* =========================================================
+   ETAT VIDE
+========================================================= */
+
+.no-other-event {
+    padding: 20px;
+
+    background: #fff;
+
+    border: 1px dashed #ccd8df;
+
+    border-radius: 13px;
+
+    color: var(--muted);
+
+    font-size: .8rem;
+
+    text-align: center;
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 991px) {
+
+    .other-events {
+        position: static;
+
+        margin-top: 10px;
+    }
+
+}
+
+
+@media (max-width: 767px) {
+
+    .event-main-image-wrapper {
+        height: 290px;
+    }
+
+    .event-image-info {
+        left: 17px;
+        right: 17px;
+        bottom: 17px;
+    }
+
+    .event-meta {
+        padding: 14px 17px;
+    }
+
+    .event-content {
+        padding: 21px 17px;
+    }
+
+    .event-description {
+        font-size: .88rem;
+
+        line-height: 1.75;
+
+        text-align: left;
+    }
+
+}
+
+
+@media (max-width: 575px) {
+
+    .event-main-image-wrapper {
+        height: 245px;
+    }
+
+    .event-main-title {
+        font-size: 1.35rem;
+    }
+
+    .event-meta {
+        flex-direction: column;
+    }
+
+    .event-meta-item {
+        width: 100%;
+    }
+
+    .event-share-buttons {
+        flex-direction: column;
+    }
+
+    .event-share-button {
+        justify-content: center;
+
+        width: 100%;
+    }
+
+}
+
+
+/* =========================================================
+   ANIMATION
+========================================================= */
+
+.event-main,
+.other-event-card {
+    animation: eventFade .5s ease both;
+}
+
+@keyframes eventFade {
+
+    from {
+        opacity: 0;
+
+        transform: translateY(12px);
+    }
+
+    to {
+        opacity: 1;
+
+        transform: translateY(0);
+    }
+
+}
+
+</style>
+
+
+
+<!-- =========================================================
+     DETAIL EVENEMENT
+========================================================= -->
+
+<section class="container"
+         id="detail-evenement">
+
+
+    <div class="row g-4 g-lg-5">
+
+
+        <!-- =================================================
+             EVENEMENT PRINCIPAL
+        ================================================== -->
+
+        <div class="col-lg-8">
+
+
+            <article class="event-main">
+
+
+                <!-- =================================================
+                     IMAGE
+                ================================================== -->
+
+                <div class="event-main-image-wrapper">
+
+
+                    {% if evenement.image %}
+
+                        <img src="{{ evenement.image.url }}"
+                             class="event-main-image"
+                             alt="{{ evenement.titre }}">
+
+                    {% else %}
+
+                        <img src="{% static 'assets/img/Imagepardefaut.png' %}"
+                             class="event-main-image"
+                             alt="Événement CNFPCEL">
+
+                    {% endif %}
+
+
+
+                    <div class="event-image-info">
+
+
+                        <span class="event-category">
+
+                            <i class="bi bi-calendar-event-fill"></i>
+
+                            Événement CNFPCEL
+
+                        </span>
+
+
+                        <h1 class="event-main-title">
+
+                            {{ evenement.titre }}
+
+                        </h1>
+
+
+                    </div>
+
+
+                </div>
+
+
+
+                <!-- =================================================
+                     INFORMATIONS
+                ================================================== -->
+
+                <div class="event-meta">
+
+
+                    {% if evenement.date %}
+
+                    <span class="event-meta-item">
+
+                        <i class="bi bi-calendar3"></i>
+
+                        {{ evenement.date }}
+
+                    </span>
+
+                    {% endif %}
+
+
+                    {% if evenement.lieu %}
+
+                    <span class="event-meta-item">
+
+                        <i class="bi bi-geo-alt-fill"></i>
+
+                        {{ evenement.lieu }}
+
+                    </span>
+
+                    {% endif %}
+
+
+                </div>
+
+
+
+                <!-- =================================================
+                     CONTENU
+                ================================================== -->
+
+                <div class="event-content">
+
+
+                    <div class="event-content-title">
+
+
+                        <span class="event-content-title-icon">
+
+                            <i class="bi bi-info-circle-fill"></i>
+
+                        </span>
+
+
+                        <span>
+
+                            À propos de l'événement
+
+                        </span>
+
+
+                    </div>
+
+
+
+                    <!--
+                        IMPORTANT :
+
+                        Le contenu est HTML enrichi.
+
+                        Les balises autorisées restent actives :
+                        strong
+                        em
+                        br
+                        a
+                        p
+                        ul
+                        li
+                    -->
+
+                    <div class="event-description">
+
+                        {{ evenement.description|safe }}
+
+                    </div>
+
+
+
+                    <!-- =================================================
+                         PARTAGE
+                    ================================================== -->
+
+                    <div class="event-share">
+
+
+                        <div class="event-share-title">
+
+                            <i class="bi bi-share-fill"></i>
+
+                            Partager cet événement
+
+                        </div>
+
+
+                        <div class="event-share-buttons">
+
+
+                            <!-- FACEBOOK -->
+
+                            <a href="https://www.facebook.com/sharer/sharer.php?u={{ request.build_absolute_uri }}"
+                               target="_blank"
+                               rel="noopener noreferrer"
+                               class="event-share-button event-facebook">
+
+                                <i class="bi bi-facebook"></i>
+
+                                Facebook
+
+                            </a>
+
+
+
+                            <!-- WHATSAPP -->
+
+                            <a href="https://api.whatsapp.com/send?text={{ evenement.titre }} - {{ request.build_absolute_uri }}"
+                               target="_blank"
+                               rel="noopener noreferrer"
+                               class="event-share-button event-whatsapp">
+
+                                <i class="bi bi-whatsapp"></i>
+
+                                WhatsApp
+
+                            </a>
+
+
+                        </div>
+
+
+                    </div>
+
+
+                </div>
+
+
+            </article>
+
+
+        </div>
+
+
+
+        <!-- =================================================
+             AUTRES EVENEMENTS
+        ================================================== -->
+
+        <div class="col-lg-4">
+
+
+            <aside class="other-events">
+
+
+                <div class="other-events-header">
+
+
+                    <span class="other-events-header-icon">
+
+                        <i class="bi bi-calendar-event"></i>
+
+                    </span>
+
+
+                    <span>
+
+                        Autres événements
+
+                    </span>
+
+
+                </div>
+
+
+
+                {% for autre_evenement in autre_evenement %}
+
+
+                <a href="{% url 'evenement_detail' autre_evenement.id %}"
+                   class="other-event-card">
+
+
+                    <!-- IMAGE -->
+
+                    <div class="other-event-image-wrapper">
+
+
+                        {% if autre_evenement.image %}
+
+                            <img src="{{ autre_evenement.image.url }}"
+                                 class="other-event-image"
+                                 alt="{{ autre_evenement.titre }}">
+
+                        {% else %}
+
+                            <img src="{% static 'assets/img/Imagepardefaut.png' %}"
+                                 class="other-event-image"
+                                 alt="Événement CNFPCEL">
+
+                        {% endif %}
+
+
+                    </div>
+
+
+
+                    <!-- INFORMATIONS -->
+
+                    <div class="other-event-body">
+
+
+                        <div class="other-event-meta">
+
+                            <i class="bi bi-calendar3"></i>
+
+                            {{ autre_evenement.date }}
+
+                        </div>
+
+
+                        <h2 class="other-event-title">
+
+                            {{ autre_evenement.titre }}
+
+                        </h2>
+
+
+                        <span class="other-event-link">
+
+                            Voir l'événement
+
+                            <i class="bi bi-arrow-right"></i>
+
+                        </span>
+
+
+                    </div>
+
+
+                </a>
+
+
+                {% empty %}
+
+
+                <div class="no-other-event">
+
+                    <i class="bi bi-calendar-x d-block mb-2 fs-4"></i>
+
+                    Aucun autre événement disponible.
+
+                </div>
+
+
+                {% endfor %}
+
+
+            </aside>
+
+
+        </div>
+
+
+    </div>
+
+
+</section>
+
+
+{% endblock %}
